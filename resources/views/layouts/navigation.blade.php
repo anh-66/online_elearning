@@ -1,99 +1,138 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
+@php
+    $menu = [
+        ['label' => 'Trang chủ', 'route' => 'home', 'active' => 'home', 'icon' => 'home'],
+        ['label' => 'Khoá học', 'route' => 'courses.index', 'active' => 'courses.*', 'icon' => 'book'],
+        ['label' => 'Thông báo', 'route' => 'announcements.index', 'active' => 'announcements.*', 'icon' => 'bell'],
+    ];
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+    if (auth()->check()) {
+        $menu[] = ['label' => 'Góc học tập', 'route' => 'dashboard', 'active' => 'dashboard', 'icon' => 'academic'];
+    }
+@endphp
+
+<nav x-data="{ open: false }" class="sticky top-0 z-40">
+    {{-- Top strip like a university portal --}}
+    <div class="hidden bg-brand-900 text-xs text-brand-100 sm:block">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1"><x-icon name="phone" class="h-3.5 w-3.5" /> (028) 3512 0000</span>
+                <span class="flex items-center gap-1"><x-icon name="mail" class="h-3.5 w-3.5" /> elearning@uth.edu.vn</span>
             </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
+            <span>Hệ thống học trực tuyến dành cho sinh viên</span>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+    <div class="bg-brand-700 text-white shadow-md">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+            <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2">
+                <x-application-logo class="h-9 w-9" />
+                <span class="leading-tight">
+                    <span class="block text-base font-bold tracking-wide">UTH E-LEARNING</span>
+                    <span class="hidden text-[11px] text-brand-100 sm:block">Học mọi lúc, mọi nơi</span>
+                </span>
+            </a>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+            <div class="hidden items-center gap-1 lg:flex">
+                @foreach ($menu as $item)
+                    <a href="{{ route($item['route']) }}"
+                       @class([
+                           'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition',
+                           'bg-white/15 text-white' => request()->routeIs($item['active']),
+                           'text-brand-50 hover:bg-white/10' => ! request()->routeIs($item['active']),
+                       ])>
+                        <x-icon :name="$item['icon']" class="h-4 w-4" /> {{ $item['label'] }}
+                    </a>
+                @endforeach
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+            <form action="{{ route('courses.index') }}" method="GET" class="hidden flex-1 md:block lg:max-w-xs">
+                <label class="relative block">
+                    <span class="sr-only">Tìm khoá học</span>
+                    <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-200" />
+                    <input type="search" name="q" value="{{ request('q') }}" placeholder="Tìm khoá học..."
+                           class="w-full rounded-full border-0 bg-white/15 py-2 pl-9 pr-4 text-sm text-white placeholder:text-brand-100 focus:bg-white focus:text-gray-900 focus:ring-2 focus:ring-brand-300">
+                </label>
+            </form>
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
+            <div class="hidden items-center gap-2 lg:flex">
+                @auth
+                    <x-dropdown align="right" width="w-56">
+                        <x-slot name="trigger">
+                            <button class="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 text-sm font-medium hover:bg-white/10">
+                                <img src="{{ Auth::user()->avatar_url }}" alt="" class="h-8 w-8 rounded-full border-2 border-white/60 object-cover">
+                                <span class="max-w-[140px] truncate">{{ Auth::user()->name }}</span>
+                                <x-icon name="chevron-down" class="h-4 w-4" />
+                            </button>
+                        </x-slot>
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                        <x-slot name="content">
+                            <div class="border-b border-gray-100 px-4 py-2">
+                                <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name }}</p>
+                                <span class="badge {{ Auth::user()->role->badgeClasses() }} mt-1">{{ Auth::user()->role->label() }}</span>
+                            </div>
+                            @if (Auth::user()->canManageCourses())
+                                <x-dropdown-link :href="route('admin.dashboard')">Trang quản trị</x-dropdown-link>
+                            @endif
+                            <x-dropdown-link :href="route('dashboard')">Góc học tập</x-dropdown-link>
+                            <x-dropdown-link :href="route('profile.edit')">Hồ sơ cá nhân</x-dropdown-link>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                    Đăng xuất
+                                </x-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                @else
+                    <a href="{{ route('login') }}" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-white/10">Đăng nhập</a>
+                    <a href="{{ route('register') }}" class="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-brand-800 hover:bg-brand-50">Đăng ký</a>
+                @endauth
+            </div>
+
+            <button @click="open = ! open" class="rounded-lg p-2 hover:bg-white/10 lg:hidden" aria-label="Mở menu">
+                <x-icon name="menu" class="h-6 w-6" x-show="! open" />
+                <x-icon name="x" class="h-6 w-6" x-show="open" x-cloak />
+            </button>
+        </div>
+
+        {{-- Mobile menu --}}
+        <div x-show="open" x-transition x-cloak class="border-t border-white/10 lg:hidden">
+            <div class="space-y-1 px-4 py-3">
+                <form action="{{ route('courses.index') }}" method="GET" class="mb-3 md:hidden">
+                    <input type="search" name="q" value="{{ request('q') }}" placeholder="Tìm khoá học..."
+                           class="w-full rounded-lg border-0 bg-white/15 px-4 py-2 text-sm text-white placeholder:text-brand-100 focus:bg-white focus:text-gray-900">
                 </form>
+
+                @foreach ($menu as $item)
+                    <a href="{{ route($item['route']) }}" @class(['flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium', 'bg-white/15' => request()->routeIs($item['active'])])>
+                        <x-icon :name="$item['icon']" class="h-4 w-4" /> {{ $item['label'] }}
+                    </a>
+                @endforeach
+
+                <div class="mt-2 border-t border-white/10 pt-3">
+                    @auth
+                        <div class="mb-2 flex items-center gap-3 px-3">
+                            <img src="{{ Auth::user()->avatar_url }}" alt="" class="h-9 w-9 rounded-full object-cover">
+                            <div>
+                                <p class="text-sm font-semibold">{{ Auth::user()->name }}</p>
+                                <p class="text-xs text-brand-100">{{ Auth::user()->email }}</p>
+                            </div>
+                        </div>
+                        @if (Auth::user()->canManageCourses())
+                            <a href="{{ route('admin.dashboard') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10">Trang quản trị</a>
+                        @endif
+                        <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10">Hồ sơ cá nhân</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button class="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-white/10">Đăng xuất</button>
+                        </form>
+                    @else
+                        <div class="flex gap-2">
+                            <a href="{{ route('login') }}" class="flex-1 rounded-lg border border-white/40 px-3 py-2 text-center text-sm">Đăng nhập</a>
+                            <a href="{{ route('register') }}" class="flex-1 rounded-lg bg-white px-3 py-2 text-center text-sm font-semibold text-brand-800">Đăng ký</a>
+                        </div>
+                    @endauth
+                </div>
             </div>
         </div>
     </div>

@@ -13,10 +13,20 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 grid gap-8 md:grid-cols-3">
         @csrf
         @method('patch')
 
+        <div class="text-center" x-data="imagePreview">
+            <img :src="previews[0] ?? @js($user->avatar_url)" alt="" class="mx-auto h-28 w-28 rounded-full object-cover ring-4 ring-brand-100">
+            <label class="btn-secondary mt-4 cursor-pointer">
+                <x-icon name="photo" class="h-4 w-4" /> Đổi ảnh đại diện
+                <input type="file" name="avatar" accept="image/*" class="sr-only" @change="pick($event)">
+            </label>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+        </div>
+
+        <div class="space-y-6 md:col-span-2">
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
@@ -33,7 +43,7 @@
                     <p class="text-sm mt-2 text-gray-800">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -45,6 +55,18 @@
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label for="phone" value="Số điện thoại" />
+            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+        </div>
+
+        <div>
+            <x-input-label for="bio" value="Giới thiệu bản thân" />
+            <textarea id="bio" name="bio" rows="3" class="form-input">{{ old('bio', $user->bio) }}</textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 
         <div class="flex items-center gap-4">
@@ -59,6 +81,7 @@
                     class="text-sm text-gray-600"
                 >{{ __('Saved.') }}</p>
             @endif
+        </div>
         </div>
     </form>
 </section>
