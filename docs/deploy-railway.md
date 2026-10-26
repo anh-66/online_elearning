@@ -53,3 +53,10 @@ Tài khoản demo sau khi seed: `admin@gmail.com` / `Admin@123`, `teacher@gmail.
 
 Ổ đĩa của container bị xoá mỗi lần deploy. Muốn giữ ảnh khoá học/avatar đã upload, thêm
 **Volume** cho service web với mount path `/var/www/html/storage/app/public`.
+
+## 6. Seed lại dữ liệu demo trên Railway
+
+Seed chỉ tự chạy khi database còn trống. Nếu database trên Railway đã có dữ liệu cũ
+(ví dụ mật khẩu cũ, chưa có chương/quiz), thêm biến `RESEED_DATABASE=true` cho service web
+và deploy lại một lần: app sẽ chạy `migrate:fresh --seed` (xoá toàn bộ dữ liệu cũ).
+Deploy xong nhớ **xoá biến này**, nếu không mỗi lần deploy sẽ xoá dữ liệu lại.
