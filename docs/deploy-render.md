@@ -82,6 +82,9 @@ CA certificate đã copy ở bước 1.4 (dán nguyên nhiều dòng).
 
 Không cần đặt `PORT`, Render tự cấp và `start.sh` tự dùng.
 
+Muốn bật **Đăng nhập bằng Google**, thêm `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
+`GOOGLE_REDIRECT_URI`: xem [dang-nhap-google.md](dang-nhap-google.md).
+
 ## 4. Deploy
 
 Bấm **Create Web Service** (hoặc **Manual Deploy** → **Deploy latest commit**). Xem tab **Logs**:

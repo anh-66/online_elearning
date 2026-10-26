@@ -3,6 +3,18 @@
 Tài liệu này ghi lại các thay đổi Claude thực hiện trên nhánh `feature/demo`, theo thứ tự thời
 gian. Nhánh `main` không bị động đến.
 
+## 26/10/2026: đăng nhập bằng Google
+
+- Thêm gói `laravel/socialite`, nút **Đăng nhập bằng Google** ở trang đăng nhập và đăng ký.
+- Email mới → tạo tài khoản **Học viên** (không có mật khẩu); email trùng tài khoản có sẵn → liên
+  kết và giữ nguyên vai trò.
+- Migration thêm cột `users.google_id`, cột `password` được để trống. Trang Hồ sơ: tài khoản
+  Google đặt mật khẩu mới không cần mật khẩu cũ, xoá tài khoản không cần nhập mật khẩu.
+- Cấu hình: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`. Hướng dẫn chi
+  tiết ở [dang-nhap-google.md](dang-nhap-google.md).
+
+Cần chạy `composer install` và `php artisan migrate`.
+
 ## 26/10/2026: bổ sung theo tài liệu phân tích thiết kế
 
 **Tách khu giảng viên và khu quản trị**

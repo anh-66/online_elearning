@@ -15,8 +15,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password', 'role', 'avatar', 'phone', 'bio'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'email', 'google_id', 'password', 'role', 'avatar', 'phone', 'bio'])]
+#[Hidden(['password', 'remember_token', 'google_id'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -61,6 +61,14 @@ class User extends Authenticatable
     public function isTeacher(): bool
     {
         return $this->role === UserRole::Teacher;
+    }
+
+    /**
+     * Accounts created through Google have no password until the user sets one.
+     */
+    public function hasPassword(): bool
+    {
+        return $this->password !== null;
     }
 
     /**
@@ -159,8 +167,11 @@ class User extends Authenticatable
      */
     protected function avatarUrl(): Attribute
     {
-        return Attribute::get(fn (): string => $this->avatar
-            ? Storage::disk('public')->url($this->avatar)
-            : 'https://ui-avatars.com/api/?background=0f766e&color=fff&name='.urlencode($this->name));
+        return Attribute::get(fn (): string => match (true) {
+            ! $this->avatar => 'https://ui-avatars.com/api/?background=0f766e&color=fff&name='.urlencode($this->name),
+            // Google sign-in stores the full URL of the Google profile picture.
+            str_starts_with($this->avatar, 'http') => $this->avatar,
+            default => Storage::disk('public')->url($this->avatar),
+        });
     }
 }

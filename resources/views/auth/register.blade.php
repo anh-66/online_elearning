@@ -50,6 +50,8 @@
         </x-primary-button>
     </form>
 
+    <x-google-sign-in-button label="Đăng ký bằng Google" />
+
     <p class="mt-6 text-center text-sm text-gray-600">
         {{ __('Already registered?') }}
         <a href="{{ route('login') }}" class="font-semibold text-brand-700 hover:text-brand-900">{{ __('Log in') }}</a>

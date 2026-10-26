@@ -48,6 +48,8 @@
         </x-primary-button>
     </form>
 
+    <x-google-sign-in-button label="Đăng nhập bằng Google" />
+
     <p class="mt-6 text-center text-sm text-gray-600">
         Chưa có tài khoản?
         <a href="{{ route('register') }}" class="font-semibold text-brand-700 hover:text-brand-900">Đăng ký ngay</a>
