@@ -54,7 +54,7 @@ class Announcement extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::get(fn (): ?string => $this->image
-            ? Storage::disk('public')->url($this->image)
+            ? Storage::disk('media')->url($this->image)
             : null);
     }
 }

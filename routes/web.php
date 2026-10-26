@@ -64,6 +64,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('categories', Admin\CategoryController::class)->except('show');
     Route::resource('users', Admin\UserController::class)->except('show');
     Route::resource('announcements', Admin\AnnouncementController::class)->except('show');
+
+    Route::get('media', [Admin\MediaController::class, 'index'])->name('media.index');
 });
 
 Route::prefix('instructor')->name('instructor.')->middleware(['auth', 'role:teacher'])->group(function () {

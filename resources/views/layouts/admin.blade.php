@@ -22,6 +22,7 @@
         'Hệ thống' => [
             ['label' => 'Người dùng', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'icon' => 'users'],
             ['label' => 'Thông báo', 'route' => 'admin.announcements.index', 'active' => 'admin.announcements.*', 'icon' => 'bell'],
+            ['label' => 'Ảnh đã lưu', 'route' => 'admin.media.index', 'active' => 'admin.media.*', 'icon' => 'photo'],
         ],
     ];
 @endphp

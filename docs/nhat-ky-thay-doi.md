@@ -3,6 +3,38 @@
 Tài liệu này ghi lại các thay đổi Claude thực hiện trên nhánh `feature/demo`, theo thứ tự thời
 gian. Nhánh `main` không bị động đến.
 
+## 26/10/2026: rà soát bảo mật trước khi push
+
+- Lịch sử git và các file sắp commit không chứa mật khẩu/khoá thật. `.gitignore` chặn thêm `.env.*`
+  (trừ `.env.example`), `*.pem`, `*.sql`.
+- Lọc HTML của CKEditor chặt hơn (chặn `java<tab>script:`, iframe `srcdoc`, thẻ `svg`/`math`...).
+- Đăng nhập Google không tự liên kết vào tài khoản **Quản trị** có cùng email, và từ chối tài khoản
+  Google chưa xác minh email.
+- Tài khoản demo đổi sang `admin@example.com`, `teacher@example.com`, `student@example.com` (mật khẩu
+  giữ nguyên), vì các địa chỉ `@gmail.com` cũ là Gmail thật của người khác. Migration mới tự đổi
+  email của các tài khoản demo cũ trong database đã seed (dữ liệu khác giữ nguyên).
+- Render: `SESSION_SECURE_COOKIE=true` để cookie đăng nhập chỉ gửi qua HTTPS.
+
+## 26/10/2026: lưu ảnh trên Cloudinary, gửi email thật, đổi bí mật bị lộ
+
+- Ảnh upload (avatar, ảnh bìa và ảnh khoá học, ảnh trong CKEditor, ảnh thông báo) lưu qua disk mới
+  `media`. Có `CLOUDINARY_URL` → lưu trên Cloudinary (không mất khi Render deploy lại); không có →
+  lưu trong `storage/app/public` như trước. Thêm gói `cloudinary/cloudinary_php`.
+- Gửi email: ở máy dùng Gmail SMTP (mật khẩu ứng dụng); trên Render dùng Resend
+  (`MAIL_MAILER=resend`, `RESEND_API_KEY`) vì Render Free chặn cổng SMTP. Thêm gói `resend/resend-php`.
+- Giảng viên nhận email khi khoá học được duyệt hoặc bị từ chối (kèm lý do). Mail lỗi thì việc
+  duyệt vẫn được lưu.
+- Bật xác minh email khi đăng ký bằng biến `AUTH_VERIFY_EMAIL=true` (mặc định tắt, ở máy không cần
+  bật). Email quên mật khẩu/xác minh đã dịch sang tiếng Việt.
+- Hướng dẫn: [luu-anh-va-gui-email.md](luu-anh-va-gui-email.md),
+  [doi-mat-khau-bi-lo.md](doi-mat-khau-bi-lo.md).
+
+- Trang quản trị **Ảnh đã lưu** (`/admin/media`): xem toàn bộ ảnh đã upload (trên Cloudinary hoặc
+  trong máy), ảnh đang dùng ở đâu (avatar, ảnh bìa, ảnh khoá học, ảnh trong bài viết, ảnh thông
+  báo), lọc ảnh không còn dùng, mở ảnh và copy link.
+
+Cần chạy `composer install`. Không có migration mới.
+
 ## 26/10/2026: đăng nhập bằng Google
 
 - Thêm gói `laravel/socialite`, nút **Đăng nhập bằng Google** ở trang đăng nhập và đăng ký.
@@ -38,7 +70,7 @@ duyệt (xuất bản), từ chối kèm lý do, hoặc ẩn. Khoá bị từ ch
 tự đặc biệt.
 
 **Dữ liệu mẫu**: mỗi khoá có 3 chương, 6 bài, 3 quiz; có sẵn lượt làm quiz, một khoá chờ duyệt,
-một bản nháp và một khoá bị từ chối của `teacher@gmail.com`. Mật khẩu mới: `Admin@123`,
+một bản nháp và một khoá bị từ chối của `teacher@example.com`. Mật khẩu mới: `Admin@123`,
 `Teacher@123`, `Student@123`.
 
 Cần chạy lại `php artisan migrate:fresh --seed` và `npm run build`.

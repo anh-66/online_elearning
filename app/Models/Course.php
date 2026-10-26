@@ -173,7 +173,7 @@ class Course extends Model
     protected function thumbnailUrl(): Attribute
     {
         return Attribute::get(fn (): ?string => $this->thumbnail
-            ? Storage::disk('public')->url($this->thumbnail)
+            ? Storage::disk('media')->url($this->thumbnail)
             : null);
     }
 

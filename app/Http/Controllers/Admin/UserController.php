@@ -40,7 +40,7 @@ class UserController extends Controller
     {
         User::create([
             ...$request->safe()->only(['name', 'email', 'role', 'phone', 'password']),
-            'avatar' => $request->file('avatar')?->store('avatars', 'public'),
+            'avatar' => $request->file('avatar')?->store('avatars', 'media'),
             'email_verified_at' => now(),
         ]);
 
@@ -66,10 +66,10 @@ class UserController extends Controller
 
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+                Storage::disk('media')->delete($user->avatar);
             }
 
-            $attributes['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $attributes['avatar'] = $request->file('avatar')->store('avatars', 'media');
         }
 
         $user->update($attributes);
@@ -84,7 +84,7 @@ class UserController extends Controller
         }
 
         if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
+            Storage::disk('media')->delete($user->avatar);
         }
 
         $user->delete();

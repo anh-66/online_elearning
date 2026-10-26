@@ -16,7 +16,17 @@ class HtmlSanitizer
      *
      * @var list<string>
      */
-    private const array FORBIDDEN_TAGS = ['script', 'style', 'object', 'embed', 'form', 'input', 'button', 'textarea', 'select', 'meta', 'link', 'base'];
+    private const array FORBIDDEN_TAGS = [
+        'script', 'style', 'object', 'embed', 'applet', 'form', 'input', 'button', 'textarea', 'select', 'meta', 'link', 'base',
+        'svg', 'math', 'template', 'noscript', 'noembed', 'noframes', 'xmp', 'plaintext', 'frame', 'frameset', 'portal',
+    ];
+
+    /**
+     * Attributes holding a URL that a browser may follow or load.
+     *
+     * @var list<string>
+     */
+    private const array URL_ATTRIBUTES = ['href', 'src', 'xlink:href', 'action', 'formaction', 'poster', 'background', 'data', 'cite'];
 
     public static function clean(?string $html): string
     {
@@ -47,9 +57,10 @@ class HtmlSanitizer
 
         foreach (iterator_to_array($xpath->query('//@*') ?: []) as $attribute) {
             $name = strtolower($attribute->nodeName);
-            $value = strtolower(trim($attribute->nodeValue ?? ''));
+            // Browsers ignore whitespace and control characters inside a URL scheme ("java\tscript:").
+            $value = strtolower(preg_replace('~[\x00-\x20]+~', '', $attribute->nodeValue ?? ''));
 
-            if (str_starts_with($name, 'on') || (in_array($name, ['href', 'src'], true) && preg_match('~^(javascript|vbscript|data:text)~', $value))) {
+            if (str_starts_with($name, 'on') || $name === 'srcdoc' || (in_array($name, self::URL_ATTRIBUTES, true) && preg_match('~^(javascript|vbscript|data:(?!image/(png|jpe?g|gif|webp|avif);))~', $value))) {
                 $attribute->ownerElement?->removeAttributeNode($attribute);
             }
         }

@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
     ];
 
     /**
-     * Courses of teacher@gmail.com that show the review flow: [title, summary, category, status, rejection reason].
+     * Courses of teacher@example.com that show the review flow: [title, summary, category, status, rejection reason].
      *
      * @var list<array{0: string, 1: string, 2: string, 3: CourseStatus, 4: ?string}>
      */
@@ -90,7 +90,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $admin = User::updateOrCreate([
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@example.com',
         ], [
             'name' => 'Admin System',
             'password' => self::ADMIN_PASSWORD,
@@ -99,9 +99,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $teachers = collect([
-            ['Nguyễn Văn Minh', 'teacher@gmail.com'],
-            ['Trần Thị Lan', 'lan.tran@gmail.com'],
-            ['Lê Hoàng Phúc', 'phuc.le@gmail.com'],
+            ['Nguyễn Văn Minh', 'teacher@example.com'],
+            ['Trần Thị Lan', 'lan.tran@example.com'],
+            ['Lê Hoàng Phúc', 'phuc.le@example.com'],
         ])->map(fn (array $teacher) => User::updateOrCreate(['email' => $teacher[1]], [
             'name' => $teacher[0],
             'password' => self::TEACHER_PASSWORD,
@@ -110,7 +110,7 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]));
 
-        $students = collect([User::updateOrCreate(['email' => 'student@gmail.com'], [
+        $students = collect([User::updateOrCreate(['email' => 'student@example.com'], [
             'name' => 'Phạm Minh Anh',
             'password' => self::STUDENT_PASSWORD,
             'role' => UserRole::Student,

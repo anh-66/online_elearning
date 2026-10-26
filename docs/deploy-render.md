@@ -77,6 +77,10 @@ LOG_CHANNEL=stderr
 MAIL_MAILER=log
 ```
 
+Để ảnh upload không bị mất và gửi được email thật, thêm `CLOUDINARY_URL`, đổi `MAIL_MAILER=resend`
+và thêm `RESEND_API_KEY`, `MAIL_FROM_ADDRESS`, `AUTH_VERIFY_EMAIL`: xem
+[luu-anh-va-gui-email.md](luu-anh-va-gui-email.md).
+
 Sau đó **Add Environment Variable** thêm riêng biến `DB_SSL_CA`, giá trị là toàn bộ nội dung
 CA certificate đã copy ở bước 1.4 (dán nguyên nhiều dòng).
 
@@ -97,9 +101,9 @@ Tài khoản demo:
 
 | Vai trò | Email | Mật khẩu |
 |---|---|---|
-| Admin | `admin@gmail.com` | `Admin@123` |
-| Giảng viên | `teacher@gmail.com` | `Teacher@123` |
-| Học viên | `student@gmail.com` | `Student@123` |
+| Admin | `admin@example.com` | `Admin@123` |
+| Giảng viên | `teacher@example.com` | `Teacher@123` |
+| Học viên | `student@example.com` | `Student@123` |
 
 ## 5. Seed lại dữ liệu demo
 
@@ -110,8 +114,10 @@ Seed chỉ tự chạy khi database trống. Muốn xoá sạch và seed lại: 
 
 - Service tự ngủ sau ~15 phút không có ai truy cập; lần mở đầu tiên sau đó mất khoảng 1 phút.
   Nên mở web trước khi thuyết trình/demo vài phút.
-- Ổ đĩa không được giữ: ảnh upload (ảnh khoá học, avatar) sẽ mất sau mỗi lần deploy hoặc khởi động
-  lại. Dữ liệu trong MySQL (Aiven) thì vẫn giữ nguyên.
+- Ổ đĩa không được giữ: nếu chưa đặt `CLOUDINARY_URL`, ảnh upload (ảnh khoá học, avatar) sẽ mất sau
+  mỗi lần deploy hoặc khởi động lại. Đặt `CLOUDINARY_URL` để lưu ảnh trên Cloudinary. Dữ liệu trong
+  MySQL (Aiven) thì vẫn giữ nguyên.
+- Cổng SMTP bị chặn: không gửi mail qua Gmail SMTP được, dùng Resend (`MAIL_MAILER=resend`).
 - Mỗi lần `git push origin feature/demo`, Render tự build và deploy lại.
 
 ## Sửa lỗi thường gặp

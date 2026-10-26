@@ -47,6 +47,24 @@ return [
             'report' => false,
         ],
 
+        // Uploaded images and files (avatars, course images, editor images...).
+        // With CLOUDINARY_URL (cloudinary://key:secret@cloud) they go to Cloudinary and
+        // survive redeploys; otherwise they stay in storage/app/public like the "public" disk.
+        'media' => str_starts_with((string) env('CLOUDINARY_URL'), 'cloudinary://') ? [
+            'driver' => 'cloudinary',
+            'url' => env('CLOUDINARY_URL'),
+            'folder' => env('CLOUDINARY_FOLDER', 'online-elearning'),
+            'throw' => true,
+            'report' => false,
+        ] : [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

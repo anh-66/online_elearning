@@ -94,9 +94,9 @@ Mật khẩu phải có ít nhất 6 ký tự, 1 chữ in hoa và 1 ký tự đ�
 
 | Email | Mật khẩu | Vai trò |
 | --- | --- | --- |
-| `admin@gmail.com` | `Admin@123` | Quản trị viên, vào `/admin` để duyệt khoá học, quản lý người dùng, danh mục |
-| `teacher@gmail.com` | `Teacher@123` | Giảng viên, vào `/instructor` để quản lý khoá học, chương, bài học, quiz của mình |
-| `student@gmail.com` | `Student@123` | Học viên |
+| `admin@example.com` | `Admin@123` | Quản trị viên, vào `/admin` để duyệt khoá học, quản lý người dùng, danh mục |
+| `teacher@example.com` | `Teacher@123` | Giảng viên, vào `/instructor` để quản lý khoá học, chương, bài học, quiz của mình |
+| `student@example.com` | `Student@123` | Học viên |
 
 ## 6. Lệnh hay dùng
 

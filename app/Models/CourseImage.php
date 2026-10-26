@@ -21,6 +21,6 @@ class CourseImage extends Model
 
     protected function url(): Attribute
     {
-        return Attribute::get(fn (): string => Storage::disk('public')->url($this->path));
+        return Attribute::get(fn (): string => Storage::disk('media')->url($this->path));
     }
 }

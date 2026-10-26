@@ -16,8 +16,8 @@ class EditorUploadController extends Controller
     {
         $request->validate(['upload' => ['required', 'image', 'max:4096']]);
 
-        $path = $request->file('upload')->store('editor/'.now()->format('Y/m'), 'public');
+        $path = $request->file('upload')->store('editor/'.now()->format('Y/m'), 'media');
 
-        return response()->json(['url' => Storage::disk('public')->url($path)]);
+        return response()->json(['url' => Storage::disk('media')->url($path)]);
     }
 }

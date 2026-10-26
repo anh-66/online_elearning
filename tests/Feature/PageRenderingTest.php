@@ -41,7 +41,7 @@ class PageRenderingTest extends TestCase
 
     public function test_student_pages_render(): void
     {
-        $student = User::where('email', 'student@gmail.com')->firstOrFail();
+        $student = User::where('email', 'student@example.com')->firstOrFail();
         $course = $student->enrolledCourses()->first();
 
         $this->actingAs($student);
@@ -54,7 +54,7 @@ class PageRenderingTest extends TestCase
 
     public function test_admin_pages_render(): void
     {
-        $admin = User::where('email', 'admin@gmail.com')->firstOrFail();
+        $admin = User::where('email', 'admin@example.com')->firstOrFail();
         $pendingCourse = Course::where('status', CourseStatus::Pending)->firstOrFail();
 
         $this->actingAs($admin);
@@ -82,7 +82,7 @@ class PageRenderingTest extends TestCase
 
     public function test_instructor_pages_render(): void
     {
-        $teacher = User::where('email', 'teacher@gmail.com')->firstOrFail();
+        $teacher = User::where('email', 'teacher@example.com')->firstOrFail();
         $course = $teacher->taughtCourses()->whereHas('enrollments')->firstOrFail();
         $lesson = $course->lessons()->first();
         $quiz = $course->quizzes()->first();
@@ -113,9 +113,9 @@ class PageRenderingTest extends TestCase
     public function test_seeded_demo_accounts_can_log_in(): void
     {
         foreach ([
-            'admin@gmail.com' => ['Admin@123', 'admin.dashboard'],
-            'teacher@gmail.com' => ['Teacher@123', 'instructor.dashboard'],
-            'student@gmail.com' => ['Student@123', 'dashboard'],
+            'admin@example.com' => ['Admin@123', 'admin.dashboard'],
+            'teacher@example.com' => ['Teacher@123', 'instructor.dashboard'],
+            'student@example.com' => ['Student@123', 'dashboard'],
         ] as $email => [$password, $home]) {
             $this->post('/login', ['email' => $email, 'password' => $password])->assertRedirect(route($home, absolute: false));
             $this->post('/logout');
@@ -124,7 +124,7 @@ class PageRenderingTest extends TestCase
 
     public function test_student_takes_seeded_quiz(): void
     {
-        $student = User::where('email', 'student@gmail.com')->firstOrFail();
+        $student = User::where('email', 'student@example.com')->firstOrFail();
         $course = $student->enrolledCourses()->first();
         $quiz = $course->quizzes()->first();
 

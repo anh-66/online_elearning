@@ -114,4 +114,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, new accounts must click the link emailed to them before
+    | using the learning pages. Keep it off until a real mailer is set up.
+    |
+    */
+
+    'verify_email' => (bool) env('AUTH_VERIFY_EMAIL', false),
+
 ];

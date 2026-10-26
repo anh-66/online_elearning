@@ -24,9 +24,9 @@ class GoogleLoginTest extends TestCase
         ]);
     }
 
-    private function fakeGoogleUser(string $email = 'hocvien@gmail.com', string $id = 'google-123'): void
+    private function fakeGoogleUser(string $email = 'hocvien@gmail.com', string $id = 'google-123', array $raw = []): void
     {
-        $googleUser = (new SocialiteUser)->map([
+        $googleUser = (new SocialiteUser)->setRaw($raw)->map([
             'id' => $id,
             'name' => 'Nguyễn Văn A',
             'email' => $email,
@@ -89,6 +89,31 @@ class GoogleLoginTest extends TestCase
         $this->assertSame(UserRole::Teacher, $teacher->fresh()->role);
         $this->assertTrue($teacher->fresh()->hasPassword());
         $response->assertRedirect(route('instructor.dashboard', absolute: false));
+    }
+
+    public function test_admin_account_is_not_linked_by_email(): void
+    {
+        $admin = User::factory()->create(['email' => 'quantri@gmail.com', 'role' => UserRole::Admin]);
+        $this->fakeGoogleUser('quantri@gmail.com');
+
+        $this->get('/auth/google/callback?code=abc&state=xyz')
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+        $this->assertNull($admin->fresh()->google_id);
+    }
+
+    public function test_unverified_google_email_is_refused(): void
+    {
+        User::factory()->create(['email' => 'hocvien@gmail.com']);
+        $this->fakeGoogleUser(raw: ['email_verified' => false]);
+
+        $this->get('/auth/google/callback?code=abc&state=xyz')
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
     }
 
     public function test_returning_google_user_is_found_by_google_id(): void

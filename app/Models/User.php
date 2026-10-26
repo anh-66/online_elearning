@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['name', 'email', 'google_id', 'password', 'role', 'avatar', 'phone', 'bio'])]
 #[Hidden(['password', 'remember_token', 'google_id'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -43,6 +43,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
         ];
+    }
+
+    /**
+     * Treat every account as verified while email verification is turned off (auth.verify_email).
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        return ! config('auth.verify_email') || $this->email_verified_at !== null;
     }
 
     /**
@@ -171,7 +179,7 @@ class User extends Authenticatable
             ! $this->avatar => 'https://ui-avatars.com/api/?background=0f766e&color=fff&name='.urlencode($this->name),
             // Google sign-in stores the full URL of the Google profile picture.
             str_starts_with($this->avatar, 'http') => $this->avatar,
-            default => Storage::disk('public')->url($this->avatar),
+            default => Storage::disk('media')->url($this->avatar),
         });
     }
 }

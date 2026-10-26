@@ -39,7 +39,7 @@ class AnnouncementController extends Controller
             'user_id' => $request->user()->id,
             'published_at' => $request->date('published_at') ?? now(),
             'slug' => UniqueSlug::for(Announcement::class, $request->string('title')),
-            'image' => $request->file('image')?->store('announcements', 'public'),
+            'image' => $request->file('image')?->store('announcements', 'media'),
         ]);
 
         return to_route('admin.announcements.index')->with('success', 'Đã đăng thông báo.');
@@ -60,10 +60,10 @@ class AnnouncementController extends Controller
 
         if ($request->hasFile('image')) {
             if ($announcement->image) {
-                Storage::disk('public')->delete($announcement->image);
+                Storage::disk('media')->delete($announcement->image);
             }
 
-            $attributes['image'] = $request->file('image')->store('announcements', 'public');
+            $attributes['image'] = $request->file('image')->store('announcements', 'media');
         }
 
         $announcement->update($attributes);
@@ -74,7 +74,7 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement): RedirectResponse
     {
         if ($announcement->image) {
-            Storage::disk('public')->delete($announcement->image);
+            Storage::disk('media')->delete($announcement->image);
         }
 
         $announcement->delete();

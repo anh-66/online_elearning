@@ -6,10 +6,14 @@ use App\Enums\CourseStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Course;
+use App\Notifications\CourseApproved;
+use App\Notifications\CourseRejected;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Throwable;
 
 /**
  * Course moderation: instructors build courses, admins approve, reject, hide or delete them.
@@ -48,11 +52,17 @@ class CourseController extends Controller
             return back()->with('error', 'Chỉ duyệt được khoá học đang chờ duyệt hoặc đã ẩn.');
         }
 
+        $wasPending = $course->status === CourseStatus::Pending;
+
         $course->update([
             'status' => CourseStatus::Published,
             'rejection_reason' => null,
             'published_at' => $course->published_at ?? now(),
         ]);
+
+        if ($wasPending) {
+            $this->notifyInstructor($course, new CourseApproved($course));
+        }
 
         return back()->with('success', "Đã duyệt và xuất bản khoá học \"{$course->title}\".");
     }
@@ -74,6 +84,8 @@ class CourseController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
         ]);
 
+        $this->notifyInstructor($course, new CourseRejected($course));
+
         return back()->with('success', "Đã từ chối khoá học \"{$course->title}\".");
     }
 
@@ -90,9 +102,21 @@ class CourseController extends Controller
 
     public function destroy(Course $course): RedirectResponse
     {
-        Storage::disk('public')->delete(array_filter([$course->thumbnail, ...$course->images->pluck('path')]));
+        Storage::disk('media')->delete(array_filter([$course->thumbnail, ...$course->images->pluck('path')]));
         $course->delete();
 
         return back()->with('success', 'Đã xoá khoá học.');
+    }
+
+    /**
+     * Email the instructor about the review result. A mail failure must not undo the review itself.
+     */
+    private function notifyInstructor(Course $course, Notification $notification): void
+    {
+        try {
+            $course->instructor?->notify($notification);
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 }

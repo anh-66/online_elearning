@@ -176,4 +176,4 @@ php artisan storage:link
 php artisan serve
 ```
 
-Tài khoản mẫu: `admin@gmail.com` / `Admin@123` (quản trị), `teacher@gmail.com` / `Teacher@123` (giảng viên), `student@gmail.com` / `Student@123` (học viên).
+Tài khoản mẫu: `admin@example.com` / `Admin@123` (quản trị), `teacher@example.com` / `Teacher@123` (giảng viên), `student@example.com` / `Student@123` (học viên).

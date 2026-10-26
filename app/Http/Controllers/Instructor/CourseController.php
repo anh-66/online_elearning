@@ -55,7 +55,7 @@ class CourseController extends Controller
                 'instructor_id' => $request->user()->id,
                 'status' => CourseStatus::Draft,
                 'slug' => UniqueSlug::for(Course::class, $request->string('title')),
-                'thumbnail' => $request->file('thumbnail')?->store('courses/thumbnails', 'public'),
+                'thumbnail' => $request->file('thumbnail')?->store('courses/thumbnails', 'media'),
             ]);
 
             $this->storeGalleryImages($request, $course);
@@ -90,16 +90,16 @@ class CourseController extends Controller
 
             if ($request->hasFile('thumbnail')) {
                 if ($course->thumbnail) {
-                    Storage::disk('public')->delete($course->thumbnail);
+                    Storage::disk('media')->delete($course->thumbnail);
                 }
 
-                $attributes['thumbnail'] = $request->file('thumbnail')->store('courses/thumbnails', 'public');
+                $attributes['thumbnail'] = $request->file('thumbnail')->store('courses/thumbnails', 'media');
             }
 
             $course->update($attributes);
 
             $imagesToDelete = $course->images()->whereIn('id', $request->input('delete_images', []))->get();
-            Storage::disk('public')->delete($imagesToDelete->pluck('path')->all());
+            Storage::disk('media')->delete($imagesToDelete->pluck('path')->all());
             $course->images()->whereKey($imagesToDelete->modelKeys())->delete();
 
             $this->storeGalleryImages($request, $course);
@@ -136,7 +136,7 @@ class CourseController extends Controller
     {
         Gate::authorize('manage', $course);
 
-        Storage::disk('public')->delete(array_filter([$course->thumbnail, ...$course->images->pluck('path')]));
+        Storage::disk('media')->delete(array_filter([$course->thumbnail, ...$course->images->pluck('path')]));
         $course->delete();
 
         return to_route('instructor.courses.index')->with('success', 'Đã xoá khoá học.');
@@ -148,7 +148,7 @@ class CourseController extends Controller
 
         foreach ($request->file('images', []) as $image) {
             $course->images()->create([
-                'path' => $image->store("courses/{$course->id}/gallery", 'public'),
+                'path' => $image->store("courses/{$course->id}/gallery", 'media'),
                 'sort_order' => $nextSortOrder++,
             ]);
         }

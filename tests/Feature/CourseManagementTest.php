@@ -27,7 +27,7 @@ class CourseManagementTest extends TestCase
 
     public function test_teacher_creates_course_as_draft_with_thumbnail_and_multiple_images(): void
     {
-        Storage::fake('public');
+        Storage::fake('media');
         $teacher = User::factory()->create(['role' => UserRole::Teacher]);
         $category = Category::factory()->create();
 
@@ -50,14 +50,14 @@ class CourseManagementTest extends TestCase
         $this->assertSame(CourseStatus::Draft, $course->status);
         $this->assertNull($course->published_at);
         $this->assertCount(3, $course->images);
-        Storage::disk('public')->assertExists([$course->thumbnail, ...$course->images->pluck('path')]);
+        Storage::disk('media')->assertExists([$course->thumbnail, ...$course->images->pluck('path')]);
     }
 
     public function test_images_can_be_removed_when_updating(): void
     {
-        Storage::fake('public');
+        Storage::fake('media');
         $course = Course::factory()->create();
-        $image = $course->images()->create(['path' => $this->image('old.png')->store('courses', 'public'), 'sort_order' => 1]);
+        $image = $course->images()->create(['path' => $this->image('old.png')->store('courses', 'media'), 'sort_order' => 1]);
 
         $this->actingAs($course->instructor)->put(route('instructor.courses.update', $course), [
             'title' => 'Tên mới',
@@ -72,7 +72,7 @@ class CourseManagementTest extends TestCase
         $this->assertSame('Tên mới', $course->title);
         $this->assertCount(1, $course->images);
         $this->assertFalse($course->images->contains($image));
-        Storage::disk('public')->assertMissing($image->path);
+        Storage::disk('media')->assertMissing($image->path);
     }
 
     public function test_teacher_can_only_manage_own_courses(): void
