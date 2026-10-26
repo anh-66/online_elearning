@@ -2,35 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\CourseLevel;
 use App\Enums\CourseStatus;
-use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CourseRequest;
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\User;
-use App\Support\UniqueSlug;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
+/**
+ * Course moderation: instructors build courses, admins approve, reject, hide or delete them.
+ */
 class CourseController extends Controller
 {
     public function index(Request $request): View
     {
-        $user = $request->user();
-
         $courses = Course::query()
             ->with(['category', 'instructor'])
-            ->withCount(['lessons', 'enrollments'])
-            ->when(! $user->isAdmin(), fn ($query) => $query->where('instructor_id', $user->id))
+            ->withCount(['lessons', 'enrollments', 'quizzes'])
             ->filter($request->only('q'))
             ->when($request->string('status')->toString(), fn ($query, string $status) => $query->where('status', $status))
             ->when($request->integer('category_id'), fn ($query, int $categoryId) => $query->where('category_id', $categoryId))
+            // Courses waiting for review come first.
+            ->orderByRaw('case when status = ? then 0 else 1 end', [CourseStatus::Pending->value])
+            ->latest('submitted_at')
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -39,131 +35,64 @@ class CourseController extends Controller
             'courses' => $courses,
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'statuses' => CourseStatus::cases(),
+            'pendingCount' => Course::where('status', CourseStatus::Pending)->count(),
         ]);
     }
 
-    public function create(): View
+    /**
+     * Publish a pending course, or show a hidden one again.
+     */
+    public function approve(Course $course): RedirectResponse
     {
-        Gate::authorize('create', Course::class);
+        if (! in_array($course->status, [CourseStatus::Pending, CourseStatus::Hidden], true)) {
+            return back()->with('error', 'Chỉ duyệt được khoá học đang chờ duyệt hoặc đã ẩn.');
+        }
 
-        return view('admin.courses.form', [
-            'course' => new Course(['level' => CourseLevel::Beginner, 'status' => CourseStatus::Draft, 'price' => 0]),
-            ...$this->formOptions(),
+        $course->update([
+            'status' => CourseStatus::Published,
+            'rejection_reason' => null,
+            'published_at' => $course->published_at ?? now(),
         ]);
+
+        return back()->with('success', "Đã duyệt và xuất bản khoá học \"{$course->title}\".");
     }
 
-    public function store(CourseRequest $request): RedirectResponse
+    public function reject(Request $request, Course $course): RedirectResponse
     {
-        Gate::authorize('create', Course::class);
+        $validated = $request->validate(
+            ['rejection_reason' => ['required', 'string', 'max:1000']],
+            [],
+            ['rejection_reason' => 'lý do từ chối'],
+        );
 
-        $course = DB::transaction(function () use ($request): Course {
-            $course = Course::create([
-                ...$this->courseAttributes($request),
-                'instructor_id' => $request->user()->isAdmin() ? $request->integer('instructor_id') : $request->user()->id,
-                'slug' => UniqueSlug::for(Course::class, $request->string('title')),
-                'thumbnail' => $request->file('thumbnail')?->store('courses/thumbnails', 'public'),
-            ]);
+        if ($course->status !== CourseStatus::Pending) {
+            return back()->with('error', 'Chỉ từ chối được khoá học đang chờ duyệt.');
+        }
 
-            $this->storeGalleryImages($request, $course);
-
-            return $course;
-        });
-
-        return to_route('admin.courses.edit', $course)->with('success', 'Đã tạo khoá học. Bạn có thể thêm bài học ngay bây giờ.');
-    }
-
-    public function edit(Course $course): View
-    {
-        Gate::authorize('manage', $course);
-
-        $course->load('images')->loadCount('lessons');
-
-        return view('admin.courses.form', [
-            'course' => $course,
-            ...$this->formOptions(),
+        $course->update([
+            'status' => CourseStatus::Rejected,
+            'rejection_reason' => $validated['rejection_reason'],
         ]);
+
+        return back()->with('success', "Đã từ chối khoá học \"{$course->title}\".");
     }
 
-    public function update(CourseRequest $request, Course $course): RedirectResponse
+    public function hide(Course $course): RedirectResponse
     {
-        Gate::authorize('manage', $course);
+        if ($course->status !== CourseStatus::Published) {
+            return back()->with('error', 'Chỉ ẩn được khoá học đang xuất bản.');
+        }
 
-        DB::transaction(function () use ($request, $course): void {
-            $attributes = [
-                ...$this->courseAttributes($request, $course),
-                'slug' => UniqueSlug::for(Course::class, $request->string('title'), $course->id),
-            ];
+        $course->update(['status' => CourseStatus::Hidden]);
 
-            if ($request->user()->isAdmin()) {
-                $attributes['instructor_id'] = $request->integer('instructor_id');
-            }
-
-            if ($request->hasFile('thumbnail')) {
-                if ($course->thumbnail) {
-                    Storage::disk('public')->delete($course->thumbnail);
-                }
-
-                $attributes['thumbnail'] = $request->file('thumbnail')->store('courses/thumbnails', 'public');
-            }
-
-            $course->update($attributes);
-
-            $imagesToDelete = $course->images()->whereIn('id', $request->input('delete_images', []))->get();
-            Storage::disk('public')->delete($imagesToDelete->pluck('path')->all());
-            $course->images()->whereKey($imagesToDelete->modelKeys())->delete();
-
-            $this->storeGalleryImages($request, $course);
-        });
-
-        return to_route('admin.courses.edit', $course)->with('success', 'Đã lưu thay đổi khoá học.');
+        return back()->with('success', "Đã ẩn khoá học \"{$course->title}\" khỏi trang công khai.");
     }
 
     public function destroy(Course $course): RedirectResponse
     {
-        Gate::authorize('manage', $course);
-
         Storage::disk('public')->delete(array_filter([$course->thumbnail, ...$course->images->pluck('path')]));
         $course->delete();
 
-        return to_route('admin.courses.index')->with('success', 'Đã xoá khoá học.');
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function courseAttributes(CourseRequest $request, ?Course $course = null): array
-    {
-        $status = CourseStatus::from($request->string('status'));
-
-        return [
-            ...$request->safe()->only(['title', 'category_id', 'summary', 'description', 'price', 'level']),
-            'status' => $status,
-            'published_at' => $status === CourseStatus::Published ? ($course?->published_at ?? now()) : null,
-        ];
-    }
-
-    private function storeGalleryImages(CourseRequest $request, Course $course): void
-    {
-        $nextSortOrder = (int) $course->images()->max('sort_order') + 1;
-
-        foreach ($request->file('images', []) as $image) {
-            $course->images()->create([
-                'path' => $image->store("courses/{$course->id}/gallery", 'public'),
-                'sort_order' => $nextSortOrder++,
-            ]);
-        }
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function formOptions(): array
-    {
-        return [
-            'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'instructors' => User::whereIn('role', [UserRole::Admin, UserRole::Teacher])->orderBy('name')->get(['id', 'name']),
-            'levels' => CourseLevel::cases(),
-            'statuses' => CourseStatus::cases(),
-        ];
+        return back()->with('success', 'Đã xoá khoá học.');
     }
 }

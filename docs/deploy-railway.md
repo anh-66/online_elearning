@@ -47,7 +47,7 @@ MAIL_MAILER=log
 Service web → **Settings** → **Networking** → **Generate Domain**. Sau đó bấm **Deploy**
 (hoặc Railway tự deploy lại khi đổi biến).
 
-Tài khoản demo sau khi seed: `admin@gmail.com` / `12345678`.
+Tài khoản demo sau khi seed: `admin@gmail.com` / `Admin@123`, `teacher@gmail.com` / `Teacher@123`, `student@gmail.com` / `Student@123`.
 
 ## 5. (Tuỳ chọn) Giữ ảnh upload qua các lần deploy
 

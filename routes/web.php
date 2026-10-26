@@ -6,8 +6,10 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Instructor;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuizAttemptController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +28,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/hoc/{course}/{lesson?}', [LearningController::class, 'show'])->name('learn.show');
     Route::post('/hoc/{course}/{lesson}/hoan-thanh', [LearningController::class, 'complete'])->name('learn.complete');
+
+    Route::scopeBindings()->group(function () {
+        Route::get('/kiem-tra/{course}/{quiz}', [QuizAttemptController::class, 'show'])->name('quizzes.show');
+        Route::post('/kiem-tra/{course}/{quiz}', [QuizAttemptController::class, 'store'])->name('quizzes.submit');
+        Route::get('/kiem-tra/{course}/{quiz}/ket-qua/{attempt}', [QuizAttemptController::class, 'result'])->name('quizzes.result');
+    });
 });
 
 Route::middleware('auth')->group(function () {
@@ -34,11 +42,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,teacher'])->group(function () {
+// CKEditor image upload, shared by the admin and instructor forms.
+Route::post('/admin/editor-upload', Admin\EditorUploadController::class)->middleware(['auth', 'role:admin,teacher'])->name('admin.editor.upload');
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', Admin\DashboardController::class)->name('dashboard');
 
-    Route::resource('courses', Admin\CourseController::class)->except('show');
-    Route::resource('courses.lessons', Admin\LessonController::class)->except('show')->scoped(['course' => 'slug', 'lesson' => 'id']);
+    Route::get('courses', [Admin\CourseController::class, 'index'])->name('courses.index');
+    Route::patch('courses/{course}/approve', [Admin\CourseController::class, 'approve'])->name('courses.approve');
+    Route::patch('courses/{course}/reject', [Admin\CourseController::class, 'reject'])->name('courses.reject');
+    Route::patch('courses/{course}/hide', [Admin\CourseController::class, 'hide'])->name('courses.hide');
+    Route::delete('courses/{course}', [Admin\CourseController::class, 'destroy'])->name('courses.destroy');
 
     Route::get('reviews', [Admin\ReviewController::class, 'index'])->name('reviews.index');
     Route::patch('reviews/{review}', [Admin\ReviewController::class, 'update'])->name('reviews.update');
@@ -47,13 +61,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,teacher'
     Route::get('enrollments', [Admin\EnrollmentController::class, 'index'])->name('enrollments.index');
     Route::delete('enrollments/{enrollment}', [Admin\EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
 
-    Route::post('editor-upload', Admin\EditorUploadController::class)->name('editor.upload');
+    Route::resource('categories', Admin\CategoryController::class)->except('show');
+    Route::resource('users', Admin\UserController::class)->except('show');
+    Route::resource('announcements', Admin\AnnouncementController::class)->except('show');
+});
 
-    Route::middleware('role:admin')->group(function () {
-        Route::resource('categories', Admin\CategoryController::class)->except('show');
-        Route::resource('users', Admin\UserController::class)->except('show');
-        Route::resource('announcements', Admin\AnnouncementController::class)->except('show');
-    });
+Route::prefix('instructor')->name('instructor.')->middleware(['auth', 'role:teacher'])->group(function () {
+    Route::get('/', Instructor\DashboardController::class)->name('dashboard');
+
+    Route::resource('courses', Instructor\CourseController::class)->except('show');
+    Route::post('courses/{course}/submit', [Instructor\CourseController::class, 'submit'])->name('courses.submit');
+    Route::get('courses/{course}/students', Instructor\StudentController::class)->name('courses.students');
+
+    Route::get('courses/{course}/curriculum', [Instructor\SectionController::class, 'index'])->name('courses.curriculum');
+    Route::resource('courses.sections', Instructor\SectionController::class)->only(['store', 'update', 'destroy'])->scoped(['course' => 'slug', 'section' => 'id']);
+    Route::resource('courses.lessons', Instructor\LessonController::class)->except(['index', 'show'])->scoped(['course' => 'slug', 'lesson' => 'id']);
+    Route::resource('courses.quizzes', Instructor\QuizController::class)->except(['index', 'show'])->scoped(['course' => 'slug', 'quiz' => 'id']);
+    Route::resource('courses.quizzes.questions', Instructor\QuestionController::class)->except(['index', 'show'])->scoped(['course' => 'slug', 'quiz' => 'id', 'question' => 'id']);
 });
 
 require __DIR__.'/auth.php';

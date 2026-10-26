@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\Quiz;
+use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -13,7 +16,7 @@ class LearningController extends Controller
 {
     public function show(Request $request, Course $course, ?Lesson $lesson = null): View|RedirectResponse
     {
-        $lessons = $course->lessons()->get();
+        $lessons = $course->curriculumLessons()->get();
         $lesson ??= $lessons->first();
 
         if (! $lesson) {
@@ -33,6 +36,7 @@ class LearningController extends Controller
             'course' => $course,
             'lesson' => $lesson,
             'lessons' => $lessons,
+            'outline' => $this->outline($course, $lessons),
             'canLearn' => $canLearn,
             'completedLessonIds' => $completedLessonIds,
             'previousLesson' => $lessons->get($currentIndex - 1),
@@ -55,12 +59,32 @@ class LearningController extends Controller
         $isCourseFinished = $user->progressIn($course) === 100;
         $user->enrollments()->where('course_id', $course->id)->update(['completed_at' => $isCourseFinished ? now() : null]);
 
-        $nextLesson = $course->lessons()->where('position', '>', $lesson->position)->first();
+        $lessons = $course->curriculumLessons()->get();
+        $nextLesson = $lessons->get($lessons->search(fn (Lesson $item) => $item->id === $lesson->id) + 1);
 
         if ($user->completedLessons()->whereKey($lesson->id)->exists() && $nextLesson) {
             return to_route('learn.show', [$course, $nextLesson])->with('success', 'Đã hoàn thành bài học. Tiếp tục bài kế tiếp nhé!');
         }
 
         return back()->with('success', $isCourseFinished ? 'Chúc mừng! Bạn đã hoàn thành khoá học.' : 'Đã cập nhật tiến độ.');
+    }
+
+    /**
+     * Group the lessons by chapter, each chapter ending with its quizzes.
+     *
+     * @param  Collection<int, Lesson>  $lessons
+     * @return Collection<int, array{title: ?string, lessons: Collection<int, Lesson>, quizzes: Collection<int, Quiz>}>
+     */
+    private function outline(Course $course, Collection $lessons): Collection
+    {
+        return $course->sections()->with('quizzes')->get()
+            ->map(fn (Section $section) => [
+                'title' => $section->title,
+                'lessons' => $lessons->where('section_id', $section->id),
+                'quizzes' => $section->quizzes,
+            ])
+            ->prepend(['title' => null, 'lessons' => $lessons->whereNull('section_id'), 'quizzes' => collect()])
+            ->filter(fn (array $group) => $group['lessons']->isNotEmpty() || $group['quizzes']->isNotEmpty())
+            ->values();
     }
 }

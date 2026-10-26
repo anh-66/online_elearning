@@ -1,34 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Instructor;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\LessonRequest;
+use App\Http\Requests\Instructor\LessonRequest;
 use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class LessonController extends Controller
 {
-    public function index(Course $course): View
+    public function create(Request $request, Course $course): View
     {
         Gate::authorize('manage', $course);
 
-        return view('admin.lessons.index', [
-            'course' => $course,
-            'lessons' => $course->lessons()->paginate(15),
-        ]);
-    }
+        $sectionId = $request->integer('section') ?: $course->sections()->value('id');
 
-    public function create(Course $course): View
-    {
-        Gate::authorize('manage', $course);
-
-        return view('admin.lessons.form', [
+        return view('instructor.lessons.form', [
             'course' => $course,
-            'lesson' => new Lesson(['position' => (int) $course->lessons()->max('position') + 1, 'duration_minutes' => 10]),
+            'sections' => $course->sections()->get(['id', 'title']),
+            'lesson' => new Lesson([
+                'section_id' => $sectionId,
+                'position' => (int) $course->lessons()->where('section_id', $sectionId)->max('position') + 1,
+                'duration_minutes' => 10,
+            ]),
         ]);
     }
 
@@ -38,17 +36,21 @@ class LessonController extends Controller
 
         $course->lessons()->create([
             ...$request->validated(),
-            'position' => $request->integer('position') ?: (int) $course->lessons()->max('position') + 1,
+            'position' => $request->integer('position') ?: (int) $course->lessons()->where('section_id', $request->integer('section_id'))->max('position') + 1,
         ]);
 
-        return to_route('admin.courses.lessons.index', $course)->with('success', 'Đã thêm bài học.');
+        return to_route('instructor.courses.curriculum', $course)->with('success', 'Đã thêm bài học.');
     }
 
     public function edit(Course $course, Lesson $lesson): View
     {
         Gate::authorize('manage', $course);
 
-        return view('admin.lessons.form', compact('course', 'lesson'));
+        return view('instructor.lessons.form', [
+            'course' => $course,
+            'sections' => $course->sections()->get(['id', 'title']),
+            'lesson' => $lesson,
+        ]);
     }
 
     public function update(LessonRequest $request, Course $course, Lesson $lesson): RedirectResponse
@@ -60,7 +62,7 @@ class LessonController extends Controller
             'position' => $request->integer('position', $lesson->position),
         ]);
 
-        return to_route('admin.courses.lessons.index', $course)->with('success', 'Đã cập nhật bài học.');
+        return to_route('instructor.courses.curriculum', $course)->with('success', 'Đã cập nhật bài học.');
     }
 
     public function destroy(Course $course, Lesson $lesson): RedirectResponse

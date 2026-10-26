@@ -41,7 +41,7 @@ class CourseController extends Controller
 
         abort_unless($course->isPublished() || $user?->can('manage', $course), 404);
 
-        $course->load(['category', 'instructor', 'images', 'lessons'])
+        $course->load(['category', 'instructor', 'images', 'lessons', 'sections.lessons', 'sections.quizzes'])
             ->loadCount('enrollments')
             ->loadAvg(['reviews' => fn ($query) => $query->where('is_visible', true)], 'rating');
 

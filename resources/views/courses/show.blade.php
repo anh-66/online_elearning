@@ -1,9 +1,16 @@
 @php
     $gallery = collect(array_filter([$course->thumbnail_url]))->merge($course->images->pluck('url'))->values();
     $totalMinutes = $course->lessons->sum('duration_minutes');
+    $unsortedLessons = $course->lessons->whereNull('section_id');
+    $lessonNumber = 1;
 @endphp
 
 <x-app-layout :title="$course->title">
+    @unless ($course->isPublished())
+        <div class="bg-amber-100 px-4 py-2 text-center text-sm text-amber-800">
+            Khoá học đang ở trạng thái <strong>{{ $course->status->label() }}</strong> nên chưa hiển thị công khai. Chỉ giảng viên phụ trách và quản trị viên xem được trang này.
+        </div>
+    @endunless
     <section class="bg-gradient-to-br from-brand-800 to-brand-600 text-white">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
             <div class="lg:col-span-2">
@@ -67,29 +74,73 @@
                     <h2 class="text-xl font-bold text-gray-900">Nội dung khoá học</h2>
                     <span class="text-sm text-gray-500">{{ $course->lessons->count() }} bài · {{ $totalMinutes }} phút</span>
                 </div>
-                <ol class="divide-y divide-gray-100">
-                    @forelse ($course->lessons as $lesson)
-                        <li class="flex items-center gap-4 px-6 py-3">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">{{ $loop->iteration }}</span>
-                            <span class="min-w-0 flex-1">
-                                @if ($isEnrolled || $lesson->is_preview)
-                                    <a href="{{ route('learn.show', [$course, $lesson]) }}" class="font-medium text-gray-800 hover:text-brand-700">{{ $lesson->title }}</a>
-                                @else
-                                    <span class="font-medium text-gray-800">{{ $lesson->title }}</span>
-                                @endif
-                                @if ($lesson->is_preview)
-                                    <span class="badge ml-2 bg-amber-100 text-amber-700">Học thử</span>
-                                @endif
-                            </span>
-                            <span class="flex shrink-0 items-center gap-1 text-sm text-gray-500">
-                                <x-icon :name="$isEnrolled || $lesson->is_preview ? 'play' : 'lock'" class="h-4 w-4" />
-                                {{ $lesson->duration_minutes }}'
-                            </span>
-                        </li>
-                    @empty
-                        <li><x-empty-state icon="book" title="Bài học đang được cập nhật" /></li>
-                    @endforelse
-                </ol>
+                @forelse ($course->sections as $section)
+                    <div class="border-b border-gray-100 bg-gray-50 px-6 py-3">
+                        <h3 class="font-semibold text-gray-900">{{ $section->title }}</h3>
+                        <p class="text-xs text-gray-500">{{ $section->lessons->count() }} bài · {{ $section->lessons->sum('duration_minutes') }} phút{{ $section->quizzes->isNotEmpty() ? ' · '.$section->quizzes->count().' bài kiểm tra' : '' }}</p>
+                    </div>
+                    <ol class="divide-y divide-gray-100">
+                        @foreach ($section->lessons as $lesson)
+                                <li class="flex items-center gap-4 px-6 py-3">
+                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">{{ $lessonNumber++ }}</span>
+                                    <span class="min-w-0 flex-1">
+                                        @if ($isEnrolled || $lesson->is_preview)
+                                            <a href="{{ route('learn.show', [$course, $lesson]) }}" class="font-medium text-gray-800 hover:text-brand-700">{{ $lesson->title }}</a>
+                                        @else
+                                            <span class="font-medium text-gray-800">{{ $lesson->title }}</span>
+                                        @endif
+                                        @if ($lesson->is_preview)
+                                            <span class="badge ml-2 bg-amber-100 text-amber-700">Học thử</span>
+                                        @endif
+                                    </span>
+                                    <span class="flex shrink-0 items-center gap-1 text-sm text-gray-500">
+                                        <x-icon :name="$isEnrolled || $lesson->is_preview ? 'play' : 'lock'" class="h-4 w-4" />
+                                        {{ $lesson->duration_minutes }}'
+                                    </span>
+                                </li>
+                        @endforeach
+                        @foreach ($section->quizzes as $quiz)
+                            <li class="flex items-center gap-4 px-6 py-3">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-700"><x-icon name="clipboard" class="h-4 w-4" /></span>
+                                <span class="min-w-0 flex-1">
+                                    @if ($isEnrolled)
+                                        <a href="{{ route('quizzes.show', [$course, $quiz]) }}" class="font-medium text-gray-800 hover:text-brand-700">{{ $quiz->title }}</a>
+                                    @else
+                                        <span class="font-medium text-gray-800">{{ $quiz->title }}</span>
+                                    @endif
+                                </span>
+                                <span class="shrink-0 text-sm text-gray-500">Trắc nghiệm</span>
+                            </li>
+                        @endforeach
+                    </ol>
+                @empty
+                    @if ($unsortedLessons->isEmpty())
+                        <x-empty-state icon="book" title="Bài học đang được cập nhật" />
+                    @endif
+                @endforelse
+                @if ($unsortedLessons->isNotEmpty())
+                    <ol class="divide-y divide-gray-100">
+                        @foreach ($unsortedLessons as $lesson)
+                                <li class="flex items-center gap-4 px-6 py-3">
+                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">{{ $lessonNumber++ }}</span>
+                                    <span class="min-w-0 flex-1">
+                                        @if ($isEnrolled || $lesson->is_preview)
+                                            <a href="{{ route('learn.show', [$course, $lesson]) }}" class="font-medium text-gray-800 hover:text-brand-700">{{ $lesson->title }}</a>
+                                        @else
+                                            <span class="font-medium text-gray-800">{{ $lesson->title }}</span>
+                                        @endif
+                                        @if ($lesson->is_preview)
+                                            <span class="badge ml-2 bg-amber-100 text-amber-700">Học thử</span>
+                                        @endif
+                                    </span>
+                                    <span class="flex shrink-0 items-center gap-1 text-sm text-gray-500">
+                                        <x-icon :name="$isEnrolled || $lesson->is_preview ? 'play' : 'lock'" class="h-4 w-4" />
+                                        {{ $lesson->duration_minutes }}'
+                                    </span>
+                                </li>
+                        @endforeach
+                    </ol>
+                @endif
             </div>
 
             {{-- Reviews --}}
@@ -163,9 +214,15 @@
                             </form>
                         @endif
                         @can('manage', $course)
-                            <a href="{{ route('admin.courses.edit', $course) }}" class="btn-secondary mt-2 w-full">
-                                <x-icon name="pencil" class="h-4 w-4" /> Chỉnh sửa khoá học
-                            </a>
+                            @if (Auth::user()->isAdmin())
+                                <a href="{{ route('admin.courses.index', ['q' => $course->title]) }}" class="btn-secondary mt-2 w-full">
+                                    <x-icon name="cog" class="h-4 w-4" /> Kiểm duyệt khoá học
+                                </a>
+                            @else
+                                <a href="{{ route('instructor.courses.edit', $course) }}" class="btn-secondary mt-2 w-full">
+                                    <x-icon name="pencil" class="h-4 w-4" /> Chỉnh sửa khoá học
+                                </a>
+                            @endif
                         @endcan
                     @else
                         <a href="{{ route('login') }}" class="btn-primary mt-4 w-full py-3">Đăng nhập để ghi danh</a>

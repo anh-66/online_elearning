@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CourseStatus;
 use App\Models\Announcement;
 use App\Models\Course;
 use App\Models\User;
@@ -54,19 +55,14 @@ class PageRenderingTest extends TestCase
     public function test_admin_pages_render(): void
     {
         $admin = User::where('email', 'admin@gmail.com')->firstOrFail();
-        $course = Course::first();
-        $lesson = $course->lessons()->first();
+        $pendingCourse = Course::where('status', CourseStatus::Pending)->firstOrFail();
 
         $this->actingAs($admin);
 
         foreach ([
             route('admin.dashboard'),
             route('admin.courses.index', ['q' => 'a', 'status' => 'published']),
-            route('admin.courses.create'),
-            route('admin.courses.edit', $course),
-            route('admin.courses.lessons.index', $course),
-            route('admin.courses.lessons.create', $course),
-            route('admin.courses.lessons.edit', [$course, $lesson]),
+            route('admin.courses.index', ['status' => 'pending']),
             route('admin.categories.index'),
             route('admin.categories.create'),
             route('admin.users.index', ['role' => 'teacher']),
@@ -77,21 +73,62 @@ class PageRenderingTest extends TestCase
             route('admin.announcements.edit', Announcement::first()),
             route('admin.reviews.index'),
             route('admin.enrollments.index'),
+            route('courses.show', $pendingCourse),
+            route('learn.show', $pendingCourse),
         ] as $url) {
             $this->get($url)->assertOk();
         }
     }
 
-    public function test_teacher_sees_only_training_pages(): void
+    public function test_instructor_pages_render(): void
     {
         $teacher = User::where('email', 'teacher@gmail.com')->firstOrFail();
+        $course = $teacher->taughtCourses()->whereHas('enrollments')->firstOrFail();
+        $lesson = $course->lessons()->first();
+        $quiz = $course->quizzes()->first();
 
         $this->actingAs($teacher);
 
-        $this->get(route('admin.dashboard'))->assertOk();
-        $this->get(route('admin.courses.index'))->assertOk();
+        foreach ([
+            route('instructor.dashboard'),
+            route('instructor.courses.index', ['q' => 'a', 'status' => 'published']),
+            route('instructor.courses.create'),
+            route('instructor.courses.edit', $course),
+            route('instructor.courses.curriculum', $course),
+            route('instructor.courses.students', $course),
+            route('instructor.courses.lessons.create', $course),
+            route('instructor.courses.lessons.edit', [$course, $lesson]),
+            route('instructor.courses.quizzes.create', $course),
+            route('instructor.courses.quizzes.edit', [$course, $quiz]),
+            route('instructor.courses.quizzes.questions.create', [$course, $quiz]),
+            route('instructor.courses.quizzes.questions.edit', [$course, $quiz, $quiz->questions()->first()]),
+        ] as $url) {
+            $this->get($url)->assertOk();
+        }
+
+        $this->get(route('admin.dashboard'))->assertForbidden();
         $this->get(route('admin.users.index'))->assertForbidden();
-        $this->get(route('admin.categories.index'))->assertForbidden();
-        $this->get(route('admin.announcements.index'))->assertForbidden();
+    }
+
+    public function test_seeded_demo_accounts_can_log_in(): void
+    {
+        foreach ([
+            'admin@gmail.com' => ['Admin@123', 'admin.dashboard'],
+            'teacher@gmail.com' => ['Teacher@123', 'instructor.dashboard'],
+            'student@gmail.com' => ['Student@123', 'dashboard'],
+        ] as $email => [$password, $home]) {
+            $this->post('/login', ['email' => $email, 'password' => $password])->assertRedirect(route($home, absolute: false));
+            $this->post('/logout');
+        }
+    }
+
+    public function test_student_takes_seeded_quiz(): void
+    {
+        $student = User::where('email', 'student@gmail.com')->firstOrFail();
+        $course = $student->enrolledCourses()->first();
+        $quiz = $course->quizzes()->first();
+
+        $this->actingAs($student)->get(route('quizzes.show', [$course, $quiz]))->assertOk();
+        $this->post(route('quizzes.submit', [$course, $quiz]), ['answers' => []])->assertRedirect();
     }
 }

@@ -1,19 +1,28 @@
 @php
     $user = Auth::user();
-    $menuGroups = [
+    $isInstructorArea = request()->routeIs('instructor.*');
+    $homeRoute = $isInstructorArea ? 'instructor.dashboard' : 'admin.dashboard';
+    $menuGroups = $isInstructorArea ? [
+        'Tổng quan' => [
+            ['label' => 'Bảng điều khiển', 'route' => 'instructor.dashboard', 'active' => 'instructor.dashboard', 'icon' => 'chart'],
+        ],
+        'Giảng dạy' => [
+            ['label' => 'Khoá học của tôi', 'route' => 'instructor.courses.index', 'active' => 'instructor.courses.*', 'icon' => 'book'],
+        ],
+    ] : [
         'Tổng quan' => [
             ['label' => 'Bảng điều khiển', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'chart'],
         ],
-        'Đào tạo' => array_filter([
-            ['label' => 'Khoá học', 'route' => 'admin.courses.index', 'active' => 'admin.courses.*', 'icon' => 'book'],
-            $user->isAdmin() ? ['label' => 'Danh mục', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'icon' => 'tag'] : null,
+        'Đào tạo' => [
+            ['label' => 'Duyệt khoá học', 'route' => 'admin.courses.index', 'active' => 'admin.courses.*', 'icon' => 'book'],
+            ['label' => 'Danh mục', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'icon' => 'tag'],
             ['label' => 'Ghi danh', 'route' => 'admin.enrollments.index', 'active' => 'admin.enrollments.*', 'icon' => 'clipboard'],
             ['label' => 'Đánh giá', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'chat'],
-        ]),
-        'Hệ thống' => $user->isAdmin() ? [
+        ],
+        'Hệ thống' => [
             ['label' => 'Người dùng', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'icon' => 'users'],
             ['label' => 'Thông báo', 'route' => 'admin.announcements.index', 'active' => 'admin.announcements.*', 'icon' => 'bell'],
-        ] : [],
+        ],
     ];
 @endphp
 <!DOCTYPE html>
@@ -28,11 +37,11 @@
 
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
                    class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col bg-brand-900 text-brand-50 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0">
-                <a href="{{ route('admin.dashboard') }}" class="flex h-16 items-center gap-2 border-b border-white/10 px-5">
+                <a href="{{ route($homeRoute) }}" class="flex h-16 items-center gap-2 border-b border-white/10 px-5">
                     <x-application-logo class="h-9 w-9" />
                     <span class="leading-tight">
                         <span class="block font-bold tracking-wide text-white">UTH E-LEARNING</span>
-                        <span class="block text-[11px] text-brand-200">Trang quản trị</span>
+                        <span class="block text-[11px] text-brand-200">{{ $isInstructorArea ? 'Kênh giảng viên' : 'Trang quản trị' }}</span>
                     </span>
                 </a>
 

@@ -70,8 +70,8 @@
                                 <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name }}</p>
                                 <span class="badge {{ Auth::user()->role->badgeClasses() }} mt-1">{{ Auth::user()->role->label() }}</span>
                             </div>
-                            @if (Auth::user()->canManageCourses())
-                                <x-dropdown-link :href="route('admin.dashboard')">Trang quản trị</x-dropdown-link>
+                            @if (Auth::user()->managementRoute())
+                                <x-dropdown-link :href="route(Auth::user()->managementRoute())">{{ Auth::user()->isAdmin() ? 'Trang quản trị' : 'Kênh giảng viên' }}</x-dropdown-link>
                             @endif
                             <x-dropdown-link :href="route('dashboard')">Góc học tập</x-dropdown-link>
                             <x-dropdown-link :href="route('profile.edit')">Hồ sơ cá nhân</x-dropdown-link>
@@ -118,8 +118,8 @@
                                 <p class="text-xs text-brand-100">{{ Auth::user()->email }}</p>
                             </div>
                         </div>
-                        @if (Auth::user()->canManageCourses())
-                            <a href="{{ route('admin.dashboard') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10">Trang quản trị</a>
+                        @if (Auth::user()->managementRoute())
+                            <a href="{{ route(Auth::user()->managementRoute()) }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10">{{ Auth::user()->isAdmin() ? 'Trang quản trị' : 'Kênh giảng viên' }}</a>
                         @endif
                         <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10">Hồ sơ cá nhân</a>
                         <form method="POST" action="{{ route('logout') }}">

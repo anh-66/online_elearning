@@ -28,7 +28,8 @@
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="new-password" />
+                            required minlength="6" autocomplete="new-password" />
+            <p class="mt-1 text-xs text-gray-500">Ít nhất 6 ký tự, gồm ít nhất 1 chữ in hoa và 1 ký tự đặc biệt (VD: Hoc@123).</p>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>

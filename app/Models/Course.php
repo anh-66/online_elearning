@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'category_id', 'instructor_id', 'title', 'slug', 'summary', 'description',
-    'thumbnail', 'price', 'level', 'status', 'published_at',
+    'thumbnail', 'price', 'level', 'status', 'rejection_reason', 'submitted_at', 'published_at',
 ])]
 class Course extends Model
 {
@@ -35,6 +35,7 @@ class Course extends Model
             'level' => CourseLevel::class,
             'status' => CourseStatus::class,
             'price' => 'integer',
+            'submitted_at' => 'datetime',
             'published_at' => 'datetime',
         ];
     }
@@ -69,11 +70,41 @@ class Course extends Model
     }
 
     /**
+     * @return HasMany<Section, $this>
+     */
+    public function sections(): HasMany
+    {
+        return $this->hasMany(Section::class)->orderBy('position')->orderBy('id');
+    }
+
+    /**
      * @return HasMany<Lesson, $this>
      */
     public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class)->orderBy('position');
+    }
+
+    /**
+     * Lessons in learning order: by chapter first, then by their position inside it.
+     * Only meant for fetching rows (aggregates should go through lessons()).
+     *
+     * @return HasMany<Lesson, $this>
+     */
+    public function curriculumLessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class)
+            ->orderBy(Section::select('position')->whereColumn('sections.id', 'lessons.section_id'))
+            ->orderBy('lessons.position')
+            ->orderBy('lessons.id');
+    }
+
+    /**
+     * @return HasMany<Quiz, $this>
+     */
+    public function quizzes(): HasMany
+    {
+        return $this->hasMany(Quiz::class);
     }
 
     /**

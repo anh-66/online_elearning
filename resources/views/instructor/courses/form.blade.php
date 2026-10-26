@@ -1,6 +1,6 @@
 <x-admin-layout :title="$course->exists ? 'Sửa khoá học' : 'Thêm khoá học'">
     <form method="POST" enctype="multipart/form-data"
-          action="{{ $course->exists ? route('admin.courses.update', $course) : route('admin.courses.store') }}"
+          action="{{ $course->exists ? route('instructor.courses.update', $course) : route('instructor.courses.store') }}"
           class="grid gap-6 xl:grid-cols-3">
         @csrf
         @if ($course->exists) @method('PUT') @endif
@@ -64,12 +64,12 @@
         <div class="space-y-6">
             <div class="card space-y-5 p-6">
                 <div>
-                    <label for="status" class="form-label">Trạng thái</label>
-                    <select id="status" name="status" class="form-input">
-                        @foreach ($statuses as $status)
-                            <option value="{{ $status->value }}" @selected(old('status', $course->status?->value) === $status->value)>{{ $status->label() }}</option>
-                        @endforeach
-                    </select>
+                    <p class="form-label">Trạng thái</p>
+                    <span class="badge mt-1 {{ $course->status->badgeClasses() }}">{{ $course->status->label() }}</span>
+                    @if ($course->status === App\Enums\CourseStatus::Rejected && $course->rejection_reason)
+                        <p class="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"><strong>Lý do từ chối:</strong> {{ $course->rejection_reason }}</p>
+                    @endif
+                    <p class="mt-2 text-xs text-gray-500">Khoá học mới là bản nháp. Khi đã thêm đủ chương và bài học, hãy gửi duyệt để quản trị viên xuất bản.</p>
                 </div>
 
                 <div>
@@ -82,18 +82,6 @@
                     </select>
                     @error('category_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-
-                @if (Auth::user()->isAdmin())
-                    <div>
-                        <label for="instructor_id" class="form-label">Giảng viên</label>
-                        <select id="instructor_id" name="instructor_id" class="form-input">
-                            @foreach ($instructors as $instructor)
-                                <option value="{{ $instructor->id }}" @selected((int) old('instructor_id', $course->instructor_id ?? Auth::id()) === $instructor->id)>{{ $instructor->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('instructor_id') <p class="form-error">{{ $message }}</p> @enderror
-                    </div>
-                @endif
 
                 <div>
                     <label for="level" class="form-label">Trình độ</label>
@@ -129,10 +117,18 @@
             <div class="card flex flex-col gap-2 p-6">
                 <button class="btn-primary w-full">{{ $course->exists ? 'Lưu thay đổi' : 'Tạo khoá học' }}</button>
                 @if ($course->exists)
-                    <a href="{{ route('admin.courses.lessons.index', $course) }}" class="btn-secondary w-full"><x-icon name="list" class="h-4 w-4" /> Quản lý bài học ({{ $course->lessons_count }})</a>
+                    <a href="{{ route('instructor.courses.curriculum', $course) }}" class="btn-secondary w-full"><x-icon name="list" class="h-4 w-4" /> Chương & bài học ({{ $course->sections_count }} chương, {{ $course->lessons_count }} bài)</a>
                 @endif
-                <a href="{{ route('admin.courses.index') }}" class="btn-ghost w-full">Quay lại danh sách</a>
+                <a href="{{ route('instructor.courses.index') }}" class="btn-ghost w-full">Quay lại danh sách</a>
             </div>
         </div>
     </form>
+
+    @if ($course->exists && $course->status->canBeSubmitted())
+        <form method="POST" action="{{ route('instructor.courses.submit', $course) }}" class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            @csrf
+            <p class="text-sm text-brand-800">Đã sẵn sàng? Gửi khoá học để quản trị viên kiểm duyệt.</p>
+            <button class="btn-primary"><x-icon name="check-circle" class="h-4 w-4" /> Gửi duyệt</button>
+        </form>
+    @endif
 </x-admin-layout>

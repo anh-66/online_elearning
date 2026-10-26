@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\CourseStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -9,19 +10,14 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Review;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function __invoke(): View
     {
-        $user = $request->user();
-        $ownCoursesOnly = fn (Builder $query) => $query->when(! $user->isAdmin(), fn (Builder $query) => $query->where('instructor_id', $user->id));
-
-        $courseQuery = Course::query()->tap($ownCoursesOnly);
-        $enrollmentQuery = Enrollment::query()->whereHas('course', $ownCoursesOnly);
+        $courseQuery = Course::query();
+        $enrollmentQuery = Enrollment::query();
 
         $months = collect(range(5, 0))->map(fn (int $monthsAgo) => now()->startOfMonth()->subMonths($monthsAgo));
         $recentEnrollments = (clone $enrollmentQuery)
@@ -34,7 +30,8 @@ class DashboardController extends Controller
                 'courses' => (clone $courseQuery)->count(),
                 'students' => User::where('role', UserRole::Student)->count(),
                 'enrollments' => (clone $enrollmentQuery)->count(),
-                'reviews' => Review::whereHas('course', $ownCoursesOnly)->count(),
+                'reviews' => Review::count(),
+                'pending' => Course::where('status', CourseStatus::Pending)->count(),
             ],
             'enrollmentChart' => [
                 'labels' => $months->map(fn ($month) => 'T'.$month->format('m/Y'))->all(),
@@ -42,6 +39,7 @@ class DashboardController extends Controller
             ],
             'categoryChart' => Category::withCount('courses')->orderByDesc('courses_count')->take(6)->get(['id', 'name']),
             'latestEnrollments' => (clone $enrollmentQuery)->with(['user', 'course'])->latest()->take(6)->get(),
+            'pendingCourses' => Course::where('status', CourseStatus::Pending)->with('instructor')->latest('submitted_at')->take(5)->get(),
             'popularCourses' => (clone $courseQuery)->withCount('enrollments')->orderByDesc('enrollments_count')->take(5)->get(),
         ]);
     }

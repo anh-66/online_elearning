@@ -1,7 +1,7 @@
 <x-admin-layout :title="$lesson->exists ? 'Sửa bài học' : 'Thêm bài học'">
-    <a href="{{ route('admin.courses.lessons.index', $course) }}" class="mb-4 flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700"><x-icon name="chevron-left" class="h-4 w-4" /> {{ $course->title }}</a>
+    <a href="{{ route('instructor.courses.curriculum', $course) }}" class="mb-4 flex items-center gap-1 text-sm text-gray-500 hover:text-brand-700"><x-icon name="chevron-left" class="h-4 w-4" /> {{ $course->title }}</a>
 
-    <form method="POST" action="{{ $lesson->exists ? route('admin.courses.lessons.update', [$course, $lesson]) : route('admin.courses.lessons.store', $course) }}" class="grid gap-6 xl:grid-cols-3">
+    <form method="POST" action="{{ $lesson->exists ? route('instructor.courses.lessons.update', [$course, $lesson]) : route('instructor.courses.lessons.store', $course) }}" class="grid gap-6 xl:grid-cols-3">
         @csrf
         @if ($lesson->exists) @method('PUT') @endif
 
@@ -19,6 +19,15 @@
         </div>
 
         <div class="card h-fit space-y-5 p-6">
+            <div>
+                <label for="section_id" class="form-label">Chương <span class="text-rose-500">*</span></label>
+                <select id="section_id" name="section_id" required class="form-input">
+                    @foreach ($sections as $section)
+                        <option value="{{ $section->id }}" @selected((int) old('section_id', $lesson->section_id) === $section->id)>{{ $section->title }}</option>
+                    @endforeach
+                </select>
+                @error('section_id') <p class="form-error">{{ $message }}</p> @enderror
+            </div>
             <div>
                 <label for="video_url" class="form-label">Đường dẫn video (YouTube)</label>
                 <input id="video_url" type="url" name="video_url" value="{{ old('video_url', $lesson->video_url) }}" placeholder="https://www.youtube.com/watch?v=..." class="form-input">
@@ -42,7 +51,7 @@
             </label>
             <div class="flex gap-2">
                 <button class="btn-primary flex-1">{{ $lesson->exists ? 'Lưu thay đổi' : 'Tạo bài học' }}</button>
-                <a href="{{ route('admin.courses.lessons.index', $course) }}" class="btn-secondary">Huỷ</a>
+                <a href="{{ route('instructor.courses.curriculum', $course) }}" class="btn-secondary">Huỷ</a>
             </div>
         </div>
     </form>

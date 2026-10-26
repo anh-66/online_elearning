@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $homeRoute = $request->user()->canManageCourses() ? 'admin.dashboard' : 'dashboard';
+        $homeRoute = $request->user()->managementRoute() ?? 'dashboard';
 
         return redirect()->intended(route($homeRoute, absolute: false));
     }

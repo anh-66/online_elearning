@@ -1,4 +1,21 @@
 <x-admin-layout title="Bảng điều khiển">
+    @if ($stats['pending'])
+        <div class="card mb-6 overflow-hidden border border-amber-200">
+            <div class="flex items-center justify-between bg-amber-50 px-5 py-3">
+                <h2 class="font-semibold text-amber-800">{{ $stats['pending'] }} khoá học đang chờ duyệt</h2>
+                <a href="{{ route('admin.courses.index', ['status' => 'pending']) }}" class="text-sm font-medium text-amber-800 underline">Duyệt ngay</a>
+            </div>
+            <ul class="divide-y divide-gray-100">
+                @foreach ($pendingCourses as $course)
+                    <li class="flex items-center gap-3 px-5 py-3">
+                        <a href="{{ route('courses.show', $course) }}" target="_blank" class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 hover:text-brand-700">{{ $course->title }}</a>
+                        <span class="shrink-0 text-xs text-gray-500">{{ $course->instructor->name }} · {{ $course->submitted_at?->diffForHumans() }}</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="grid grid-cols-2 gap-4 xl:grid-cols-4">
         @foreach ([
             ['book', 'Khoá học', $stats['courses'], 'from-brand-500 to-brand-700'],
@@ -67,7 +84,7 @@
                 @forelse ($popularCourses as $course)
                     <li class="flex items-center gap-3 px-5 py-3">
                         <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-sm font-bold text-brand-700">{{ $loop->iteration }}</span>
-                        <a href="{{ route('admin.courses.edit', $course) }}" class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 hover:text-brand-700">{{ $course->title }}</a>
+                        <a href="{{ route('courses.show', $course) }}" target="_blank" class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 hover:text-brand-700">{{ $course->title }}</a>
                         <span class="badge bg-gray-100 text-gray-700">{{ $course->enrollments_count }} học viên</span>
                     </li>
                 @empty

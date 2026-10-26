@@ -90,13 +90,13 @@ mà không cần `npm run build` lại.
 
 ## 5. Tài khoản mẫu
 
-Tất cả dùng mật khẩu `12345678`.
+Mật khẩu phải có ít nhất 6 ký tự, 1 chữ in hoa và 1 ký tự đặc biệt.
 
-| Email | Vai trò |
-| --- | --- |
-| `admin@gmail.com` | Quản trị viên, vào được `/admin` |
-| `teacher@gmail.com` | Giảng viên, vào được `/admin` nhưng chỉ sửa khoá học của mình |
-| `student@gmail.com` | Học viên |
+| Email | Mật khẩu | Vai trò |
+| --- | --- | --- |
+| `admin@gmail.com` | `Admin@123` | Quản trị viên, vào `/admin` để duyệt khoá học, quản lý người dùng, danh mục |
+| `teacher@gmail.com` | `Teacher@123` | Giảng viên, vào `/instructor` để quản lý khoá học, chương, bài học, quiz của mình |
+| `student@gmail.com` | `Student@123` | Học viên |
 
 ## 6. Lệnh hay dùng
 

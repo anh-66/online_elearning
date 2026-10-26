@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Instructor;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LessonRequest extends FormRequest
 {
@@ -15,6 +16,7 @@ class LessonRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'section_id' => ['required', 'integer', Rule::exists('sections', 'id')->where('course_id', $this->route('course')->id)],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
             'video_url' => ['nullable', 'url', 'max:255'],
@@ -30,6 +32,7 @@ class LessonRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'section_id' => 'chương',
             'title' => 'tên bài học',
             'content' => 'nội dung',
             'video_url' => 'đường dẫn video',

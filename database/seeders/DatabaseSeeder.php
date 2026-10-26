@@ -8,6 +8,9 @@ use App\Enums\UserRole;
 use App\Models\Announcement;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\Quiz;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,6 +20,37 @@ use Illuminate\Support\Str;
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
+
+    /**
+     * Demo logins. Every password follows the app rule: 6+ characters, an uppercase letter and a special character.
+     */
+    public const string ADMIN_PASSWORD = 'Admin@123';
+
+    public const string TEACHER_PASSWORD = 'Teacher@123';
+
+    public const string STUDENT_PASSWORD = 'Student@123';
+
+    /**
+     * Chapters of every demo course, each one => its lesson titles.
+     *
+     * @var array<string, list<string>>
+     */
+    private const array OUTLINE = [
+        'Chương 1: Làm quen' => ['Giới thiệu tổng quan', 'Cài đặt môi trường'],
+        'Chương 2: Kiến thức nền tảng' => ['Kiến thức nền tảng', 'Thực hành cơ bản'],
+        'Chương 3: Vận dụng' => ['Bài tập tình huống', 'Dự án cuối khoá'],
+    ];
+
+    /**
+     * Courses of teacher@gmail.com that show the review flow: [title, summary, category, status, rejection reason].
+     *
+     * @var list<array{0: string, 1: string, 2: string, 3: CourseStatus, 4: ?string}>
+     */
+    private const array REVIEW_DEMO_COURSES = [
+        ['Lập trình Python nâng cao', 'Lập trình hướng đối tượng, xử lý file và làm việc với API bằng Python.', 'Khoa học dữ liệu', CourseStatus::Pending, null],
+        ['Docker cho lập trình viên', 'Đóng gói ứng dụng bằng Docker và chạy nhiều dịch vụ với Docker Compose.', 'Lập trình Web', CourseStatus::Draft, null],
+        ['Viết CV và phỏng vấn xin việc', 'Chuẩn bị hồ sơ xin việc ấn tượng và tự tin khi phỏng vấn.', 'Kỹ năng mềm', CourseStatus::Rejected, 'Mô tả khoá học còn sơ sài, vui lòng bổ sung mục tiêu và đề cương chi tiết cho từng chương.'],
+    ];
 
     /**
      * Demo catalog: category => list of [title, summary, level, price].
@@ -59,7 +93,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
         ], [
             'name' => 'Admin System',
-            'password' => '12345678',
+            'password' => self::ADMIN_PASSWORD,
             'role' => UserRole::Admin,
             'email_verified_at' => now(),
         ]);
@@ -70,7 +104,7 @@ class DatabaseSeeder extends Seeder
             ['Lê Hoàng Phúc', 'phuc.le@gmail.com'],
         ])->map(fn (array $teacher) => User::updateOrCreate(['email' => $teacher[1]], [
             'name' => $teacher[0],
-            'password' => '12345678',
+            'password' => self::TEACHER_PASSWORD,
             'role' => UserRole::Teacher,
             'bio' => 'Giảng viên với hơn 5 năm kinh nghiệm giảng dạy và làm việc thực tế.',
             'email_verified_at' => now(),
@@ -78,7 +112,7 @@ class DatabaseSeeder extends Seeder
 
         $students = collect([User::updateOrCreate(['email' => 'student@gmail.com'], [
             'name' => 'Phạm Minh Anh',
-            'password' => '12345678',
+            'password' => self::STUDENT_PASSWORD,
             'role' => UserRole::Student,
             'email_verified_at' => now(),
         ])])->merge(User::factory(24)->create(['role' => UserRole::Student]));
@@ -99,6 +133,7 @@ class DatabaseSeeder extends Seeder
                     'price' => $price,
                     'level' => $level,
                     'status' => CourseStatus::Published,
+                    'submitted_at' => now()->subDays(random_int(151, 160)),
                     'published_at' => now()->subDays(random_int(1, 150)),
                 ]);
 
@@ -108,7 +143,33 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        $this->seedReviewDemoCourses($teachers->first());
         $this->seedAnnouncements($admin);
+    }
+
+    /**
+     * Courses waiting for review, still in draft or rejected, so the approval flow can be tried right away.
+     */
+    private function seedReviewDemoCourses(User $teacher): void
+    {
+        foreach (self::REVIEW_DEMO_COURSES as [$title, $summary, $categoryName, $status, $rejectionReason]) {
+            $course = Course::firstOrCreate(['slug' => Str::slug($title)], [
+                'category_id' => Category::where('slug', Str::slug($categoryName))->value('id'),
+                'instructor_id' => $teacher->id,
+                'title' => $title,
+                'summary' => $summary,
+                'description' => $this->courseDescription($title, $summary),
+                'price' => 0,
+                'level' => CourseLevel::Intermediate,
+                'status' => $status,
+                'rejection_reason' => $rejectionReason,
+                'submitted_at' => $status === CourseStatus::Draft ? null : now()->subDays(random_int(1, 5)),
+            ]);
+
+            if ($course->wasRecentlyCreated) {
+                $this->seedCurriculum($course);
+            }
+        }
     }
 
     private function courseDescription(string $title, string $summary): string
@@ -128,27 +189,94 @@ class DatabaseSeeder extends Seeder
     }
 
     /**
+     * Chapters with two lessons and a three-question quiz each.
+     *
+     * @return Collection<int, Lesson>
+     */
+    private function seedCurriculum(Course $course): Collection
+    {
+        $lessons = collect();
+        $lessonNumber = 1;
+
+        foreach (array_keys(self::OUTLINE) as $sectionIndex => $sectionTitle) {
+            $section = $course->sections()->create(['title' => $sectionTitle, 'position' => $sectionIndex + 1]);
+
+            foreach (self::OUTLINE[$sectionTitle] as $lessonIndex => $lessonTitle) {
+                $lessons->push($section->lessons()->create([
+                    'course_id' => $course->id,
+                    'title' => 'Bài '.$lessonNumber.': '.$lessonTitle,
+                    'content' => "<p>Nội dung bài học <strong>{$lessonTitle}</strong> của khoá {$course->title}.</p><p>Hãy xem video, đọc tài liệu và hoàn thành bài tập trước khi chuyển sang bài tiếp theo.</p><blockquote>Mẹo: ghi chú lại những ý chính để ôn tập dễ dàng hơn.</blockquote>",
+                    'video_url' => $lessonNumber === 1 ? 'https://www.youtube.com/watch?v=ysEN5RaKOlA' : null,
+                    'duration_minutes' => random_int(8, 40),
+                    'position' => $lessonIndex + 1,
+                    'is_preview' => $lessonNumber === 1,
+                ]));
+                $lessonNumber++;
+            }
+
+            $this->seedQuiz($course, $section);
+        }
+
+        return $lessons;
+    }
+
+    private function seedQuiz(Course $course, Section $section): Quiz
+    {
+        $quiz = $section->quizzes()->create([
+            'course_id' => $course->id,
+            'title' => 'Kiểm tra '.Str::before($section->title, ':'),
+            'description' => 'Ôn lại kiến thức của '.Str::lower(Str::before($section->title, ':')).' trước khi học tiếp.',
+            'pass_percent' => 60,
+        ]);
+
+        $questions = [
+            ["Nội dung chính của \"{$section->title}\" thuộc khoá học nào?", [$course->title, 'Nhập môn Kế toán', 'Lịch sử Việt Nam', 'Vật lý đại cương']],
+            ['Cách học hiệu quả nhất với mỗi bài học là gì?', ['Xem video, ghi chú và làm bài tập', 'Chỉ đọc tiêu đề bài học', 'Bỏ qua phần thực hành', 'Học dồn vào cuối khoá']],
+            ['Khi nào nên bấm "Đánh dấu hoàn thành" một bài học?', ['Sau khi đã học xong và nắm được nội dung bài', 'Ngay khi mở bài học', 'Không bao giờ cần bấm', 'Chỉ khi giảng viên yêu cầu']],
+        ];
+
+        foreach ($questions as $position => [$content, $answers]) {
+            $question = $quiz->questions()->create(['content' => $content, 'position' => $position + 1]);
+
+            // The first answer is the correct one; shuffle so it is not always option A.
+            $question->answers()->createMany(collect($answers)
+                ->map(fn (string $answer, int $index) => ['content' => $answer, 'is_correct' => $index === 0])
+                ->shuffle()
+                ->all());
+        }
+
+        return $quiz;
+    }
+
+    /**
      * @param  Collection<int, User>  $students
      */
     private function seedLessonsAndLearners(Course $course, $students): void
     {
-        $lessonTitles = ['Giới thiệu tổng quan', 'Cài đặt môi trường', 'Kiến thức nền tảng', 'Thực hành cơ bản', 'Bài tập tình huống', 'Dự án cuối khoá'];
-
-        $lessons = collect($lessonTitles)->map(fn (string $lessonTitle, int $index) => $course->lessons()->create([
-            'title' => 'Bài '.($index + 1).': '.$lessonTitle,
-            'content' => "<p>Nội dung bài học <strong>{$lessonTitle}</strong> của khoá {$course->title}.</p><p>Hãy xem video, đọc tài liệu và hoàn thành bài tập trước khi chuyển sang bài tiếp theo.</p><blockquote>Mẹo: ghi chú lại những ý chính để ôn tập dễ dàng hơn.</blockquote>",
-            'video_url' => $index === 0 ? 'https://www.youtube.com/watch?v=ysEN5RaKOlA' : null,
-            'duration_minutes' => random_int(8, 40),
-            'position' => $index + 1,
-            'is_preview' => $index === 0,
-        ]));
+        $lessons = $this->seedCurriculum($course);
+        $quizzes = $course->quizzes()->get();
 
         foreach ($students->random(random_int(4, 12)) as $student) {
             $student->enrollments()->forceCreate([
                 'course_id' => $course->id,
                 'created_at' => now()->subDays(random_int(0, 170)),
             ]);
-            $student->completedLessons()->syncWithoutDetaching($lessons->take(random_int(0, $lessons->count()))->pluck('id'));
+
+            $finishedLessons = $lessons->take(random_int(0, $lessons->count()));
+            $student->completedLessons()->syncWithoutDetaching($finishedLessons->pluck('id'));
+
+            if ($finishedLessons->count() === $lessons->count()) {
+                $student->enrollments()->where('course_id', $course->id)->update(['completed_at' => now()->subDays(random_int(0, 30))]);
+            }
+
+            // Learners who finished a chapter have taken its quiz once.
+            foreach ($quizzes as $quiz) {
+                if ($finishedLessons->where('section_id', $quiz->section_id)->count() === 2) {
+                    $quiz->grade($student, $quiz->questions()->with('answers')->get()->mapWithKeys(fn ($question) => [
+                        $question->id => (random_int(0, 3) ? $question->answers->firstWhere('is_correct', true) : $question->answers->first())->id,
+                    ])->all());
+                }
+            }
 
             if (random_int(0, 1)) {
                 $student->reviews()->create([

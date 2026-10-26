@@ -13,8 +13,8 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    @if (Auth::user()->canManageCourses())
-                        <a href="{{ route('admin.dashboard') }}" class="btn-secondary"><x-icon name="cog" class="h-4 w-4" /> Trang quản trị</a>
+                    @if (Auth::user()->managementRoute())
+                        <a href="{{ route(Auth::user()->managementRoute()) }}" class="btn-secondary"><x-icon name="cog" class="h-4 w-4" /> {{ Auth::user()->isAdmin() ? 'Trang quản trị' : 'Kênh giảng viên' }}</a>
                     @endif
                     <a href="{{ route('courses.index') }}" class="btn-primary"><x-icon name="plus" class="h-4 w-4" /> Tìm khoá học mới</a>
                 </div>

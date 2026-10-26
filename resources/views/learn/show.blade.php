@@ -68,29 +68,53 @@
             <aside :class="outline ? 'block' : 'hidden'" class="order-first lg:order-none lg:block">
                 <div class="card overflow-hidden lg:sticky lg:top-28">
                     <h2 class="border-b border-gray-100 px-5 py-3 font-semibold text-gray-900">Nội dung khoá học</h2>
-                    <ol class="max-h-[50vh] divide-y lg:max-h-[70vh] divide-gray-50 overflow-y-auto">
-                        @foreach ($lessons as $item)
-                            @php($isDone = $completedLessonIds->contains($item->id))
-                            <li>
-                                @if ($canLearn || $item->is_preview)
-                                    <a href="{{ route('learn.show', [$course, $item]) }}"
-                                       @class(['flex items-start gap-3 px-5 py-3 text-sm transition', 'bg-brand-50 font-semibold text-brand-800' => $item->id === $lesson->id, 'hover:bg-gray-50' => $item->id !== $lesson->id])>
-                                        <span @class(['mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', 'border-emerald-500 bg-emerald-500 text-white' => $isDone, 'border-gray-300 text-transparent' => ! $isDone])>
-                                            <x-icon name="check" class="h-3 w-3" />
-                                        </span>
-                                        <span class="flex-1">{{ $item->title }}</span>
-                                        <span class="shrink-0 text-xs text-gray-400">{{ $item->duration_minutes }}'</span>
-                                    </a>
-                                @else
-                                    <span class="flex items-start gap-3 px-5 py-3 text-sm text-gray-400">
-                                        <x-icon name="lock" class="mt-0.5 h-5 w-5 shrink-0" />
-                                        <span class="flex-1">{{ $item->title }}</span>
-                                        <span class="shrink-0 text-xs">{{ $item->duration_minutes }}'</span>
-                                    </span>
-                                @endif
-                            </li>
+                    <div class="max-h-[50vh] overflow-y-auto lg:max-h-[70vh]">
+                        @foreach ($outline as $group)
+                            @if ($group['title'])
+                                <p class="border-b border-gray-100 bg-gray-50 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $group['title'] }}</p>
+                            @endif
+                            <ol class="divide-y divide-gray-50">
+                                @foreach ($group['lessons'] as $item)
+                                    @php($isDone = $completedLessonIds->contains($item->id))
+                                    <li>
+                                        @if ($canLearn || $item->is_preview)
+                                            <a href="{{ route('learn.show', [$course, $item]) }}"
+                                               @class(['flex items-start gap-3 px-5 py-3 text-sm transition', 'bg-brand-50 font-semibold text-brand-800' => $item->id === $lesson->id, 'hover:bg-gray-50' => $item->id !== $lesson->id])>
+                                                <span @class(['mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', 'border-emerald-500 bg-emerald-500 text-white' => $isDone, 'border-gray-300 text-transparent' => ! $isDone])>
+                                                    <x-icon name="check" class="h-3 w-3" />
+                                                </span>
+                                                <span class="flex-1">{{ $item->title }}</span>
+                                                <span class="shrink-0 text-xs text-gray-400">{{ $item->duration_minutes }}'</span>
+                                            </a>
+                                        @else
+                                            <span class="flex items-start gap-3 px-5 py-3 text-sm text-gray-400">
+                                                <x-icon name="lock" class="mt-0.5 h-5 w-5 shrink-0" />
+                                                <span class="flex-1">{{ $item->title }}</span>
+                                                <span class="shrink-0 text-xs">{{ $item->duration_minutes }}'</span>
+                                            </span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                                @foreach ($group['quizzes'] as $quiz)
+                                    <li>
+                                        @if ($canLearn)
+                                            <a href="{{ route('quizzes.show', [$course, $quiz]) }}" class="flex items-start gap-3 px-5 py-3 text-sm text-amber-800 transition hover:bg-amber-50">
+                                                <x-icon name="clipboard" class="mt-0.5 h-5 w-5 shrink-0" />
+                                                <span class="flex-1">{{ $quiz->title }}</span>
+                                                <span class="shrink-0 text-xs">Quiz</span>
+                                            </a>
+                                        @else
+                                            <span class="flex items-start gap-3 px-5 py-3 text-sm text-gray-400">
+                                                <x-icon name="lock" class="mt-0.5 h-5 w-5 shrink-0" />
+                                                <span class="flex-1">{{ $quiz->title }}</span>
+                                                <span class="shrink-0 text-xs">Quiz</span>
+                                            </span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ol>
                         @endforeach
-                    </ol>
+                    </div>
                 </div>
             </aside>
         </div>

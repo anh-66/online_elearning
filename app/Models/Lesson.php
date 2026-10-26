@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['course_id', 'title', 'content', 'video_url', 'duration_minutes', 'position', 'is_preview'])]
+#[Fillable(['course_id', 'section_id', 'title', 'content', 'video_url', 'duration_minutes', 'position', 'is_preview'])]
 class Lesson extends Model
 {
     /** @use HasFactory<LessonFactory> */
@@ -35,6 +35,14 @@ class Lesson extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    /**
+     * @return BelongsTo<Section, $this>
+     */
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(Section::class);
     }
 
     /**

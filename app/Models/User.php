@@ -113,6 +113,26 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
 
+    /**
+     * @return HasMany<QuizAttempt, $this>
+     */
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    /**
+     * The back-office home of the user: admins moderate, teachers manage their own courses.
+     */
+    public function managementRoute(): ?string
+    {
+        return match ($this->role) {
+            UserRole::Admin => 'admin.dashboard',
+            UserRole::Teacher => 'instructor.dashboard',
+            default => null,
+        };
+    }
+
     public function isEnrolledIn(Course $course): bool
     {
         return $this->enrollments()->where('course_id', $course->id)->exists();
