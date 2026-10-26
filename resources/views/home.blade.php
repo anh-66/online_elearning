@@ -66,12 +66,12 @@
 
         <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             @foreach ($categories as $category)
-                <a href="{{ route('courses.index', ['category' => $category->slug]) }}" class="card flex items-center gap-3 p-4 transition hover:border-brand-300 hover:bg-brand-50">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white">
+                <a href="{{ route('courses.index', ['category' => $category->slug]) }}" class="card flex items-center gap-3 p-3 transition hover:border-brand-300 hover:bg-brand-50 sm:p-4">
+                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white sm:h-10 sm:w-10">
                         <x-icon name="tag" class="h-5 w-5" />
                     </span>
                     <span class="min-w-0">
-                        <span class="block truncate font-semibold text-gray-900">{{ $category->name }}</span>
+                        <span class="block text-sm font-semibold leading-snug text-gray-900 sm:truncate sm:text-base">{{ $category->name }}</span>
                         <span class="text-xs text-gray-500">{{ $category->courses_count }} khoá học</span>
                     </span>
                 </a>
@@ -98,6 +98,10 @@
                 <div class="card col-span-full"><x-empty-state icon="book" title="Chưa có khoá học nào" /></div>
             @endforelse
         </div>
+
+        <a href="{{ route('courses.index') }}" class="btn-secondary mt-5 w-full sm:hidden">
+            Xem tất cả khoá học <x-icon name="arrow-right" class="h-4 w-4" />
+        </a>
     </section>
 
     {{-- Announcements --}}

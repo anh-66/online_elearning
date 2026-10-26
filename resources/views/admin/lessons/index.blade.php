@@ -26,6 +26,8 @@
                             <td class="text-center">
                                 @if ($lesson->is_preview)
                                     <span class="badge bg-amber-100 text-amber-700">Có</span>
+                                @else
+                                    <span class="text-gray-400">—</span>
                                 @endif
                             </td>
                             <td class="whitespace-nowrap text-right">

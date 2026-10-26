@@ -53,7 +53,9 @@ class CourseController extends Controller
             'relatedCourses' => Course::published()
                 ->where('category_id', $course->category_id)
                 ->whereKeyNot($course->id)
-                ->withCount('lessons')
+                ->with('category')
+                ->withCount(['lessons', 'enrollments'])
+                ->withAvg(['reviews' => fn ($query) => $query->where('is_visible', true)], 'rating')
                 ->take(3)
                 ->get(),
         ]);

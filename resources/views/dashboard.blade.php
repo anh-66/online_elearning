@@ -4,14 +4,15 @@
         <div class="card overflow-hidden">
             <div class="h-24 bg-gradient-to-r from-brand-700 to-teal-500"></div>
             <div class="flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end sm:justify-between">
-                <div class="-mt-10 flex items-end gap-4">
-                    <img src="{{ Auth::user()->avatar_url }}" alt="" class="h-20 w-20 rounded-2xl border-4 border-white object-cover shadow">
-                    <div class="pb-1">
+                {{-- Only the avatar overlaps the banner; the greeting stays on white so it is readable --}}
+                <div class="flex items-end gap-4">
+                    <img src="{{ Auth::user()->avatar_url }}" alt="" class="-mt-10 h-20 w-20 shrink-0 rounded-2xl border-4 border-white object-cover shadow">
+                    <div class="min-w-0 pt-3">
                         <p class="text-sm text-gray-500">Xin chào,</p>
                         <h1 class="text-xl font-bold text-gray-900">{{ Auth::user()->name }}</h1>
                     </div>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     @if (Auth::user()->canManageCourses())
                         <a href="{{ route('admin.dashboard') }}" class="btn-secondary"><x-icon name="cog" class="h-4 w-4" /> Trang quản trị</a>
                     @endif
@@ -28,11 +29,11 @@
                 ['check-circle', 'Bài học đã học', $stats['completedLessons'], 'bg-emerald-50 text-emerald-600'],
                 ['chart', 'Tiến độ trung bình', $stats['averageProgress'].'%', 'bg-indigo-50 text-indigo-600'],
             ] as [$icon, $label, $value, $colors])
-                <div class="card flex items-center gap-4 p-5">
+                <div class="card flex flex-col items-start gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
                     <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $colors }}">
                         <x-icon :name="$icon" class="h-6 w-6" />
                     </span>
-                    <div>
+                    <div class="min-w-0">
                         <p class="text-2xl font-bold text-gray-900">{{ $value }}</p>
                         <p class="text-xs text-gray-500 sm:text-sm">{{ $label }}</p>
                     </div>
@@ -48,8 +49,8 @@
                 </div>
                 <div class="divide-y divide-gray-100">
                     @forelse ($courses as $course)
-                        <div class="flex flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center">
-                            <x-course-thumbnail :course="$course" class="aspect-video w-full shrink-0 rounded-lg sm:w-36" />
+                        <div class="flex flex-wrap items-center gap-4 px-4 py-4 sm:flex-nowrap sm:px-6">
+                            <x-course-thumbnail :course="$course" compact class="aspect-video w-24 shrink-0 rounded-lg sm:w-36" />
                             <div class="min-w-0 flex-1">
                                 <a href="{{ route('courses.show', $course) }}" class="font-semibold text-gray-900 hover:text-brand-700">{{ $course->title }}</a>
                                 <p class="text-sm text-gray-500">{{ $course->instructor->name }} · {{ $course->lessons->count() }} bài học</p>
@@ -57,10 +58,10 @@
                                     <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
                                         <div class="h-full rounded-full {{ $course->progress === 100 ? 'bg-emerald-500' : 'bg-brand-600' }}" style="width: {{ $course->progress }}%"></div>
                                     </div>
-                                    <span class="w-10 text-right text-sm font-semibold text-gray-700">{{ $course->progress }}%</span>
+                                    <span class="w-11 shrink-0 text-right text-sm font-semibold text-gray-700">{{ $course->progress }}%</span>
                                 </div>
                             </div>
-                            <a href="{{ route('learn.show', $course) }}" class="btn-primary shrink-0">
+                            <a href="{{ route('learn.show', $course) }}" class="btn-primary w-full shrink-0 sm:w-28">
                                 {{ $course->progress === 0 ? 'Bắt đầu học' : ($course->progress === 100 ? 'Ôn tập' : 'Học tiếp') }}
                             </a>
                         </div>

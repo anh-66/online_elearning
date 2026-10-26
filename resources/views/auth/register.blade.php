@@ -1,4 +1,9 @@
 <x-guest-layout>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Tạo tài khoản</h1>
+        <p class="mt-1 text-sm text-gray-500">Đăng ký miễn phí để ghi danh và theo dõi tiến độ học tập.</p>
+    </div>
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
@@ -39,14 +44,13 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
+        <x-primary-button class="mt-6 w-full py-2.5">
+            {{ __('Register') }}
+        </x-primary-button>
     </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+        {{ __('Already registered?') }}
+        <a href="{{ route('login') }}" class="font-semibold text-brand-700 hover:text-brand-900">{{ __('Log in') }}</a>
+    </p>
 </x-guest-layout>

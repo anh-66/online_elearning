@@ -44,6 +44,8 @@
     ];
 @endphp
 
-<svg {{ $attributes->merge(['class' => 'h-5 w-5']) }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true">
+{{-- Only fall back to h-5 w-5 when no size is given: in the compiled CSS h-5 comes after h-10/h-12 and would win --}}
+@php($hasSize = preg_match('/(^|\s)(h|w|size)-/', $attributes->get('class', '')))
+<svg {{ $hasSize ? $attributes : $attributes->merge(['class' => 'h-5 w-5']) }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true">
     <path stroke-linecap="round" stroke-linejoin="round" d="{{ $paths[$name] ?? $paths['squares'] }}" />
 </svg>

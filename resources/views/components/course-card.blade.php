@@ -11,7 +11,8 @@
             <p class="text-xs font-semibold uppercase tracking-wide text-brand-700">{{ $course->category->name }}</p>
         @endif
 
-        <h3 class="mt-1 line-clamp-2 font-semibold text-gray-900 group-hover:text-brand-700">{{ $course->title }}</h3>
+        {{-- min-h keeps rating rows aligned across a grid row when some titles wrap to two lines --}}
+        <h3 class="mt-1 line-clamp-2 min-h-[3rem] font-semibold text-gray-900 group-hover:text-brand-700">{{ $course->title }}</h3>
         <p class="mt-1 line-clamp-2 text-sm text-gray-500">{{ $course->summary }}</p>
 
         <div class="mt-3 flex items-center gap-2 text-sm">

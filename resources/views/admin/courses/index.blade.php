@@ -30,14 +30,14 @@
                         <tr>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <x-course-thumbnail :course="$course" class="h-12 w-20 shrink-0 rounded-md" />
+                                    <x-course-thumbnail :course="$course" compact class="h-12 w-20 shrink-0 rounded-md" />
                                     <div class="min-w-0">
                                         <p class="max-w-xs truncate font-medium text-gray-900">{{ $course->title }}</p>
                                         <p class="text-xs text-gray-500">{{ $course->level->label() }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ $course->category?->name ?? '—' }}</td>
+                            <td class="whitespace-nowrap">{{ $course->category?->name ?? '—' }}</td>
                             <td class="whitespace-nowrap">{{ $course->instructor->name }}</td>
                             <td class="text-center">{{ $course->lessons_count }}</td>
                             <td class="text-center">{{ $course->enrollments_count }}</td>

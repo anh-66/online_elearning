@@ -19,7 +19,7 @@
             <div class="space-y-6 lg:col-span-2">
                 <div class="card overflow-hidden">
                     @if ($lesson->embed_url)
-                        <iframe src="{{ $lesson->embed_url }}" title="{{ $lesson->title }}" class="aspect-video w-full" allowfullscreen
+                        <iframe src="{{ $lesson->embed_url }}" title="{{ $lesson->title }}" class="aspect-video w-full bg-gray-900" allowfullscreen
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
                     @elseif ($lesson->video_url)
                         <div class="flex aspect-video items-center justify-center bg-gray-900">
@@ -39,7 +39,7 @@
                     @if ($previousLesson)
                         <a href="{{ route('learn.show', [$course, $previousLesson]) }}" class="btn-secondary"><x-icon name="chevron-left" class="h-4 w-4" /> Bài trước</a>
                     @else
-                        <span></span>
+                        <span class="hidden sm:block"></span>
                     @endif
 
                     @if ($canLearn)
@@ -64,10 +64,11 @@
                 </div>
             </div>
 
-            <aside :class="outline ? 'block' : 'hidden'" class="lg:block">
-                <div class="card sticky top-28 overflow-hidden">
+            {{-- On mobile the outline opens right under its toggle button instead of below the lesson --}}
+            <aside :class="outline ? 'block' : 'hidden'" class="order-first lg:order-none lg:block">
+                <div class="card overflow-hidden lg:sticky lg:top-28">
                     <h2 class="border-b border-gray-100 px-5 py-3 font-semibold text-gray-900">Nội dung khoá học</h2>
-                    <ol class="max-h-[70vh] divide-y divide-gray-50 overflow-y-auto">
+                    <ol class="max-h-[50vh] divide-y lg:max-h-[70vh] divide-gray-50 overflow-y-auto">
                         @foreach ($lessons as $item)
                             @php($isDone = $completedLessonIds->contains($item->id))
                             <li>

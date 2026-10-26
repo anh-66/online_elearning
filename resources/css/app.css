@@ -50,7 +50,7 @@
     }
 
     .badge {
-        @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+        @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium;
     }
 
     .table-wrapper {
@@ -61,8 +61,9 @@
         @apply min-w-full divide-y divide-gray-100 text-sm;
     }
 
+    /* No text-left here: it would out-rank the text-center / text-right utilities set on individual headers. */
     .data-table thead th {
-        @apply bg-gray-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500;
+        @apply whitespace-nowrap bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500;
     }
 
     .data-table tbody td {
