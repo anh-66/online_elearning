@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -122,5 +123,20 @@ class Course extends Model
     public function averageRating(): float
     {
         return (float) ($this->reviews()->avg('rating') ?? 0);
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_PUBLISHED);
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    public function scopeDraft(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_DRAFT);
     }
 }

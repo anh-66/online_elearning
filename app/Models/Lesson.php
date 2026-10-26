@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 #[Fillable([
     'chapter_id',
@@ -33,5 +34,17 @@ class Lesson extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(LessonComment::class);
+    }
+
+    public function course(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Course::class,
+            Chapter::class,
+            'id',          // Foreign key on Chapter table (referenced by Course)
+            'id',          // Foreign key on Course table
+            'chapter_id',  // Local key on Lesson table
+            'course_id'    // Local key on Chapter table
+        );
     }
 }
