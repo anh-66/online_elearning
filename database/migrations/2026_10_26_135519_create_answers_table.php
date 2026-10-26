@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('student');
+        Schema::create('answers', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
+            $table->text('answer_text');
+            $table->boolean('is_correct')->default(false);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        Schema::dropIfExists('answers');
     }
 };
