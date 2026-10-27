@@ -1,6 +1,6 @@
 <section>
     <header class="border-b border-slate-100 pb-5">
-        <p class="text-sm font-semibold uppercase tracking-[0.14em] text-indigo-600">Thông tin cá nhân</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.14em] text-emerald-700">Thông tin cá nhân</p>
         <h2 class="mt-2 text-xl font-semibold tracking-tight text-slate-900">{{ __('Cập nhật hồ sơ') }}</h2>
 
         <p class="mt-2 text-sm leading-6 text-slate-500">
