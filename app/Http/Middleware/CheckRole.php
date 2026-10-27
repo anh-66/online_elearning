@@ -15,13 +15,13 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        // 1. Chưa đăng nhập
-        if (! $request->user()) {
+        $user = $request->user();
+
+        if (! $user) {
             return redirect()->guest(route('login'));
         }
 
-        // 2. Tài khoản bị khóa (status !== 'active')
-        if (! $request->user()->isActive()) {
+        if (! $user->isActive()) {
             auth()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -29,9 +29,7 @@ class CheckRole
             return redirect()->route('login')->with('error', 'Tài khoản của bạn đã bị khóa hoặc ngừng hoạt động. Vui lòng liên hệ quản trị viên.');
         }
 
-        // 3. Kiểm tra vai trò (Role)
-        // Lưu ý: Tài khoản có role 'admin' có thể truy cập được các route của admin hoặc nếu cần có thể nới lỏng
-        if (! in_array($request->user()->role, $roles, true)) {
+        if (! $user->hasAnyRole(...$roles)) {
             abort(403, 'Bạn không có quyền truy cập vào chức năng hoặc trang này.');
         }
 

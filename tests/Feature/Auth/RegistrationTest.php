@@ -23,9 +23,49 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'role' => 'student',
         ]);
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+            'role' => 'student',
+        ]);
+    }
+
+    public function test_new_users_can_register_as_instructor(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Instructor User',
+            'email' => 'instructor@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'role' => 'instructor',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirectToRoute('instructor.dashboard');
+        $this->assertDatabaseHas('users', [
+            'email' => 'instructor@example.com',
+            'role' => 'instructor',
+        ]);
+    }
+
+    public function test_registration_rejects_admin_role(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'role' => 'admin',
+        ]);
+
+        $this->assertGuest();
+        $response->assertSessionHasErrors('role');
+        $this->assertDatabaseMissing('users', [
+            'email' => 'admin@example.com',
+        ]);
     }
 }

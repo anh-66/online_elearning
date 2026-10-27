@@ -39,6 +39,24 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label :value="__('Đăng ký với vai trò')" />
+
+            <div class="mt-2 space-y-2">
+                <label for="role_student" class="flex items-center gap-2 text-sm text-gray-700">
+                    <input id="role_student" type="radio" name="role" value="student" class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('role', 'student') === 'student' ? 'checked' : '' }} required>
+                    <span>{{ __('Học viên (Student)') }}</span>
+                </label>
+                <label for="role_instructor" class="flex items-center gap-2 text-sm text-gray-700">
+                    <input id="role_instructor" type="radio" name="role" value="instructor" class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('role') === 'instructor' ? 'checked' : '' }}>
+                    <span>{{ __('Giảng viên (Instructor)') }}</span>
+                </label>
+            </div>
+
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
