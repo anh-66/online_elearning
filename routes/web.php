@@ -1,23 +1,22 @@
 <?php
 
+use App\Http\Controllers\CourseCatalogController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes (Dành riêng cho Thành viên 2)
+| Public Routes (Thành viên 2: HomeController, CourseCatalogController, InstructorProfileController)
 |--------------------------------------------------------------------------
-| TV2 sẽ nối HomeController, CourseCatalogController, InstructorProfileController vào đây.
 */
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Ví dụ route TV2 sẽ phát triển:
-// Route::get('/courses', [CourseCatalogController::class, 'index'])->name('courses.index');
-// Route::get('/courses/{slug}', [CourseCatalogController::class, 'show'])->name('courses.show');
-// Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->name('instructors.show');
+Route::get('/courses', [CourseCatalogController::class, 'index'])->name('courses.index');
+Route::get('/courses/{slug}', [CourseCatalogController::class, 'show'])->name('courses.show');
+Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->name('instructors.show');
 
 /*
 |--------------------------------------------------------------------------
