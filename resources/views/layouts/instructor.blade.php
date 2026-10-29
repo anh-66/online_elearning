@@ -27,7 +27,7 @@
                class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-xl">
             <!-- Sidebar Header / Logo -->
             <div class="h-16 flex items-center justify-between px-6 bg-slate-950/60 border-b border-slate-800">
-                <a href="{{ url('/instructor/dashboard') }}" class="flex items-center space-x-2.5">
+                <a href="{{ route('instructor.dashboard') }}" class="flex items-center space-x-2.5">
                     <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
                         IN
                     </div>
@@ -44,28 +44,28 @@
             <!-- Navigation Links -->
             <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto text-sm font-medium">
                 <!-- Dashboard -->
-                <a href="{{ url('/instructor/dashboard') }}" 
+                <a href="{{ route('instructor.dashboard') }}" 
                    class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('instructor/dashboard') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span>Tổng quan (Dashboard)</span>
                 </a>
 
                 <!-- Khóa học của tôi -->
-                <a href="{{ url('/instructor/courses') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('instructor/courses') && !request()->is('instructor/courses/create') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                <a href="{{ route('instructor.courses.index') }}" 
+                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('instructor/courses*', 'instructor/chapters*', 'instructor/lessons*', 'instructor/quizzes*', 'instructor/questions*') && ! request()->is('instructor/courses/create') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span>Khóa học của tôi</span>
                 </a>
 
                 <!-- Tạo khóa học mới -->
-                <a href="{{ url('/instructor/courses/create') }}" 
+                <a href="{{ route('instructor.courses.create') }}" 
                    class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('instructor/courses/create') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>Tạo khóa học mới</span>
                 </a>
 
                 <!-- Danh sách Học viên -->
-                <a href="{{ url('/instructor/students') }}" 
+                <a href="{{ route('instructor.students.index') }}" 
                    class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('instructor/students*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     <span>Quản lý Học viên</span>
