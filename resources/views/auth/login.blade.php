@@ -44,4 +44,13 @@
         {{ __('Chưa có tài khoản?') }}
         <a href="{{ route('register') }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700">{{ __('Đăng ký ngay') }}</a>
     </p>
+
+    <p class="mt-4 text-center text-sm">
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 font-semibold text-slate-500 transition hover:text-indigo-600">
+            {{ __('Quay về trang chủ') }}
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </a>
+    </p>
 </x-guest-layout>
