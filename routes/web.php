@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CourseCatalogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
@@ -55,6 +56,12 @@ Route::middleware('auth')->group(function () {
 
     // Endpoint upload ảnh cho CKEditor 5
     Route::post('/upload/image', [UploadController::class, 'uploadImage'])->name('upload.image');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
+        ->name('auth.google.callback');
 });
 
 require __DIR__.'/auth.php';
