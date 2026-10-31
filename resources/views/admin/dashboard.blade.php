@@ -5,6 +5,18 @@
 
 @section('content')
 <div class="space-y-6">
+    @if (session('status'))
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-700">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    <div class="flex justify-end">
+        <a href="{{ route('admin.instructors.create') }}" class="rounded-md bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">
+            Tạo tài khoản giảng viên
+        </a>
+    </div>
+
     <!-- 4 Thẻ thống kê tổng quan -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">

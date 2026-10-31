@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\InstructorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
 })->name('dashboard');
+
+Route::get('/instructors/create', [InstructorController::class, 'create'])->name('instructors.create');
+Route::post('/instructors', [InstructorController::class, 'store'])->name('instructors.store');
 
 // TV6 sẽ tiếp tục khai báo các Controller và routes cho:
 // - DashboardController (Thống kê Chart.js)
