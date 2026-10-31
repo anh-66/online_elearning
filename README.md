@@ -8,6 +8,7 @@ Website học trực tuyến: giảng viên đăng khóa học, học viên đă
 - [Công nghệ](#công-nghệ)
 - [Yêu cầu môi trường](#yêu-cầu-môi-trường)
 - [Cài đặt](#cài-đặt)
+- [Đăng nhập bằng Google](#đăng-nhập-bằng-google)
 - [Tài khoản mặc định](#tài-khoản-mặc-định)
 - [Cấu trúc thư mục](#cấu-trúc-thư-mục)
 - [Phân quyền](#phân-quyền)
@@ -23,6 +24,7 @@ Trạng thái: ✅ đã xong, 🚧 đang làm, ⬜ chưa làm. Cập nhật bả
 | Nhóm | Tính năng | Trạng thái |
 |---|---|---|
 | Xác thực | Đăng ký, đăng nhập, đăng xuất, quên/đổi mật khẩu, hồ sơ cá nhân | ✅ (Breeze) |
+| Xác thực | Đăng nhập bằng Google OAuth | ✅ |
 | Phân quyền | Middleware theo vai trò, redirect theo vai trò, Policy quyền sở hữu | ⬜ |
 | Admin | Dashboard thống kê (Chart.js) | ⬜ |
 | Admin | CRUD người dùng (khóa/mở khóa, đổi vai trò) | ⬜ |
@@ -46,7 +48,7 @@ Trạng thái: ✅ đã xong, 🚧 đang làm, ⬜ chưa làm. Cập nhật bả
 |---|---|
 | Backend | PHP 8.3+, Laravel 13, Eloquent ORM |
 | Cơ sở dữ liệu | MySQL |
-| Xác thực | Laravel Breeze (Blade) |
+| Xác thực | Laravel Breeze (Blade), Laravel Socialite (Google OAuth) |
 | Frontend | Blade, Tailwind CSS 3, Alpine.js, Vite |
 | Editor | CKEditor 5 |
 | Biểu đồ | Chart.js |
@@ -119,6 +121,24 @@ DB_PASSWORD=
 
 > Không commit file `.env`. File này đã nằm trong `.gitignore`.
 
+**Cấu hình đăng nhập bằng Google**
+
+Tạo OAuth 2.0 Client ID loại **Web application** trong [Google Cloud Console](https://console.cloud.google.com/), sau đó thêm URL callback của môi trường đang chạy vào **Authorized redirect URIs**:
+
+```text
+http://127.0.0.1:8000/auth/google/callback
+```
+
+Thêm thông tin client vào `.env`:
+
+```env
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
+```
+
+Nếu `APP_URL` không phải `http://127.0.0.1:8000`, hãy dùng đúng URL đó trong cả `GOOGLE_REDIRECT_URI` và Google Cloud Console. Không commit `GOOGLE_CLIENT_SECRET` hoặc các giá trị bí mật khác vào Git.
+
 **5. Tạo bảng và dữ liệu mẫu**
 
 ```bash
@@ -146,6 +166,16 @@ Truy cập: <http://localhost:8000>
 > Nếu chỉ muốn chạy thử mà không sửa giao diện, dùng `npm run build` một lần thay cho `npm run dev`.
 
 **Cài nhanh bằng một lệnh** (tùy chọn): `composer setup` sẽ cài thư viện, tạo `.env`, sinh key, chạy migrate và build frontend. Lệnh này **chưa chạy seeder**, bạn cần chạy thêm `php artisan db:seed` sau đó.
+
+## Đăng nhập bằng Google
+
+Tại trang đăng nhập, chọn **Tiếp tục với Google** để chuyển tới Google xác thực. Người dùng mới sẽ được tạo với vai trò học viên; tài khoản đã tồn tại sẽ được liên kết theo địa chỉ email. Tài khoản bị khóa hoặc không hoạt động sẽ không thể đăng nhập.
+
+Sau khi cập nhật các biến `GOOGLE_*` trong `.env`, xóa cache cấu hình để Laravel nhận giá trị mới:
+
+```bash
+php artisan optimize:clear
+```
 
 ## Tài khoản mặc định
 
@@ -277,6 +307,8 @@ php artisan test                    # chạy test
 | `Vite manifest not found` | Chạy `npm run dev` hoặc `npm run build` |
 | Ảnh upload không hiển thị | Chạy `php artisan storage:link` |
 | Sửa `.env` hoặc config mà không có tác dụng | Chạy `php artisan optimize:clear` |
+| Đăng nhập Google báo `redirect_uri_mismatch` | Kiểm tra `GOOGLE_REDIRECT_URI`, `APP_URL` và Authorized redirect URI trong Google Cloud Console phải trùng tuyệt đối |
+| Đăng nhập Google thất bại | Kiểm tra `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, callback URL và chạy lại `php artisan optimize:clear` |
 | `Your lock file does not contain a compatible set of packages` | Phiên bản PHP chưa đủ (cần 8.3+) hoặc thiếu extension |
 | Sau khi pull, giao diện lỗi hoặc thiếu class | Chạy lại `composer install` và `npm install` |
 
