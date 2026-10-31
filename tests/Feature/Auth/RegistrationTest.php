@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,7 +24,6 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'role' => 'student',
         ]);
 
         $this->assertAuthenticated();
@@ -34,7 +34,7 @@ class RegistrationTest extends TestCase
         ]);
     }
 
-    public function test_new_users_can_register_as_instructor(): void
+    public function test_public_registration_always_creates_a_student(): void
     {
         $response = $this->post('/register', [
             'name' => 'Instructor User',
@@ -45,14 +45,14 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirectToRoute('instructor.dashboard');
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertDatabaseHas('users', [
             'email' => 'instructor@example.com',
-            'role' => 'instructor',
+            'role' => 'student',
         ]);
     }
 
-    public function test_registration_rejects_admin_role(): void
+    public function test_public_registration_always_creates_a_student_for_admin_role(): void
     {
         $response = $this->post('/register', [
             'name' => 'Admin User',
@@ -62,10 +62,41 @@ class RegistrationTest extends TestCase
             'role' => 'admin',
         ]);
 
-        $this->assertGuest();
-        $response->assertSessionHasErrors('role');
-        $this->assertDatabaseMissing('users', [
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertDatabaseHas('users', [
             'email' => 'admin@example.com',
+            'role' => 'student',
+        ]);
+    }
+
+    public function test_only_admins_can_create_instructor_accounts(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.instructors.store'), [
+            'name' => 'Instructor User',
+            'email' => 'created-instructor@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard', absolute: false));
+        $this->assertDatabaseHas('users', [
+            'email' => 'created-instructor@example.com',
+            'role' => User::ROLE_INSTRUCTOR,
+        ]);
+    }
+
+    public function test_students_cannot_create_instructor_accounts(): void
+    {
+        $student = User::factory()->create();
+
+        $response = $this->actingAs($student)->get(route('admin.instructors.create'));
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('users', [
+            'email' => 'created-instructor@example.com',
         ]);
     }
 }

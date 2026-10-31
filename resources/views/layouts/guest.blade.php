@@ -9,125 +9,93 @@
 
         <title>{{ $title }} · {{ config('app.name', 'EduLearn') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Scripts & Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-full bg-slate-100 font-sans text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
-        <!-- Background Subtle Pattern -->
-        <div class="fixed inset-0 pointer-events-none bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] opacity-40"></div>
-
-        <main class="relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-10">
-            <!-- Main Card Container: Crisp Modern Style, Subtle Rounded Corners -->
-            <div class="w-full max-w-5xl overflow-hidden rounded-lg border border-slate-200/90 bg-white shadow-lg shadow-slate-200/50 grid lg:grid-cols-12 min-h-[620px]">
-
-                <!-- Left Showcase Panel (5 Columns on Desktop) -->
-                <aside class="relative hidden lg:flex lg:col-span-5 flex-col justify-between overflow-hidden bg-slate-900 p-8 xl:p-10 text-white">
-                    <!-- Background Showcase Image with Dark Modern Overlay -->
-                    <img
-                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
-                        alt="E-learning banner"
-                        class="absolute inset-0 h-full w-full object-cover opacity-20 mix-blend-luminosity filter contrast-125"
-                    />
-                    <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/85 via-slate-900/95 to-slate-950"></div>
-
-                    <!-- Decorative subtle grid element -->
-                    <div class="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl"></div>
-
-                    <!-- Brand / Home Link -->
-                    <div class="relative z-10">
-                        <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5 group">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-500/30 transition group-hover:scale-105">
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </span>
-                            <span class="text-xl font-bold tracking-tight text-white">
-                                {{ config('app.name', 'EduLearn') }}
-                            </span>
-                        </a>
-                    </div>
-
-                    <!-- Showcase Highlights -->
-                    <div class="relative z-10 my-8">
-                        <span class="inline-flex items-center gap-1.5 rounded-md border border-indigo-500/30 bg-indigo-500/20 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-indigo-300">
-                            <span class="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-                            Nền tảng học trực tuyến
+    <body class="min-h-full bg-white font-sans text-neutral-900 antialiased selection:bg-green-700 selection:text-white">
+        <main class="flex min-h-screen items-center justify-center sm:p-5 lg:p-8">
+            <div class="grid w-full max-w-6xl overflow-hidden border-y border-neutral-200 bg-white shadow-xl shadow-neutral-200/50 sm:border-x lg:min-h-[680px] lg:grid-cols-2">
+                <aside class="flex flex-col justify-between bg-black px-7 py-8 text-white sm:px-10 sm:py-10 lg:px-12 lg:py-12">
+                    <a href="{{ route('home') }}" class="inline-flex w-fit items-center gap-3 text-white" aria-label="{{ config('app.name', 'EduLearn') }} - Trang chủ">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.25v13m0-13C10.83 5.48 9.25 5 7.5 5S4.17 5.48 3 6.25v13C4.17 18.48 5.75 18 7.5 18s3.33.48 4.5 1.25Zm0 0C13.17 5.48 14.75 5 16.5 5s3.33.48 4.5 1.25v13C19.83 18.48 18.25 18 16.5 18s-3.33.48-4.5 1.25Z" />
+                            </svg>
                         </span>
+                        <span class="text-lg font-semibold tracking-tight">{{ config('app.name', 'EduLearn') }}</span>
+                    </a>
 
-                        <h2 class="mt-4 text-2xl xl:text-3xl font-bold tracking-tight text-white leading-snug">
-                            Nâng tầm kỹ năng.<br>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-200 to-white">
-                                Vững bước tương lai.
-                            </span>
-                        </h2>
-
-                        <p class="mt-3 text-sm text-slate-300 leading-relaxed">
-                            Khám phá hàng trăm khóa học thực chiến từ lập trình, thiết kế đến kinh doanh cùng lộ trình bài bản.
+                    <div class="py-10 lg:py-12">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-green-400">Nền tảng học trực tuyến</p>
+                        <h1 class="mt-4 max-w-lg text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+                            Tạo tài khoản miễn phí
+                        </h1>
+                        <p class="mt-3 max-w-lg text-sm leading-6 text-neutral-300 sm:text-base">
+                            Khám phá những công cụ giúp bạn học tập chủ động và kết nối với cộng đồng.
                         </p>
 
-                        <!-- Key Feature Bullets -->
-                        <div class="mt-6 space-y-3">
-                            <div class="flex items-center gap-3 text-xs xl:text-sm text-slate-200">
-                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/20 text-emerald-400">
-                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <div class="mt-7 space-y-4">
+                            <div class="flex items-start gap-3 text-sm text-neutral-200">
+                                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center text-green-400">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 4 4L19 6" /></svg>
                                 </span>
-                                <span>Bài giảng chuẩn hóa, thực hành qua dự án</span>
+                                <span><strong class="font-semibold text-white">Theo dõi tiến độ</strong><span class="mt-1 block text-xs leading-5 text-neutral-400">Nắm bắt tiến trình hoàn thành khóa học.</span></span>
                             </div>
-                            <div class="flex items-center gap-3 text-xs xl:text-sm text-slate-200">
-                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/20 text-emerald-400">
-                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <div class="flex items-start gap-3 text-sm text-neutral-200">
+                                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center text-green-400">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 4 4L19 6" /></svg>
                                 </span>
-                                <span>Giảng viên kinh nghiệm & cộng đồng hỗ trợ</span>
+                                <span><strong class="font-semibold text-white">Bài kiểm tra Quiz</strong><span class="mt-1 block text-xs leading-5 text-neutral-400">Luyện tập và nhận kết quả tự động.</span></span>
                             </div>
-                            <div class="flex items-center gap-3 text-xs xl:text-sm text-slate-200">
-                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/20 text-emerald-400">
-                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <div class="flex items-start gap-3 text-sm text-neutral-200">
+                                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center text-green-400">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 4 4L19 6" /></svg>
                                 </span>
-                                <span>Chứng nhận hoàn thành xác thực uy tín</span>
+                                <span><strong class="font-semibold text-white">Hỏi đáp bài học</strong><span class="mt-1 block text-xs leading-5 text-neutral-400">Trao đổi và đặt câu hỏi dưới mỗi bài.</span></span>
+                            </div>
+                            <div class="flex items-start gap-3 text-sm text-neutral-200">
+                                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center text-green-400">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 4 4L19 6" /></svg>
+                                </span>
+                                <span><strong class="font-semibold text-white">Danh sách yêu thích</strong><span class="mt-1 block text-xs leading-5 text-neutral-400">Lưu lại khóa học bạn quan tâm.</span></span>
+                            </div>
+                            <div class="flex items-start gap-3 text-sm text-neutral-200">
+                                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center text-green-400">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 4 4L19 6" /></svg>
+                                </span>
+                                <span><strong class="font-semibold text-white">Hồ sơ cá nhân</strong><span class="mt-1 block text-xs leading-5 text-neutral-400">Cập nhật thông tin và ảnh đại diện.</span></span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Social Proof / Mini Card -->
-                    <div class="relative z-10 pt-4 border-t border-slate-800/80">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center -space-x-2">
-                                <img class="h-7 w-7 rounded-full ring-2 ring-slate-900 object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Avatar">
-                                <img class="h-7 w-7 rounded-full ring-2 ring-slate-900 object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Avatar">
-                                <img class="h-7 w-7 rounded-full ring-2 ring-slate-900 object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Avatar">
-                                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 ring-2 ring-slate-900 text-[10px] font-semibold text-slate-300">+10k</span>
-                            </div>
-                            <div class="flex items-center gap-1 text-amber-400 text-xs font-semibold">
-                                <span>★ 4.9/5</span>
-                                <span class="text-slate-400 font-normal">đánh giá</span>
-                            </div>
+                    <div class="grid grid-cols-2 gap-5 border-t border-neutral-800 pt-6 sm:gap-8 sm:pt-7">
+                        <div>
+                            <p class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ number_format($instructorCount, 0, ',', '.') }}</p>
+                            <p class="mt-1 text-xs text-neutral-300 sm:text-sm">Giảng viên</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ number_format($studentCount, 0, ',', '.') }}</p>
+                            <p class="mt-1 text-xs text-neutral-300 sm:text-sm">Bạn học</p>
                         </div>
                     </div>
                 </aside>
 
-                <!-- Right Form Panel (7 Columns on Desktop) -->
-                <section class="lg:col-span-7 flex flex-col justify-center px-6 py-8 sm:px-10 sm:py-10 lg:px-12 bg-white">
-                    <!-- Mobile Brand Header -->
-                    <div class="mb-6 lg:hidden flex items-center justify-between">
-                        <a href="{{ url('/') }}" class="inline-flex items-center gap-2 group">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
-                                <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </span>
-                            <span class="text-lg font-bold text-slate-900">{{ config('app.name', 'EduLearn') }}</span>
-                        </a>
-                        <a href="{{ url('/') }}" class="text-xs font-medium text-slate-500 hover:text-indigo-600 transition">
-                            Về trang chủ →
-                        </a>
+                <section class="flex flex-col px-6 py-7 sm:px-10 sm:py-9 lg:px-14 lg:py-10">
+                    <div class="flex min-h-8 justify-end text-right text-xs sm:text-sm">
+                        @if (request()->routeIs('login') && Route::has('register'))
+                            <p class="text-neutral-500">Chưa có tài khoản?
+                                <a href="{{ route('register') }}" class="ml-1 font-semibold text-neutral-900 transition hover:text-green-700">Đăng ký <span aria-hidden="true">→</span></a>
+                            </p>
+                        @elseif (request()->routeIs('register'))
+                            <p class="text-neutral-500">Đã có tài khoản?
+                                <a href="{{ route('login') }}" class="ml-1 font-semibold text-neutral-900 transition hover:text-green-700">Đăng nhập <span aria-hidden="true">→</span></a>
+                            </p>
+                        @endif
                     </div>
 
-                    <!-- Slot Content -->
-                    <div class="w-full max-w-md mx-auto">
+                    <div class="mx-auto my-auto w-full max-w-sm py-8">
                         {{ $slot }}
                     </div>
                 </section>
