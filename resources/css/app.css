@@ -6,56 +6,191 @@
     display: none !important;
 }
 
-/* Nội dung rich-text do CKEditor 5 sinh ra (mô tả khóa học, nội dung bài học).
-   Dự án không dùng @tailwindcss/typography nên tự khôi phục style sau preflight. */
-@layer components {
-    .rich-content { @apply text-gray-700 leading-relaxed break-words; }
-    .rich-content > * + * { @apply mt-3; }
-    .rich-content h2 { @apply text-xl font-bold text-gray-900 mt-6; }
-    .rich-content h3 { @apply text-lg font-bold text-gray-900 mt-5; }
-    .rich-content h4 { @apply text-base font-semibold text-gray-900 mt-4; }
-    .rich-content ul { @apply list-disc pl-6 space-y-1; }
-    .rich-content ol { @apply list-decimal pl-6 space-y-1; }
-    .rich-content a { @apply text-brand-700 underline hover:text-brand-800; }
-    .rich-content strong { @apply font-semibold text-gray-900; }
-    .rich-content blockquote { @apply border-l-4 border-brand-200 pl-4 italic text-gray-600; }
-    .rich-content code { @apply rounded bg-gray-100 px-1.5 py-0.5 text-sm; }
-    .rich-content pre { @apply overflow-x-auto rounded-lg bg-gray-900 p-4 text-sm text-gray-100; }
-    .rich-content pre code { @apply bg-transparent p-0; }
-    .rich-content hr { @apply border-gray-200; }
-    .rich-content img { @apply h-auto max-w-full rounded-lg; }
-    .rich-content figure.image { @apply mx-auto; }
-    .rich-content figcaption { @apply mt-2 text-center text-sm text-gray-500; }
-    .rich-content figure.table { @apply overflow-x-auto; }
-    .rich-content table { @apply w-full border-collapse text-sm; }
-    .rich-content th,
-    .rich-content td { @apply border border-gray-200 px-3 py-2 text-left align-top; }
-    .rich-content th { @apply bg-gray-50 font-semibold text-gray-900; }
-    .rich-content iframe { @apply w-full max-w-full rounded-lg; }
-
-    .dark .rich-content { @apply text-neutral-300; }
-    .dark .rich-content :is(h2, h3, h4, strong) { @apply text-neutral-100; }
-    .dark .rich-content a { @apply text-brand-400 hover:text-brand-300; }
-    .dark .rich-content blockquote { @apply border-brand-800 text-neutral-400; }
-    .dark .rich-content code { @apply bg-neutral-800; }
-    .dark .rich-content pre { @apply bg-black; }
-    .dark .rich-content :is(hr, th, td) { @apply border-neutral-700; }
-    .dark .rich-content th { @apply bg-neutral-800 text-neutral-100; }
-    .dark .rich-content figcaption { @apply text-neutral-400; }
-}
-
-/* Giao diện tối cho ô nhập liệu (plugin forms mặc định nền trắng) */
 @layer base {
+    body {
+        @apply bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        letter-spacing: -0.011em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        letter-spacing: -0.022em;
+    }
+
     .dark input:not([type='checkbox'], [type='radio'], [type='file'], [type='range']),
     .dark select,
     .dark textarea {
-        @apply border-neutral-700 bg-neutral-900 text-neutral-100 placeholder:text-neutral-500;
+        @apply border-[#30363d] bg-[#0d1117] text-[#e6edf3] placeholder-[#7d8590] focus:border-[#388bfd] focus:ring-1 focus:ring-[#388bfd];
     }
 
     .dark [type='checkbox']:not(:checked),
     .dark [type='radio']:not(:checked) {
-        @apply border-neutral-600 bg-neutral-900;
+        @apply border-[#30363d] bg-[#161b22];
     }
 
-    .dark { color-scheme: dark; }
+    .dark {
+        color-scheme: dark;
+    }
+}
+
+@layer components {
+    /* Glass Navbar Effect (GitHub Dark Compatible) */
+    .apple-glass-nav {
+        background-color: rgba(255, 255, 255, 0.85);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+    }
+    .dark .apple-glass-nav {
+        background-color: rgba(13, 17, 23, 0.85);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        border-color: #30363d;
+    }
+
+    /* Apple Style Rounded-Rectangle Buttons (Uiverse Ratio) */
+    .btn-apple-primary {
+        @apply inline-flex items-center justify-center rounded-2xl bg-[#019D91] px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-[#008b80] focus:outline-none focus:ring-2 focus:ring-[#019D91]/40 active:scale-[0.98];
+    }
+    .btn-apple-outline {
+        @apply inline-flex items-center justify-center rounded-2xl border border-[#019D91] bg-transparent px-6 py-2.5 text-sm font-semibold text-[#018076] transition duration-200 hover:bg-[#019D91]/10 focus:outline-none focus:ring-2 focus:ring-[#019D91]/40 active:scale-[0.98] dark:text-[#02b3a5] dark:border-[#02b3a5] dark:hover:bg-[#02b3a5]/10;
+    }
+    .btn-apple-secondary {
+        @apply inline-flex items-center justify-center rounded-2xl bg-[#E8E8ED] px-6 py-2.5 text-sm font-medium text-[#1D1D1F] transition duration-200 hover:bg-[#DEDEE3] active:scale-[0.98] dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700;
+    }
+    .btn-apple-dark-pill {
+        @apply inline-flex items-center justify-center rounded-2xl bg-white px-6 py-2.5 text-sm font-semibold text-black transition duration-200 hover:bg-neutral-100 active:scale-[0.98];
+    }
+    .btn-apple-dark-outline {
+        @apply inline-flex items-center justify-center rounded-2xl border border-white/40 bg-transparent px-6 py-2.5 text-sm font-medium text-white transition duration-200 hover:bg-white/10 active:scale-[0.98];
+    }
+
+    /* Circuit Background Pattern from Uiverse.io by Gautammsharma */
+    .circuit-wrapper {
+        min-height: 100%;
+        width: 100%;
+        position: relative;
+        background-color: white;
+    }
+    .dark .circuit-wrapper {
+        background-color: #0d1117;
+    }
+
+    .circuit-background {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 19px,
+                rgba(75, 85, 99, 0.08) 19px,
+                rgba(75, 85, 99, 0.08) 20px,
+                transparent 20px,
+                transparent 39px,
+                rgba(75, 85, 99, 0.08) 39px,
+                rgba(75, 85, 99, 0.08) 40px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 19px,
+                rgba(75, 85, 99, 0.08) 19px,
+                rgba(75, 85, 99, 0.08) 20px,
+                transparent 20px,
+                transparent 39px,
+                rgba(75, 85, 99, 0.08) 39px,
+                rgba(75, 85, 99, 0.08) 40px
+            ),
+            radial-gradient(
+                circle at 20px 20px,
+                rgba(55, 65, 81, 0.12) 2px,
+                transparent 2px
+            ),
+            radial-gradient(
+                circle at 40px 40px,
+                rgba(55, 65, 81, 0.12) 2px,
+                transparent 2px
+            );
+        background-size:
+            40px 40px,
+            40px 40px,
+            40px 40px,
+            40px 40px;
+    }
+
+    .dark .circuit-background {
+        background-image:
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 19px,
+                rgba(255, 255, 255, 0.035) 19px,
+                rgba(255, 255, 255, 0.035) 20px,
+                transparent 20px,
+                transparent 39px,
+                rgba(255, 255, 255, 0.035) 39px,
+                rgba(255, 255, 255, 0.035) 40px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 19px,
+                rgba(255, 255, 255, 0.035) 19px,
+                rgba(255, 255, 255, 0.035) 20px,
+                transparent 20px,
+                transparent 39px,
+                rgba(255, 255, 255, 0.035) 39px,
+                rgba(255, 255, 255, 0.035) 40px
+            ),
+            radial-gradient(
+                circle at 20px 20px,
+                rgba(255, 255, 255, 0.07) 2px,
+                transparent 2px
+            ),
+            radial-gradient(
+                circle at 40px 40px,
+                rgba(255, 255, 255, 0.07) 2px,
+                transparent 2px
+            );
+    }
+
+    /* Rich content */
+    .rich-content { @apply text-[#1D1D1F] leading-relaxed break-words; }
+    .rich-content > * + * { @apply mt-3; }
+    .rich-content h2 { @apply text-xl font-bold text-[#1D1D1F] mt-6 tracking-tight; }
+    .rich-content h3 { @apply text-lg font-bold text-[#1D1D1F] mt-5 tracking-tight; }
+    .rich-content h4 { @apply text-base font-semibold text-[#1D1D1F] mt-4; }
+    .rich-content ul { @apply list-disc pl-6 space-y-1; }
+    .rich-content ol { @apply list-decimal pl-6 space-y-1; }
+    .rich-content a { @apply text-[#0066CC] underline hover:text-[#0077ED] dark:text-[#2997FF]; }
+    .rich-content strong { @apply font-semibold text-[#1D1D1F]; }
+    .rich-content blockquote { @apply border-l-2 border-[#D2D2D7] pl-4 italic text-[#86868B]; }
+    .rich-content code { @apply rounded bg-[#F5F5F7] px-1.5 py-0.5 text-sm; }
+    .rich-content pre { @apply overflow-x-auto rounded-xl bg-black p-4 text-sm text-gray-100; }
+    .rich-content pre code { @apply bg-transparent p-0; }
+    .rich-content hr { @apply border-[#D2D2D7]/50; }
+    .rich-content img { @apply h-auto max-w-full rounded-xl; }
+    .rich-content figure.image { @apply mx-auto; }
+    .rich-content figcaption { @apply mt-2 text-center text-sm text-[#86868B]; }
+    .rich-content figure.table { @apply overflow-x-auto; }
+    .rich-content table { @apply w-full border-collapse text-sm; }
+    .rich-content th,
+    .rich-content td { @apply border border-[#D2D2D7]/60 px-3 py-2 text-left align-top; }
+    .rich-content th { @apply bg-[#F5F5F7] font-semibold text-[#1D1D1F]; }
+    .rich-content iframe { @apply w-full max-w-full rounded-xl; }
+
+    .dark .rich-content { @apply text-neutral-300; }
+    .dark .rich-content :is(h2, h3, h4, strong) { @apply text-white; }
+    .dark .rich-content a { @apply text-[#2997FF] hover:underline; }
+    .dark .rich-content blockquote { @apply border-neutral-700 text-neutral-400; }
+    .dark .rich-content code { @apply bg-neutral-800 text-neutral-200; }
+    .dark .rich-content pre { @apply bg-black; }
+    .dark .rich-content :is(hr, th, td) { @apply border-neutral-800; }
+    .dark .rich-content th { @apply bg-neutral-900 text-white; }
+    .dark .rich-content figcaption { @apply text-neutral-400; }
 }

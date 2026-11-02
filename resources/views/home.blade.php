@@ -3,7 +3,6 @@
 @section('title', 'Trang chủ')
 
 @php
-    // Tên icon lưu ở cột categories.icon (VD seeder: 'code', 'chart-bar', 'palette') → path SVG Heroicons
     $categoryIcons = [
         'code' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',
         'chart-bar' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
@@ -14,205 +13,334 @@
     ];
 
     $heroStats = [
-        ['value' => $stats['total_courses'], 'label' => 'Khóa học', 'icon' => 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z'],
-        ['value' => $stats['total_students'], 'label' => 'Học viên', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
-        ['value' => $stats['total_instructors'], 'label' => 'Giảng viên', 'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
-        ['value' => $stats['total_enrollments'], 'label' => 'Lượt ghi danh', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
+        ['value' => $stats['total_courses'], 'label' => 'Khóa học tuyển chọn'],
+        ['value' => $stats['total_students'], 'label' => 'Học viên tin tưởng'],
+        ['value' => $stats['total_instructors'], 'label' => 'Giảng viên chuyên môn'],
+        ['value' => $stats['total_enrollments'], 'label' => 'Lượt ghi danh học tập'],
     ];
-
-    $quickLinks = [
-        ['label' => 'Khóa học', 'text' => 'Khám phá thư viện', 'url' => route('courses.index'), 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
-        ['label' => 'Miễn phí', 'text' => 'Học không tốn phí', 'url' => route('courses.index', ['price' => 'free']), 'icon' => 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7'],
-    ];
-    if (Auth::check()) {
-        $quickLinks[] = Route::has('my-courses')
-            ? ['label' => 'Góc học tập', 'text' => 'Tiến độ của bạn', 'url' => route('my-courses'), 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4']
-            : ['label' => 'Bảng điều khiển', 'text' => 'Tiếp tục học tập', 'url' => route(Auth::user()->dashboardRouteName()), 'icon' => 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'];
-        $quickLinks[] = ['label' => 'Hồ sơ', 'text' => 'Cập nhật thông tin', 'url' => route('profile.edit'), 'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'];
-    } else {
-        $quickLinks[] = ['label' => 'Đăng nhập', 'text' => 'Vào tài khoản', 'url' => route('login'), 'icon' => 'M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1'];
-        $quickLinks[] = ['label' => 'Đăng ký', 'text' => 'Tạo tài khoản mới', 'url' => route('register'), 'icon' => 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z'];
-    }
 @endphp
 
 @section('content')
 
-{{-- ===== HERO ===== --}}
-<section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white dark:from-brand-950 dark:via-brand-900 dark:to-neutral-950">
-    <div class="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></div>
-    <div class="absolute -bottom-40 left-1/3 h-96 w-96 rounded-full bg-brand-300/20 blur-3xl" aria-hidden="true"></div>
+{{-- ======================================================== --}}
+{{-- 1. HERO SECTION (Circuit Background Pattern) --}}
+{{-- ======================================================== --}}
+<section class="circuit-wrapper relative pt-16 pb-20 sm:pt-24 sm:pb-28 text-center transition-colors overflow-hidden">
+    <div class="circuit-background"></div>
+    <div class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8">
+        {{-- Headline --}}
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.08]">
+            Nâng tầm tri thức.<br>Khởi đầu bứt phá.
+        </h1>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20 sm:pt-20 sm:pb-24">
-        <div class="max-w-2xl">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                Nền tảng học trực tuyến cho sinh viên
-            </span>
-            <h1 class="mt-5 text-4xl sm:text-5xl font-bold leading-tight tracking-tight">
-                Nâng tầm kiến thức<br>cùng <span class="text-amber-300">EduLearn</span>
-            </h1>
-            <p class="mt-5 text-base sm:text-lg leading-relaxed text-brand-50/90">
-                Học lập trình, dữ liệu, thiết kế và kỹ năng mềm với lộ trình rõ ràng, bài giảng video và theo dõi tiến độ từng bài.
-            </p>
+        {{-- Subheadline --}}
+        <p class="mt-5 text-lg sm:text-2xl text-[#86868B] dark:text-[#8b949e] font-normal max-w-3xl mx-auto leading-relaxed">
+            Học lập trình, dữ liệu và công nghệ với lộ trình rõ ràng, theo sát tiến độ cùng các chuyên gia hàng đầu.
+        </p>
 
-            <form action="{{ route('courses.index') }}" method="GET" class="mt-8 flex items-center gap-2 rounded-xl bg-white p-2 shadow-xl shadow-brand-900/20 dark:bg-neutral-900">
-                <input type="text" name="keyword" placeholder="Bạn muốn học gì hôm nay?"
-                       class="flex-1 min-w-0 border-0 bg-transparent px-3 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-0 dark:!bg-transparent dark:text-neutral-100">
-                <button type="submit" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-800">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Tìm khóa học
+        {{-- Centered Search Input Pill (with GitHub Dark border & surface) --}}
+        <div class="mt-10 max-w-2xl mx-auto">
+            <form action="{{ route('courses.index') }}" method="GET" class="relative">
+                <input type="text" name="keyword" placeholder="Tìm kiếm công nghệ, kỹ năng, khóa học..."
+                       class="w-full h-14 pl-14 pr-36 text-sm sm:text-base bg-[#F5F5F7] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#f0f6fc] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-[#E5E5EA] dark:border-[#30363d] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#019D91] dark:focus:border-[#02b3a5] transition">
+                <span class="absolute left-5 top-4 text-[#86868B] dark:text-[#7d8590]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </span>
+                <button type="submit" class="absolute right-2 top-2 bottom-2 px-6 bg-[#019D91] hover:bg-[#008b80] text-white text-xs sm:text-sm font-semibold rounded-xl transition shadow-sm active:scale-[0.98]">
+                    Tìm kiếm
                 </button>
             </form>
         </div>
 
-        <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Symmetrical Stats Rail (Clean Open Typography: Big Numbers & Small Labels, No Boxes) --}}
+        <div class="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-4xl mx-auto">
             @foreach($heroStats as $stat)
-                <div class="rounded-2xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur-sm">
-                    <svg class="w-7 h-7 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ $stat['icon'] }}"/></svg>
-                    <p class="mt-3 text-3xl font-bold">{{ number_format($stat['value']) }}+</p>
-                    <p class="mt-0.5 text-sm text-brand-50/90">{{ $stat['label'] }}</p>
+                <div class="text-center">
+                    <p class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc] leading-none">
+                        {{ number_format($stat['value']) }}+
+                    </p>
+                    <p class="mt-3 text-sm sm:text-base font-normal text-[#86868B] dark:text-[#8b949e]">
+                        {{ $stat['label'] }}
+                    </p>
                 </div>
             @endforeach
         </div>
     </div>
 </section>
 
-{{-- ===== Ô TRUY CẬP NHANH (đè lên mép hero) ===== --}}
-<section class="relative -mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        @foreach($quickLinks as $link)
-            <a href="{{ $link['url'] }}"
-               class="group flex flex-col items-center rounded-xl border-b-2 border-transparent bg-white p-5 text-center shadow-md shadow-slate-200/70 transition hover:-translate-y-1 hover:border-brand-600 dark:bg-neutral-900 dark:shadow-black/30 dark:hover:border-brand-400">
-                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white dark:bg-brand-500/15 dark:text-brand-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ $link['icon'] }}"/></svg>
-                </span>
-                <span class="mt-3 font-semibold text-gray-900 dark:text-neutral-100">{{ $link['label'] }}</span>
-                <span class="mt-0.5 text-xs text-gray-500 dark:text-neutral-400">{{ $link['text'] }}</span>
-            </a>
-        @endforeach
-    </div>
-</section>
-
-{{-- ===== BANNER (Admin quản lý) ===== --}}
+{{-- ======================================================== --}}
+{{-- 2. BILLBOARD BANNER (Full Width Edge-to-Edge) --}}
+{{-- ======================================================== --}}
 @if($banners->isNotEmpty())
-<section class="mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="relative overflow-hidden rounded-2xl bg-brand-50 dark:bg-neutral-900" x-data="{ current: 0, total: {{ $banners->count() }} }" x-init="setInterval(() => { current = (current + 1) % total }, 5000)">
-        <div class="relative h-56 md:h-80">
+<section class="w-full bg-[#161b22] border-y border-[#30363d] text-white py-16 sm:py-24 text-center transition-colors" x-data="{ current: 0, total: {{ $banners->count() }} }" x-init="setInterval(() => { current = (current + 1) % total }, 6000)">
+    <div class="w-full max-w-5xl mx-auto px-4 sm:px-8">
+        <div class="relative min-h-[180px] flex items-center justify-center">
             @foreach($banners as $index => $banner)
-            <div class="absolute inset-0 transition-opacity duration-700"
-                 x-show="current === {{ $index }}"
-                 x-cloak>
-                @php
-                    $hasImage = $banner->image_path && file_exists(public_path('storage/' . $banner->image_path));
-                @endphp
-                @if($hasImage)
-                    <img src="{{ asset('storage/' . $banner->image_path) }}"
-                         alt="{{ $banner->title }}"
-                         class="w-full h-full object-cover">
-                @else
-                    <div class="w-full h-full bg-gradient-to-r from-brand-800 to-brand-600 flex items-center px-8 sm:px-12 relative overflow-hidden dark:from-brand-950 dark:to-brand-800">
-                        <div class="absolute -right-16 -top-16 h-72 w-72 rounded-full bg-white/10 blur-2xl" aria-hidden="true"></div>
-                        <div class="relative max-w-2xl text-white">
-                            <span class="inline-block px-3 py-1 bg-amber-300 text-brand-950 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider">Thông báo & Khóa học mới</span>
-                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight">{{ $banner->title }}</h2>
-                            @if($banner->link_url)
-                                <a href="{{ url($banner->link_url) }}" class="inline-block bg-white text-brand-800 font-semibold px-5 py-2.5 rounded-lg hover:bg-brand-50 transition">
-                                    Khám phá ngay
-                                </a>
-                            @endif
+                <div class="w-full transition-opacity duration-500"
+                     x-show="current === {{ $index }}"
+                     x-cloak>
+                    <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 max-w-4xl mx-auto leading-tight">
+                        {{ $banner->title }}
+                    </h2>
+                    <p class="text-base sm:text-xl text-[#8b949e] max-w-2xl mx-auto mb-8 leading-relaxed">
+                        Khám phá khóa học chuyên sâu được cập nhật liên tục theo chuẩn doanh nghiệp.
+                    </p>
+                    @if($banner->link_url)
+                        <div class="flex items-center justify-center">
+                            <a href="{{ url($banner->link_url) }}" class="inline-flex items-center justify-center rounded-full bg-white text-[#161b22] hover:bg-neutral-100 px-8 py-3.5 text-sm font-semibold transition active:scale-[0.98] shadow-lg">
+                                Khám phá chương trình
+                            </a>
                         </div>
-                    </div>
-                @endif
-            </div>
+                    @endif
+                </div>
             @endforeach
         </div>
 
-        {{-- Dots --}}
+        {{-- Dots Indicator --}}
         @if($banners->count() > 1)
-        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-            @foreach($banners as $index => $banner)
-            <button type="button" @click="current = {{ $index }}" aria-label="Banner {{ $index + 1 }}"
-                    class="w-2.5 h-2.5 rounded-full transition"
-                    :class="current === {{ $index }} ? 'bg-white' : 'bg-white/40'">
-            </button>
-            @endforeach
-        </div>
+            <div class="mt-8 flex justify-center space-x-2.5">
+                @foreach($banners as $index => $banner)
+                    <button type="button" @click="current = {{ $index }}" aria-label="Banner {{ $index + 1 }}"
+                            class="h-2.5 rounded-full transition-all duration-300"
+                            :class="current === {{ $index }} ? 'bg-white w-8' : 'bg-white/30 w-2.5'">
+                    </button>
+                @endforeach
+            </div>
         @endif
     </div>
 </section>
 @endif
 
-{{-- ===== DANH MỤC NỔI BẬT ===== --}}
+{{-- ======================================================== --}}
+{{-- 3. DANH MỤC NỔI BẬT --}}
+{{-- ======================================================== --}}
 @if($featuredCategories->isNotEmpty())
-<section class="mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-end justify-between gap-4 mb-6">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-neutral-100">Danh mục nổi bật</h2>
-            <p class="mt-1 text-gray-500 dark:text-neutral-400">Chọn lĩnh vực bạn quan tâm</p>
+<section class="bg-white dark:bg-[#0d1117] py-16 sm:py-20 transition-colors">
+    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
+        <div class="mb-8">
+            <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc]">
+                Danh mục chuyên ngành
+            </h2>
         </div>
-        <a href="{{ route('courses.index') }}" class="shrink-0 text-sm font-semibold text-brand-700 dark:text-brand-400 hover:text-brand-900 dark:hover:text-brand-300 transition">
-            Xem tất cả →
-        </a>
-    </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        @foreach($featuredCategories as $category)
-        @php($iconPath = $categoryIcons[$category->icon] ?? null)
-        <a href="{{ route('courses.index', ['category' => $category->id]) }}"
-           class="group flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl hover:border-brand-600 hover:shadow-md transition dark:hover:border-brand-500">
-            @if($category->icon && ! $iconPath && ! preg_match('/^[a-z0-9-]+$/', $category->icon))
-                {{-- Icon dạng emoji thì hiển thị trực tiếp --}}
-                <div class="w-11 h-11 shrink-0 flex items-center justify-center text-2xl">{{ $category->icon }}</div>
-            @else
-                <div class="w-11 h-11 shrink-0 bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 rounded-lg flex items-center justify-center group-hover:bg-brand-700 group-hover:text-white transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPath ?? $categoryIcons['default'] }}"/>
-                    </svg>
-                </div>
-            @endif
-            <div class="min-w-0">
-                <p class="font-semibold text-gray-800 dark:text-neutral-100 group-hover:text-brand-800 dark:group-hover:text-brand-300 transition text-sm truncate">{{ $category->name }}</p>
-                <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">{{ $category->courses_count }} khóa học</p>
-            </div>
-        </a>
-        @endforeach
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+            @foreach($featuredCategories as $category)
+                @php($iconPath = $categoryIcons[$category->icon] ?? null)
+                <a href="{{ route('courses.index', ['category' => $category->id]) }}"
+                   class="group p-6 bg-[#F5F5F7] dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] rounded-3xl transition duration-200 hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] dark:hover:border-[#8b949e]/50 flex flex-col justify-between">
+                    <div class="w-12 h-12 rounded-full bg-white dark:bg-[#0d1117] text-[#1D1D1F] dark:text-[#e6edf3] flex items-center justify-center mb-5 border border-black/5 dark:border-[#30363d] shadow-sm">
+                        @if($category->icon && ! $iconPath && ! preg_match('/^[a-z0-9-]+$/', $category->icon))
+                            <span class="text-xl">{{ $category->icon }}</span>
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ $iconPath ?? $categoryIcons['default'] }}"/>
+                            </svg>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="font-semibold text-base sm:text-lg text-[#1D1D1F] dark:text-[#f0f6fc] group-hover:text-[#019D91] dark:group-hover:text-[#02b3a5] transition-colors truncate">
+                            {{ $category->name }}
+                        </p>
+                        <p class="text-xs sm:text-sm text-[#86868B] dark:text-[#8b949e] mt-1">
+                            {{ $category->courses_count }} khóa học
+                        </p>
+                    </div>
+                </a>
+            @endforeach
+        </div>
     </div>
 </section>
 @endif
 
-{{-- ===== KHÓA HỌC NỔI BẬT ===== --}}
+{{-- ======================================================== --}}
+{{-- 4. KHÓA HỌC NỔI BẬT --}}
+{{-- ======================================================== --}}
 @if($featuredCourses->isNotEmpty())
-<section class="mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-end justify-between gap-4 mb-6">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-neutral-100">Khóa học được yêu thích</h2>
-            <p class="mt-1 text-gray-500 dark:text-neutral-400">Nhiều học viên lựa chọn nhất</p>
+<section class="bg-white dark:bg-[#0d1117] py-16 sm:py-20 transition-colors">
+    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
+            <div>
+                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc]">
+                    Khóa học được lựa chọn nhiều nhất
+                </h2>
+            </div>
+            <a href="{{ route('courses.index') }}" class="text-sm font-medium text-[#019D91] dark:text-[#02b3a5] hover:underline flex items-center gap-1">
+                Xem toàn bộ khóa học <span>&rsaquo;</span>
+            </a>
         </div>
-        <a href="{{ route('courses.index') }}" class="shrink-0 text-sm font-semibold text-brand-700 dark:text-brand-400 hover:text-brand-900 dark:hover:text-brand-300 transition">
-            Xem tất cả →
-        </a>
-    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        @foreach($featuredCourses as $course)
-        @include('partials.course-card', ['course' => $course])
-        @endforeach
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
+            @foreach($featuredCourses as $course)
+                @include('partials.course-card', ['course' => $course])
+            @endforeach
+        </div>
     </div>
 </section>
 @endif
 
-{{-- ===== KÊU GỌI HÀNH ĐỘNG ===== --}}
-<section class="mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-brand-700 to-brand-500 px-6 py-10 text-center text-white sm:px-12 dark:from-brand-900 dark:to-brand-700">
-        <div class="absolute -left-16 -bottom-20 h-64 w-64 rounded-full bg-white/10 blur-2xl" aria-hidden="true"></div>
-        <h2 class="relative text-2xl sm:text-3xl font-bold">Sẵn sàng bắt đầu hành trình học tập?</h2>
-        <p class="relative mx-auto mt-3 max-w-xl text-brand-50/90">Hàng chục khóa học chất lượng đang chờ bạn. Học theo tốc độ của riêng bạn, mọi lúc, mọi nơi.</p>
-        <div class="relative mt-6 flex flex-wrap justify-center gap-3">
-            @guest
-                <a href="{{ route('register') }}" class="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-brand-800 transition hover:bg-brand-50">Đăng ký miễn phí</a>
-            @endguest
-            <a href="{{ route('courses.index') }}" class="rounded-lg bg-white/15 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/30 transition hover:bg-white/25">Xem khóa học</a>
+{{-- ======================================================== --}}
+{{-- 5. CALL TO ACTION (Floating Tech Icons - Natural Proportions & Centered Container) --}}
+{{-- ======================================================== --}}
+<section class="relative bg-white dark:bg-[#0d1117] py-16 sm:py-24 text-center transition-colors overflow-hidden">
+    {{-- Centered Canvas (Chứa text và các icon bao quanh tập trung, hai bên mép có khoảng trống tự nhiên như ảnh mẫu) --}}
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 min-h-[440px] flex items-center justify-center">
+
+        {{-- ================= VÙNG ICON TĨNH PHÂN BỔ TO NHỎ ================= --}}
+        <div class="pointer-events-none select-none" aria-hidden="true">
+
+            {{-- -------- CỤM BÊN TRÁI -------- --}}
+            {{-- 1. Google (Vừa ~ 36px, nude icon đa sắc như ảnh mẫu góc trên trái) --}}
+            <div class="hidden sm:block absolute top-2 left-[3%] lg:left-[5%]">
+                <svg class="w-9 h-9" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+            </div>
+
+            {{-- 2. React (Vừa ~ 38px, nude cyan) --}}
+            <div class="hidden md:block absolute top-1 left-[25%] lg:left-[26%]">
+                <svg class="w-10 h-10 text-[#00D8FF]" viewBox="-11.5 -10.23174 23 20.46348" fill="none" stroke="currentColor" stroke-width="1.3">
+                    <circle cx="0" cy="0" r="2.05" fill="#00D8FF"/>
+                    <ellipse rx="11" ry="4.2"/>
+                    <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+                    <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+                </svg>
+            </div>
+
+            {{-- 3. PHP (Vừa ~ 40px x 24px) --}}
+            <div class="hidden sm:block absolute top-16 left-[14%] lg:left-[15%]">
+                <svg class="w-11 h-6" viewBox="0 0 128 128">
+                    <ellipse cx="64" cy="64" rx="60" ry="34" fill="#777BB4"/>
+                    <text x="64" y="74" font-size="34" font-family="system-ui, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle" font-style="italic">php</text>
+                </svg>
+            </div>
+
+            {{-- 4. Figma (TO NỔI BẬT ~ 52px, app icon bo góc y chang mẫu) --}}
+            <div class="hidden sm:flex absolute top-[40%] left-[2%] lg:left-[3%] w-13 h-13 rounded-2xl bg-black dark:bg-[#161b22] border border-black/10 dark:border-[#30363d] items-center justify-center shadow-lg p-2.5">
+                <svg class="w-8 h-8" viewBox="0 0 38 57" fill="none">
+                    <path d="M19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5Z" fill="#1ABCFE"/>
+                    <path d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z" fill="#0ACF83"/>
+                    <path d="M19 0V19H28.5C33.7467 19 38 14.7467 38 9.5C38 4.25329 33.7467 0 28.5 0H19Z" fill="#FF7262"/>
+                    <path d="M0 9.5C0 14.7467 4.25329 19 9.5 19H19V0H9.5C4.25329 0 0 4.25329 0 9.5Z" fill="#F24E1E"/>
+                    <path d="M0 28.5C0 33.7467 4.25329 38 9.5 38H19V19H9.5C4.25329 19 0 23.2533 0 28.5Z" fill="#A259FF"/>
+                </svg>
+            </div>
+
+            {{-- 5. JavaScript (Nhỏ vừa ~ 30px, dịch xa ra khỏi khối chữ) --}}
+            <div class="hidden md:flex absolute top-[52%] left-[10%] lg:left-[12%] w-8 h-8 rounded-lg bg-[#F7DF1E] text-black font-black text-xs items-center justify-center shadow-sm">
+                JS
+            </div>
+
+            {{-- 6. HTML5 (Nhỏ ~ 24px) --}}
+            <div class="hidden lg:block absolute bottom-14 left-[6%]">
+                <svg class="w-6 h-6" viewBox="0 0 512 512">
+                    <path fill="#E34F26" d="M71 460L30 0h452l-41 460-185 52z"/>
+                    <path fill="#EF652A" d="M256 472l149-41 35-391H256v432z"/>
+                    <path fill="#EBEBEB" d="M256 208h-68l-5-53h73V97H114l14 163h128v-52zm0 147l-63-17-4-45h-53l8 94 112 31v-63z"/>
+                    <path fill="#FFF" d="M256 208v-53h68l6-58H256V44h142l-13 147H256v17zm0 147v63l112-31 16-177H256v52h64l-6 76-58 17z"/>
+                </svg>
+            </div>
+
+            {{-- 7. Python (Vừa ~ 34px) --}}
+            <div class="hidden sm:block absolute bottom-4 left-[14%] lg:left-[16%]">
+                <svg class="w-8 h-8" viewBox="0 0 128 128">
+                    <path fill="#3776AB" d="M63.7 3.5c-15.5 0-25 6.7-25 19.8v14.5h25.4v3.6H27.9C13 41.4 3.5 50.8 3.5 65.7c0 14.8 8.4 24.3 22.8 24.3h8.3v-11.7c0-8.7 7.7-16.1 16.4-16.1h25.3c7.2 0 13.1-6 13.1-13.3V23.3c0-12.8-10.4-19.8-25.7-19.8zm-13.8 7.3a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4z"/>
+                    <path fill="#FFD43B" d="M64.3 124.5c15.5 0 25-6.7 25-19.8V90.2H63.9v-3.6h36.2c14.9 0 24.4-9.4 24.4-24.3 0-14.8-8.4-24.3-22.8-24.3h-8.3v11.7c0 8.7-7.7 16.1-16.4 16.1H51.7c-7.2 0-13.1 6-13.1 13.3v25.6c0 12.8 10.4 19.8 25.7 19.8zm13.8-7.3a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4z"/>
+                </svg>
+            </div>
+
+            {{-- 8. Git (Nhỏ ~ 24px, hình thoi cam) --}}
+            <div class="hidden md:block absolute bottom-8 left-[27%]">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="#F05032">
+                    <path d="M21.62 11.11l-8.73-8.73a1.76 1.76 0 00-2.48 0L8.6 4.19l3.14 3.14a2.09 2.09 0 012.37 2.37l3.03 3.03a2.09 2.09 0 011.66 2.45 2.1 2.1 0 01-2.44-1.67l-2.82-2.82v5.33a2.12 2.12 0 11-1.75 0V10.4a2.11 2.11 0 01-1.15-1.84 2.1 2.1 0 01.37-1.18L7.76 4.23 2.38 9.61a1.76 1.76 0 000 2.48l8.73 8.73a1.76 1.76 0 002.48 0l8.03-8.03a1.76 1.76 0 000-2.48z"/>
+                </svg>
+            </div>
+
+            {{-- -------- CỤM BÊN PHẢI -------- --}}
+            {{-- 9. YouTube (TO NỔI BẬT ~ 46px x 32px, nút Play đỏ) --}}
+            <div class="hidden sm:block absolute top-2 right-[20%] lg:right-[22%]">
+                <svg class="w-12 h-8" viewBox="0 0 24 24">
+                    <path fill="#FF0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
+                    <path fill="#FFFFFF" d="m9.545 15.568 6.273-3.568-6.273-3.568z"/>
+                </svg>
+            </div>
+
+            {{-- 10. Tailwind CSS (Nhỏ vừa ~ 30px, sóng cyan) --}}
+            <div class="hidden md:block absolute top-2 right-[4%] lg:right-[6%]">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#38BDF8">
+                    <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/>
+                </svg>
+            </div>
+
+            {{-- 11. Laravel (Vừa ~ 36px, khối 3D đỏ) --}}
+            <div class="hidden sm:block absolute top-16 right-[10%] lg:right-[12%]">
+                <svg class="w-9 h-9" viewBox="0 0 24 24" fill="#FF2D20">
+                    <path d="M8.27 11.23L2.64 8.01a.75.75 0 010-1.3L12.07.72a.75.75 0 01.76 0l9.43 5.99a.75.75 0 010 1.3l-5.63 3.22 5.63 3.22a.75.75 0 010 1.3l-9.43 5.99a.75.75 0 01-.76 0L2.64 15.75a.75.75 0 010-1.3l5.63-3.22zm3.73-8.8L4.69 7.36l3.58 2.05 7.31-4.17-3.58-2.81zm-7.31 12.35l7.31 4.65 7.31-4.65-3.58-2.05-7.31 4.17-3.73-2.12zm15.42-7.42l-3.73-2.13-7.31 4.17 3.58 2.05 7.46-4.09z"/>
+                </svg>
+            </div>
+
+            {{-- 12. VS Code (TO NỔI BẬT ~ 52px, app icon xanh bo góc như Ae trong mẫu) --}}
+            <div class="hidden sm:flex absolute top-[38%] right-[2%] lg:right-[3%] w-13 h-13 rounded-2xl bg-[#007ACC] items-center justify-center shadow-lg p-2.5">
+                <svg class="w-8 h-8 fill-white" viewBox="0 0 24 24">
+                    <path d="M17.472 2.012a1.488 1.488 0 00-.737.199L9.04 7.625l-4.49-3.414a.994.994 0 00-1.42.348l-1.002 1.62a1 1 0 00.273 1.348l3.961 3.01-3.96 3.01a.999.999 0 00-.274 1.349l1.002 1.62a.996.996 0 001.42.348l4.49-3.414 7.695 5.414a1.496 1.496 0 001.597.108c.524-.298.848-.857.848-1.46V3.58c0-.603-.324-1.162-.848-1.46a1.47 1.47 0 00-.86-.108zM17.2 6.555v10.89l-5.698-4.008 5.698-6.882z"/>
+                </svg>
+            </div>
+
+            {{-- 13. GitHub (Vừa ~ 38px, dịch xa ra khỏi khối chữ) --}}
+            <div class="hidden md:flex absolute top-[52%] right-[10%] lg:right-[12%] w-10 h-10 rounded-xl bg-[#181717] dark:bg-[#161b22] text-white items-center justify-center shadow-md border border-black/10 dark:border-[#30363d]">
+                <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                </svg>
+            </div>
+
+            {{-- 14. CSS3 (Nhỏ ~ 24px) --}}
+            <div class="hidden lg:block absolute bottom-14 right-[15%]">
+                <svg class="w-6 h-6" viewBox="0 0 512 512">
+                    <path fill="#1572B6" d="M71 460L30 0h452l-41 460-185 52z"/>
+                    <path fill="#33A9DC" d="M256 472l149-41 35-391H256v432z"/>
+                    <path fill="#EBEBEB" d="M256 208h-68l-5-53h73V97H114l14 163h128v-52zm0 147l-63-17-4-45h-53l8 94 112 31v-63z"/>
+                    <path fill="#FFF" d="M256 97h136l-5 58H256v53h68l-7 76-61 17v63l112-31 16-177h-128V97z"/>
+                </svg>
+            </div>
+
+            {{-- 15. Docker (Vừa ~ 36px) --}}
+            <div class="hidden sm:block absolute bottom-4 right-[24%] lg:right-[26%]">
+                <svg class="w-9 h-9" viewBox="0 0 24 24" fill="#2496ED">
+                    <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.186.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186m-2.954 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.145a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186m5.884 2.714h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186H8.1a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186H5.145a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.432-.23-.07-.47-.119-.714-.146-.607-.068-1.57-.02-2.421.654l-.454.36.27.525c.89 1.733.642 3.864-.672 5.342-.906.993-2.193 1.543-3.528 1.507H1.546a.855.855 0 00-.853.856c-.005 1.516.48 2.996 1.382 4.218 1.765 2.378 4.607 3.655 8.448 3.795 5.864.213 11.233-2.073 13.064-5.918.064-.132.146-.358.232-.619.68-2.062 1.144-4.82-.056-8.788"/>
+                </svg>
+            </div>
+
+            {{-- 16. TypeScript (Nhỏ ~ 24px) --}}
+            <div class="hidden sm:flex absolute bottom-6 right-[5%] lg:right-[7%] w-6 h-6 rounded-md bg-[#3178C6] text-white font-black text-[10px] items-center justify-center shadow-sm">
+                TS
+            </div>
         </div>
+
+        {{-- ================= KHỐI NỘI DUNG CHÍNH (Chính giữa) ================= --}}
+        <div class="relative z-10 max-w-xl mx-auto px-4 py-8">
+            <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.15]">
+                Bắt đầu hành trình học tập ngay hôm nay.
+            </h2>
+            <p class="mt-4 text-base sm:text-lg text-[#86868B] dark:text-[#8b949e] max-w-md sm:max-w-lg mx-auto leading-relaxed">
+                Hàng chục khóa học chất lượng cao đang chờ đón bạn. Đăng ký dễ dàng, học mọi lúc mọi nơi.
+            </p>
+            <div class="mt-8 flex justify-center">
+                @guest
+                    <a href="{{ route('register') }}" class="btn-apple-primary px-9 py-3.5 text-base font-medium">
+                        Tạo tài khoản miễn phí
+                    </a>
+                @else
+                    <a href="{{ route('courses.index') }}" class="btn-apple-primary px-9 py-3.5 text-base font-medium">
+                        Khám phá thêm khóa học
+                    </a>
+                @endguest
+            </div>
+        </div>
+
     </div>
 </section>
 
