@@ -1,59 +1,82 @@
 <x-guest-layout title="Đăng nhập">
     <div class="mb-6">
-        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">Chào mừng bạn trở lại</p>
-        <h2 class="mt-2 text-2xl font-bold tracking-tight text-neutral-950 dark:text-neutral-100">Đăng nhập</h2>
-        <p class="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">Đăng nhập để tiếp tục hành trình học tập của bạn.</p>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 uppercase">
+            ĐĂNG NHẬP TÀI KHOẢN
+        </h2>
     </div>
 
-    <x-auth-session-status class="mb-4 rounded-md bg-brand-50 dark:bg-brand-500/10 px-4 py-3 text-sm font-medium text-brand-800 dark:text-brand-300" :status="session('status')" />
+    <x-auth-session-status class="mb-4 rounded-lg bg-[#019D91]/10 px-4 py-2.5 text-xs text-[#018076]" :status="session('status')" />
 
     @if (session('error'))
-        <p class="mb-4 rounded-md bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm font-medium text-red-700 dark:text-red-400">{{ session('error') }}</p>
+        <p class="mb-4 rounded-lg bg-rose-50 px-4 py-2.5 text-xs text-rose-600">{{ session('error') }}</p>
     @endif
 
-    <a href="{{ route('auth.google') }}" class="inline-flex w-full items-center justify-center gap-3 rounded-md border border-neutral-300 dark:border-neutral-700 px-5 py-3 text-sm font-medium text-neutral-900 dark:text-neutral-100 shadow-sm transition hover:bg-neutral-50 dark:hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2">
+    {{-- Google OAuth Button --}}
+    <a href="{{ route('auth.google') }}" class="w-full h-12 flex items-center justify-center gap-3 rounded-2xl border border-neutral-300 bg-white px-4 text-sm font-semibold text-neutral-800 hover:bg-neutral-50 shadow-sm transition active:scale-[0.99]">
         <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="#4285F4" d="M21.35 12.23c0-.72-.06-1.42-.18-2.09H12v3.96h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.7 2.91-4.2 2.91-7.26Z" />
             <path fill="#34A853" d="M12 21.67c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.93-3.31.93-2.54 0-4.7-1.72-5.47-4.03H3.28v2.53A9.74 9.74 0 0 0 12 21.67Z" />
             <path fill="#FBBC05" d="M6.53 13.76a5.86 5.86 0 0 1 0-3.52V7.71H3.28a9.75 9.75 0 0 0 0 8.58l3.25-2.53Z" />
             <path fill="#EA4335" d="M12 6.21c1.43 0 2.72.49 3.74 1.46l2.8-2.8C16.84 3.3 14.63 2.33 12 2.33a9.74 9.74 0 0 0-8.72 5.38l3.25 2.53C7.3 7.93 9.46 6.21 12 6.21Z" />
         </svg>
-        Tiếp tục với Google
+        <span>Đăng nhập với Google</span>
     </a>
 
-    <div class="my-5 flex items-center gap-3 text-xs font-medium text-neutral-500 dark:text-neutral-400">
-        <span class="h-px flex-1 bg-neutral-200 dark:bg-neutral-700"></span>
-        <span>HOẶC</span>
-        <span class="h-px flex-1 bg-neutral-200 dark:bg-neutral-700"></span>
+    {{-- Divider --}}
+    <div class="my-6 flex items-center gap-3">
+        <span class="h-px flex-1 bg-neutral-300"></span>
+        <span class="text-xs font-semibold text-neutral-500 uppercase tracking-wider">HOẶC</span>
+        <span class="h-px flex-1 bg-neutral-300"></span>
     </div>
 
+    {{-- Form --}}
     <form method="POST" action="{{ route('login') }}" class="space-y-4">
         @csrf
 
+        {{-- Email --}}
         <div>
-            <x-input-label for="email" value="Địa chỉ email" class="text-sm font-medium text-neutral-800 dark:text-neutral-100" />
-            <x-text-input id="email" class="mt-2 block w-full border-neutral-300 dark:border-neutral-700 px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-brand-700 focus:ring-brand-700/20" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Nhập email của bạn" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <label for="email" class="block text-sm font-semibold text-neutral-800 mb-1.5">Địa chỉ email</label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+                   placeholder="name@example.com"
+                   class="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition">
+            <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs" />
         </div>
 
+        {{-- Password --}}
         <div>
-            <div class="flex items-center justify-between gap-3">
-                <x-input-label for="password" value="Mật khẩu" class="text-sm font-medium text-neutral-800 dark:text-neutral-100" />
-                @if (Route::has('password.request'))
-                    <a class="text-xs font-medium text-neutral-700 dark:text-neutral-200 transition hover:text-brand-700 dark:hover:text-brand-300" href="{{ route('password.request') }}">Quên mật khẩu?</a>
-                @endif
-            </div>
-            <x-text-input id="password" class="mt-2 block w-full border-neutral-300 dark:border-neutral-700 px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-brand-700 focus:ring-brand-700/20" type="password" name="password" required autocomplete="current-password" placeholder="Nhập mật khẩu" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <label for="password" class="block text-sm font-semibold text-neutral-800 mb-1.5">Mật khẩu</label>
+            <input id="password" type="password" name="password" required autocomplete="current-password"
+                   placeholder="••••••••"
+                   class="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition">
+            <p class="mt-1.5 text-[10px] text-neutral-400 font-medium tracking-wide uppercase leading-normal">
+                MẬT KHẨU PHẢI CÓ TỐI THIỂU 8 KÝ TỰ BAO GỒM CHỮ SỐ VÀ CHỮ CÁI.
+            </p>
+            <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs" />
         </div>
 
-        <label for="remember_me" class="inline-flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
-            <input id="remember_me" type="checkbox" class="rounded border-neutral-300 dark:border-neutral-700 text-brand-700 dark:text-brand-400 shadow-none focus:ring-brand-700" name="remember">
-            <span>Ghi nhớ đăng nhập</span>
-        </label>
+        {{-- Remember me & Forgot Password --}}
+        <div class="flex items-center justify-between pt-1">
+            <label for="remember_me" class="inline-flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
+                <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded-md border-neutral-300 text-[#019D91] focus:ring-[#019D91]">
+                <span>Ghi nhớ đăng nhập</span>
+            </label>
 
-        <button type="submit" class="inline-flex w-full items-center justify-center rounded-md bg-brand-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2">
+            @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" class="text-sm font-medium text-[#019D91] hover:underline">
+                    Quên mật khẩu?
+                </a>
+            @endif
+        </div>
+
+        {{-- Submit Button (Teal #019D91, Rounded-2xl Ratio) --}}
+        <button type="submit" class="w-full h-12 mt-4 rounded-2xl bg-[#019D91] hover:bg-[#008b80] text-white text-base font-semibold shadow-sm transition active:scale-[0.99] flex items-center justify-center">
             Đăng nhập
         </button>
+
+        {{-- Legal Disclaimer --}}
+        <p class="pt-3 text-center text-xs text-neutral-700 leading-relaxed font-normal">
+            Bằng cách tạo tài khoản, bạn đồng ý với <a href="#" class="text-red-600 font-semibold hover:underline">Điều khoản Dịch vụ</a>.<br>
+            Để biết thêm thông tin về cách bảo mật của chúng tôi, hãy xem <a href="#" class="text-red-600 font-semibold hover:underline">Chính sách Bảo mật</a>.
+        </p>
     </form>
 </x-guest-layout>
