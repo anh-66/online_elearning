@@ -24,7 +24,7 @@ class HomeController extends Controller
         $featuredCategories = Category::withCount(['courses' => function ($query) {
             $query->where('status', Course::STATUS_PUBLISHED);
         }])
-            ->having('courses_count', '>', 0)
+            ->whereHas('courses', fn ($query) => $query->where('status', Course::STATUS_PUBLISHED))
             ->orderByDesc('courses_count')
             ->limit(8)
             ->get();
