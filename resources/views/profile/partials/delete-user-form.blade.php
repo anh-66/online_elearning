@@ -1,9 +1,9 @@
 <section class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
     <header class="max-w-2xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.14em] text-rose-600">Vùng nguy hiểm</p>
-        <h2 class="mt-2 text-xl font-semibold tracking-tight text-slate-900">{{ __('Xóa tài khoản') }}</h2>
+        <p class="text-sm font-semibold uppercase tracking-[0.14em] text-rose-600 dark:text-rose-400">Vùng nguy hiểm</p>
+        <h2 class="mt-2 text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">{{ __('Xóa tài khoản') }}</h2>
 
-        <p class="mt-2 text-sm leading-6 text-slate-500">
+        <p class="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
             {{ __('Thao tác này sẽ xóa vĩnh viễn tài khoản và dữ liệu liên quan. Bạn sẽ cần xác nhận bằng mật khẩu.') }}
         </p>
     </header>
@@ -19,22 +19,22 @@
             @csrf
             @method('delete')
 
-            <h2 class="text-xl font-semibold text-slate-900">
+            <h2 class="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                 {{ __('Bạn có chắc chắn muốn xóa tài khoản?') }}
             </h2>
 
-            <p class="text-sm leading-6 text-slate-500">
+            <p class="text-sm leading-6 text-neutral-500 dark:text-neutral-400">
                 {{ __('Tất cả tài nguyên và dữ liệu của bạn sẽ bị xóa vĩnh viễn. Nhập mật khẩu để xác nhận thao tác này.') }}
             </p>
 
             <div>
-                <x-input-label for="password" value="Mật khẩu" class="text-sm font-semibold text-slate-700" />
+                <x-input-label for="password" value="Mật khẩu" class="text-sm font-semibold text-neutral-700 dark:text-neutral-200" />
 
                 <x-text-input
                     id="password"
                     name="password"
                     type="password"
-                    class="mt-2 block w-full rounded-xl border-slate-200 px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-2 block w-full rounded-xl border-neutral-200 dark:border-neutral-800 px-4 py-3 text-sm shadow-sm focus:border-brand-600 focus:ring-brand-600"
                     placeholder="Nhập mật khẩu"
                 />
 

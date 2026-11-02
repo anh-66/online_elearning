@@ -16,7 +16,7 @@ class InstructorProfileController extends Controller
             ->findOrFail($id);
 
         // Danh sách khóa học đã published của giảng viên
-        $courses = Course::with(['category', 'reviews'])
+        $courses = Course::with(['instructor', 'category', 'reviews'])
             ->where('instructor_id', $instructor->id)
             ->published()
             ->withCount('enrollments')

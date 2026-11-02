@@ -56,7 +56,7 @@ class CourseCatalogController extends Controller
         $courses = $query->paginate(12)->withQueryString();
         $categories = Category::withCount(['courses' => function ($q) {
             $q->where('status', Course::STATUS_PUBLISHED);
-        }])->having('courses_count', '>', 0)->orderBy('name')->get();
+        }])->whereHas('courses', fn ($q) => $q->where('status', Course::STATUS_PUBLISHED))->orderBy('name')->get();
 
         return view('courses.index', compact('courses', 'categories'));
     }
@@ -73,6 +73,7 @@ class CourseCatalogController extends Controller
             'chapters.lessons',
             'chapters.quizzes',
         ])
+            ->withCount('enrollments')
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
@@ -86,6 +87,14 @@ class CourseCatalogController extends Controller
         $averageRating = $course->averageRating();
         $totalReviews = $course->reviews()->count();
 
+        // Số lượt đánh giá theo từng mức sao (5 → 1) để vẽ thanh phân bố
+        $ratingCounts = $course->reviews()
+            ->selectRaw('rating, count(*) as total')
+            ->groupBy('rating')
+            ->pluck('total', 'rating');
+        $ratingBreakdown = collect([5, 4, 3, 2, 1])
+            ->mapWithKeys(fn (int $star) => [$star => (int) ($ratingCounts[$star] ?? 0)]);
+
         // Kiểm tra xem user đã ghi danh chưa (nếu đã đăng nhập)
         $isEnrolled = false;
         if (auth()->check()) {
@@ -94,6 +103,6 @@ class CourseCatalogController extends Controller
                 ->exists();
         }
 
-        return view('courses.show', compact('course', 'reviews', 'averageRating', 'totalReviews', 'isEnrolled'));
+        return view('courses.show', compact('course', 'reviews', 'averageRating', 'totalReviews', 'ratingBreakdown', 'isEnrolled'));
     }
 }

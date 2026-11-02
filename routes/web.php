@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UploadController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,8 +46,18 @@ Route::middleware(['auth'])->group(function () {
 | Profile & System Upload Routes (Thành viên 1 & Dùng chung)
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function () {
-    return view('dashboard');
+Route::get('/dashboard', function (Request $request) {
+    $enrolledCourses = $request->user()->enrolledCourses()
+        ->with(['instructor', 'category', 'reviews'])
+        ->withCount('enrollments')
+        ->latest('enrollments.enrolled_at')
+        ->take(6)
+        ->get();
+
+    return view('dashboard', [
+        'enrolledCourses' => $enrolledCourses,
+        'enrollmentTotal' => $request->user()->enrollments()->count(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -1,4 +1,5 @@
 import defaultTheme from "tailwindcss/defaultTheme";
+import colors from "tailwindcss/colors";
 import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
@@ -10,10 +11,17 @@ export default {
         "./resources/js/**/*.js",
     ],
 
+    darkMode: "class",
+
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                // Layout nào chưa nạp Be Vietnam Pro (VD admin) sẽ rơi về Figtree
+                sans: ["Be Vietnam Pro", "Figtree", ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                // Màu nhấn tông teal (brand-700 = #0f766e)
+                brand: colors.teal,
             },
         },
     },
