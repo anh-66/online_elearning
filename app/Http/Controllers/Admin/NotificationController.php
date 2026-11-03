@@ -11,51 +11,52 @@ use Illuminate\View\View;
 
 class NotificationController extends Controller
 {
-    /**
-     * Các loại thông báo cho phép (khớp ghi chú trong migration: system, course, promotion).
-     */
-    public const TYPES = [
-        'system' => 'Hệ thống',
-        'course' => 'Khóa học',
-        'promotion' => 'Khuyến mãi',
-    ];
-
-    public function index(): View
+    public function index(Request $request): View
     {
-        $notifications = Notification::latest()->paginate(15);
-
-        return view('admin.notifications.index', [
-            'notifications' => $notifications,
-            'types' => self::TYPES,
+        $validated = $request->validate([
+            'keyword' => ['nullable', 'string', 'max:100'],
+            'type' => ['nullable', Rule::in(['system', 'course', 'promotion'])],
         ]);
+
+        $notifications = Notification::query()
+            ->when($validated['keyword'] ?? null, function ($query, string $keyword) {
+                $query->where('title', 'like', "%{$keyword}%")
+                    ->orWhere('content', 'like', "%{$keyword}%");
+            })
+            ->when($validated['type'] ?? null, fn ($query, string $type) => $query->where('type', $type))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.notifications.index', compact('notifications'));
     }
 
     public function create(): View
     {
         return view('admin.notifications.form', [
             'notification' => new Notification(['type' => 'system']),
-            'types' => self::TYPES,
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        Notification::create($this->validated($request));
+        $validated = $this->validated($request);
 
-        return redirect()->route('admin.notifications.index')->with('success', 'Đã đăng thông báo mới.');
+        Notification::create($validated);
+
+        return redirect()->route('admin.notifications.index')->with('success', 'Đã thêm thông báo mới.');
     }
 
     public function edit(Notification $notification): View
     {
-        return view('admin.notifications.form', [
-            'notification' => $notification,
-            'types' => self::TYPES,
-        ]);
+        return view('admin.notifications.form', compact('notification'));
     }
 
     public function update(Request $request, Notification $notification): RedirectResponse
     {
-        $notification->update($this->validated($request));
+        $validated = $this->validated($request);
+
+        $notification->update($validated);
 
         return redirect()->route('admin.notifications.index')->with('success', 'Đã cập nhật thông báo.');
     }
@@ -74,8 +75,14 @@ class NotificationController extends Controller
     {
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'content' => ['required', 'string', 'max:5000'],
-            'type' => ['required', Rule::in(array_keys(self::TYPES))],
+            'content' => ['required', 'string'],
+            'type' => ['required', Rule::in(['system', 'course', 'promotion'])],
+        ], [
+            'title.required' => 'Vui lòng nhập tiêu đề thông báo.',
+            'title.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
+            'content.required' => 'Vui lòng nhập nội dung thông báo.',
+            'type.required' => 'Vui lòng chọn loại thông báo.',
+            'type.in' => 'Loại thông báo không hợp lệ.',
         ]);
     }
 }

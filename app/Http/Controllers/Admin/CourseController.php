@@ -97,6 +97,18 @@ class CourseController extends Controller
     }
 
     /**
+     * Ẩn khóa học đã xuất bản: published -> draft.
+     */
+    public function hide(Course $course): RedirectResponse
+    {
+        $course->update([
+            'status' => Course::STATUS_DRAFT,
+        ]);
+
+        return back()->with('success', "Đã ẩn khóa học \"{$course->title}\".");
+    }
+
+    /**
      * Xóa khóa học vi phạm (kéo theo chương, bài học, ghi danh... nhờ cascade).
      */
     public function destroy(Course $course): RedirectResponse

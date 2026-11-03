@@ -117,7 +117,8 @@
                     </h1>
                 </div>
 
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    @include('partials.notification-bell')
                     <x-theme-toggle />
                     <a href="{{ route('profile.edit') }}" class="text-sm font-medium text-neutral-600 hover:text-brand-700 dark:text-neutral-300 dark:hover:text-brand-400 transition">Hồ sơ</a>
                     <form method="POST" action="{{ route('logout') }}">

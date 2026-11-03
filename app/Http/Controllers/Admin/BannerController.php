@@ -62,6 +62,15 @@ class BannerController extends Controller
         return redirect()->route('admin.banners.index')->with('success', 'Đã xóa banner.');
     }
 
+    public function toggle(Banner $banner): RedirectResponse
+    {
+        $banner->update(['is_active' => ! $banner->is_active]);
+
+        $message = $banner->is_active ? 'Đã bật banner.' : 'Đã tắt banner.';
+
+        return back()->with('success', $message);
+    }
+
     /**
      * @return array<string, mixed>
      */

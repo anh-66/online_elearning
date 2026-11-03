@@ -63,13 +63,13 @@ class CategoryController extends Controller
     {
         $courseCount = $category->courses()->count();
 
+        if ($courseCount > 0) {
+            return back()->with('error', "Không thể xóa danh mục \"{$category->name}\" vì đang có {$courseCount} khóa học. Vui lòng chuyển các khóa học sang danh mục khác trước khi xóa.");
+        }
+
         $category->delete();
 
-        $message = $courseCount > 0
-            ? "Đã xóa danh mục. {$courseCount} khóa học thuộc danh mục này giờ chưa được phân loại."
-            : 'Đã xóa danh mục.';
-
-        return redirect()->route('admin.categories.index')->with('success', $message);
+        return redirect()->route('admin.categories.index')->with('success', 'Đã xóa danh mục thành công.');
     }
 
     /**

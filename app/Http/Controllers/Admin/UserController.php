@@ -39,6 +39,62 @@ class UserController extends Controller
     }
 
     /**
+     * Form chỉnh sửa thông tin người dùng.
+     */
+    public function edit(User $user): View
+    {
+        return view('admin.users.form', compact('user'));
+    }
+
+    /**
+     * Cập nhật thông tin người dùng.
+     */
+    public function update(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'role' => ['required', Rule::in([User::ROLE_ADMIN, User::ROLE_INSTRUCTOR, User::ROLE_STUDENT])],
+            'status' => ['required', Rule::in([User::STATUS_ACTIVE, User::STATUS_BLOCKED])],
+            'password' => ['nullable', 'string', 'min:8'],
+        ]);
+
+        if ($user->is($request->user())) {
+            if ($validated['role'] !== $user->role) {
+                return back()->with('error', 'Bạn không thể tự đổi vai trò của chính mình.');
+            }
+            if ($validated['status'] !== User::STATUS_ACTIVE) {
+                return back()->with('error', 'Bạn không thể tự khóa tài khoản của chính mình.');
+            }
+        }
+
+        if (! empty($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('admin.users.index')->with('success', "Đã cập nhật thông tin người dùng {$user->name}.");
+    }
+
+    /**
+     * Xóa tài khoản người dùng (không cho phép tự xóa tài khoản của chính mình).
+     */
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        if ($user->is($request->user())) {
+            return back()->with('error', 'Bạn không thể tự xóa tài khoản của chính mình.');
+        }
+
+        $name = $user->name;
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', "Đã xóa tài khoản {$name}.");
+    }
+
+    /**
      * Đổi role của người dùng (admin / instructor / student).
      */
     public function updateRole(Request $request, User $user): RedirectResponse

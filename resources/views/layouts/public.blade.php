@@ -55,8 +55,10 @@
                     </form>
                 </div>
 
-                <!-- Right: Actions (Theme Toggle + User Dropdown / Auth Buttons) -->
-                <div class="flex items-center space-x-4">
+                <!-- Right: Actions (Notification Bell + Theme Toggle + User Dropdown / Auth Buttons) -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    @include('partials.notification-bell')
+
                     <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2 transition" />
 
                     @auth
