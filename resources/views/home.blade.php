@@ -78,9 +78,15 @@
     <div class="w-full max-w-5xl mx-auto px-4 sm:px-8">
         <div class="relative min-h-[180px] flex items-center justify-center">
             @foreach($banners as $index => $banner)
-                <div class="w-full transition-opacity duration-500"
+                <div class="relative w-full transition-opacity duration-500"
                      x-show="current === {{ $index }}"
                      x-cloak>
+                    <img src="{{ asset('storage/'.$banner->image_path) }}"
+                         alt="{{ $banner->title }}"
+                         class="absolute inset-0 h-full w-full object-cover opacity-30"
+                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                    <div class="absolute inset-0 bg-[#161b22]/70"></div>
+                    <div class="relative z-10">
                     <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 max-w-4xl mx-auto leading-tight">
                         {{ $banner->title }}
                     </h2>
@@ -94,6 +100,7 @@
                             </a>
                         </div>
                     @endif
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -112,6 +119,8 @@
     </div>
 </section>
 @endif
+
+@include('partials.latest-notifications', ['latestNotifications' => $latestNotifications])
 
 {{-- ======================================================== --}}
 {{-- 3. DANH MỤC NỔI BẬT --}}
