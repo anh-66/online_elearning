@@ -12,9 +12,14 @@ class RegistrationTest extends TestCase
 
     public function test_registration_screen_can_be_rendered(): void
     {
+        User::factory()->instructor()->count(4)->create();
+        User::factory()->count(5)->create();
+
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertOk()
+            ->assertSee('4')
+            ->assertSee('5');
     }
 
     public function test_new_users_can_register(): void

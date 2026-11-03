@@ -55,8 +55,10 @@
                     </form>
                 </div>
 
-                <!-- Right: Actions (Theme Toggle + User Dropdown / Auth Buttons) -->
-                <div class="flex items-center space-x-4">
+                <!-- Right: Actions (Notification Bell + Theme Toggle + User Dropdown / Auth Buttons) -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    @include('partials.notification-bell')
+
                     <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2 transition" />
 
                     @auth
@@ -111,7 +113,7 @@
                                     </a>
                                 @endif
 
-                                @if(Auth::user()->isInstructor() || Auth::user()->isAdmin())
+                                @if(Auth::user()->isInstructor())
                                     <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium text-[#019D91] dark:text-[#02b3a5]">
                                         Studio Giảng viên
                                     </a>

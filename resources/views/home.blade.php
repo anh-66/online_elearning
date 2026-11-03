@@ -78,9 +78,15 @@
     <div class="w-full max-w-5xl mx-auto px-4 sm:px-8">
         <div class="relative min-h-[180px] flex items-center justify-center">
             @foreach($banners as $index => $banner)
-                <div class="w-full transition-opacity duration-500"
+                <div class="relative w-full transition-opacity duration-500"
                      x-show="current === {{ $index }}"
                      x-cloak>
+                    <img src="{{ asset('storage/'.$banner->image_path) }}"
+                         alt="{{ $banner->title }}"
+                         class="absolute inset-0 h-full w-full object-cover opacity-30"
+                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                    <div class="absolute inset-0 bg-[#161b22]/70"></div>
+                    <div class="relative z-10">
                     <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 max-w-4xl mx-auto leading-tight">
                         {{ $banner->title }}
                     </h2>
@@ -94,6 +100,7 @@
                             </a>
                         </div>
                     @endif
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -112,6 +119,8 @@
     </div>
 </section>
 @endif
+
+@include('partials.latest-notifications', ['latestNotifications' => $latestNotifications])
 
 {{-- ======================================================== --}}
 {{-- 3. DANH MỤC NỔI BẬT --}}
@@ -188,11 +197,11 @@
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 min-h-[440px] flex items-center justify-center">
 
         {{-- ================= VÙNG ICON TĨNH PHÂN BỔ TO NHỎ ================= --}}
-        <div class="pointer-events-none select-none" aria-hidden="true">
+        <div class="tech-icons pointer-events-none select-none" aria-hidden="true">
 
             {{-- -------- CỤM BÊN TRÁI -------- --}}
             {{-- 1. Google (Vừa ~ 36px, nude icon đa sắc như ảnh mẫu góc trên trái) --}}
-            <div class="hidden sm:block absolute top-2 left-[3%] lg:left-[5%]">
+            <div class="tech-float hidden sm:block absolute top-2 left-[3%] lg:left-[5%]">
                 <svg class="w-9 h-9" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -202,7 +211,7 @@
             </div>
 
             {{-- 2. React (Vừa ~ 38px, nude cyan) --}}
-            <div class="hidden md:block absolute top-1 left-[25%] lg:left-[26%]">
+            <div class="tech-float hidden md:block absolute top-1 left-[25%] lg:left-[26%]">
                 <svg class="w-10 h-10 text-[#00D8FF]" viewBox="-11.5 -10.23174 23 20.46348" fill="none" stroke="currentColor" stroke-width="1.3">
                     <circle cx="0" cy="0" r="2.05" fill="#00D8FF"/>
                     <ellipse rx="11" ry="4.2"/>
@@ -212,7 +221,7 @@
             </div>
 
             {{-- 3. PHP (Vừa ~ 40px x 24px) --}}
-            <div class="hidden sm:block absolute top-16 left-[14%] lg:left-[15%]">
+            <div class="tech-float hidden sm:block absolute top-16 left-[14%] lg:left-[15%]">
                 <svg class="w-11 h-6" viewBox="0 0 128 128">
                     <ellipse cx="64" cy="64" rx="60" ry="34" fill="#777BB4"/>
                     <text x="64" y="74" font-size="34" font-family="system-ui, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle" font-style="italic">php</text>
@@ -220,7 +229,7 @@
             </div>
 
             {{-- 4. Figma (TO NỔI BẬT ~ 52px, app icon bo góc y chang mẫu) --}}
-            <div class="hidden sm:flex absolute top-[40%] left-[2%] lg:left-[3%] w-13 h-13 rounded-2xl bg-black dark:bg-[#161b22] border border-black/10 dark:border-[#30363d] items-center justify-center shadow-lg p-2.5">
+            <div class="tech-float hidden sm:flex absolute top-[40%] left-[2%] lg:left-[3%] w-13 h-13 rounded-2xl bg-black dark:bg-[#161b22] border border-black/10 dark:border-[#30363d] items-center justify-center shadow-lg p-2.5">
                 <svg class="w-8 h-8" viewBox="0 0 38 57" fill="none">
                     <path d="M19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5Z" fill="#1ABCFE"/>
                     <path d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z" fill="#0ACF83"/>
@@ -231,12 +240,12 @@
             </div>
 
             {{-- 5. JavaScript (Nhỏ vừa ~ 30px, dịch xa ra khỏi khối chữ) --}}
-            <div class="hidden md:flex absolute top-[52%] left-[10%] lg:left-[12%] w-8 h-8 rounded-lg bg-[#F7DF1E] text-black font-black text-xs items-center justify-center shadow-sm">
+            <div class="tech-float hidden md:flex absolute top-[52%] left-[10%] lg:left-[12%] w-8 h-8 rounded-lg bg-[#F7DF1E] text-black font-black text-xs items-center justify-center shadow-sm">
                 JS
             </div>
 
             {{-- 6. HTML5 (Nhỏ ~ 24px) --}}
-            <div class="hidden lg:block absolute bottom-14 left-[6%]">
+            <div class="tech-float hidden lg:block absolute bottom-14 left-[6%]">
                 <svg class="w-6 h-6" viewBox="0 0 512 512">
                     <path fill="#E34F26" d="M71 460L30 0h452l-41 460-185 52z"/>
                     <path fill="#EF652A" d="M256 472l149-41 35-391H256v432z"/>
@@ -246,7 +255,7 @@
             </div>
 
             {{-- 7. Python (Vừa ~ 34px) --}}
-            <div class="hidden sm:block absolute bottom-4 left-[14%] lg:left-[16%]">
+            <div class="tech-float hidden sm:block absolute bottom-4 left-[14%] lg:left-[16%]">
                 <svg class="w-8 h-8" viewBox="0 0 128 128">
                     <path fill="#3776AB" d="M63.7 3.5c-15.5 0-25 6.7-25 19.8v14.5h25.4v3.6H27.9C13 41.4 3.5 50.8 3.5 65.7c0 14.8 8.4 24.3 22.8 24.3h8.3v-11.7c0-8.7 7.7-16.1 16.4-16.1h25.3c7.2 0 13.1-6 13.1-13.3V23.3c0-12.8-10.4-19.8-25.7-19.8zm-13.8 7.3a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4z"/>
                     <path fill="#FFD43B" d="M64.3 124.5c15.5 0 25-6.7 25-19.8V90.2H63.9v-3.6h36.2c14.9 0 24.4-9.4 24.4-24.3 0-14.8-8.4-24.3-22.8-24.3h-8.3v11.7c0 8.7-7.7 16.1-16.4 16.1H51.7c-7.2 0-13.1 6-13.1 13.3v25.6c0 12.8 10.4 19.8 25.7 19.8zm13.8-7.3a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4z"/>
@@ -254,7 +263,7 @@
             </div>
 
             {{-- 8. Git (Nhỏ ~ 24px, hình thoi cam) --}}
-            <div class="hidden md:block absolute bottom-8 left-[27%]">
+            <div class="tech-float hidden md:block absolute bottom-8 left-[27%]">
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="#F05032">
                     <path d="M21.62 11.11l-8.73-8.73a1.76 1.76 0 00-2.48 0L8.6 4.19l3.14 3.14a2.09 2.09 0 012.37 2.37l3.03 3.03a2.09 2.09 0 011.66 2.45 2.1 2.1 0 01-2.44-1.67l-2.82-2.82v5.33a2.12 2.12 0 11-1.75 0V10.4a2.11 2.11 0 01-1.15-1.84 2.1 2.1 0 01.37-1.18L7.76 4.23 2.38 9.61a1.76 1.76 0 000 2.48l8.73 8.73a1.76 1.76 0 002.48 0l8.03-8.03a1.76 1.76 0 000-2.48z"/>
                 </svg>
@@ -262,7 +271,7 @@
 
             {{-- -------- CỤM BÊN PHẢI -------- --}}
             {{-- 9. YouTube (TO NỔI BẬT ~ 46px x 32px, nút Play đỏ) --}}
-            <div class="hidden sm:block absolute top-2 right-[20%] lg:right-[22%]">
+            <div class="tech-float hidden sm:block absolute top-2 right-[20%] lg:right-[22%]">
                 <svg class="w-12 h-8" viewBox="0 0 24 24">
                     <path fill="#FF0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
                     <path fill="#FFFFFF" d="m9.545 15.568 6.273-3.568-6.273-3.568z"/>
@@ -270,35 +279,35 @@
             </div>
 
             {{-- 10. Tailwind CSS (Nhỏ vừa ~ 30px, sóng cyan) --}}
-            <div class="hidden md:block absolute top-2 right-[4%] lg:right-[6%]">
+            <div class="tech-float hidden md:block absolute top-2 right-[4%] lg:right-[6%]">
                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#38BDF8">
                     <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/>
                 </svg>
             </div>
 
             {{-- 11. Laravel (Vừa ~ 36px, khối 3D đỏ) --}}
-            <div class="hidden sm:block absolute top-16 right-[10%] lg:right-[12%]">
+            <div class="tech-float hidden sm:block absolute top-16 right-[10%] lg:right-[12%]">
                 <svg class="w-9 h-9" viewBox="0 0 24 24" fill="#FF2D20">
                     <path d="M8.27 11.23L2.64 8.01a.75.75 0 010-1.3L12.07.72a.75.75 0 01.76 0l9.43 5.99a.75.75 0 010 1.3l-5.63 3.22 5.63 3.22a.75.75 0 010 1.3l-9.43 5.99a.75.75 0 01-.76 0L2.64 15.75a.75.75 0 010-1.3l5.63-3.22zm3.73-8.8L4.69 7.36l3.58 2.05 7.31-4.17-3.58-2.81zm-7.31 12.35l7.31 4.65 7.31-4.65-3.58-2.05-7.31 4.17-3.73-2.12zm15.42-7.42l-3.73-2.13-7.31 4.17 3.58 2.05 7.46-4.09z"/>
                 </svg>
             </div>
 
             {{-- 12. VS Code (TO NỔI BẬT ~ 52px, app icon xanh bo góc như Ae trong mẫu) --}}
-            <div class="hidden sm:flex absolute top-[38%] right-[2%] lg:right-[3%] w-13 h-13 rounded-2xl bg-[#007ACC] items-center justify-center shadow-lg p-2.5">
+            <div class="tech-float hidden sm:flex absolute top-[38%] right-[2%] lg:right-[3%] w-13 h-13 rounded-2xl bg-[#007ACC] items-center justify-center shadow-lg p-2.5">
                 <svg class="w-8 h-8 fill-white" viewBox="0 0 24 24">
                     <path d="M17.472 2.012a1.488 1.488 0 00-.737.199L9.04 7.625l-4.49-3.414a.994.994 0 00-1.42.348l-1.002 1.62a1 1 0 00.273 1.348l3.961 3.01-3.96 3.01a.999.999 0 00-.274 1.349l1.002 1.62a.996.996 0 001.42.348l4.49-3.414 7.695 5.414a1.496 1.496 0 001.597.108c.524-.298.848-.857.848-1.46V3.58c0-.603-.324-1.162-.848-1.46a1.47 1.47 0 00-.86-.108zM17.2 6.555v10.89l-5.698-4.008 5.698-6.882z"/>
                 </svg>
             </div>
 
             {{-- 13. GitHub (Vừa ~ 38px, dịch xa ra khỏi khối chữ) --}}
-            <div class="hidden md:flex absolute top-[52%] right-[10%] lg:right-[12%] w-10 h-10 rounded-xl bg-[#181717] dark:bg-[#161b22] text-white items-center justify-center shadow-md border border-black/10 dark:border-[#30363d]">
+            <div class="tech-float hidden md:flex absolute top-[52%] right-[10%] lg:right-[12%] w-10 h-10 rounded-xl bg-[#181717] dark:bg-[#161b22] text-white items-center justify-center shadow-md border border-black/10 dark:border-[#30363d]">
                 <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
                 </svg>
             </div>
 
             {{-- 14. CSS3 (Nhỏ ~ 24px) --}}
-            <div class="hidden lg:block absolute bottom-14 right-[15%]">
+            <div class="tech-float hidden lg:block absolute bottom-14 right-[15%]">
                 <svg class="w-6 h-6" viewBox="0 0 512 512">
                     <path fill="#1572B6" d="M71 460L30 0h452l-41 460-185 52z"/>
                     <path fill="#33A9DC" d="M256 472l149-41 35-391H256v432z"/>
@@ -308,14 +317,14 @@
             </div>
 
             {{-- 15. Docker (Vừa ~ 36px) --}}
-            <div class="hidden sm:block absolute bottom-4 right-[24%] lg:right-[26%]">
+            <div class="tech-float hidden sm:block absolute bottom-4 right-[24%] lg:right-[26%]">
                 <svg class="w-9 h-9" viewBox="0 0 24 24" fill="#2496ED">
                     <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.186.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186m-2.954 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.145a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186m5.884 2.714h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186H8.1a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186H5.145a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.432-.23-.07-.47-.119-.714-.146-.607-.068-1.57-.02-2.421.654l-.454.36.27.525c.89 1.733.642 3.864-.672 5.342-.906.993-2.193 1.543-3.528 1.507H1.546a.855.855 0 00-.853.856c-.005 1.516.48 2.996 1.382 4.218 1.765 2.378 4.607 3.655 8.448 3.795 5.864.213 11.233-2.073 13.064-5.918.064-.132.146-.358.232-.619.68-2.062 1.144-4.82-.056-8.788"/>
                 </svg>
             </div>
 
             {{-- 16. TypeScript (Nhỏ ~ 24px) --}}
-            <div class="hidden sm:flex absolute bottom-6 right-[5%] lg:right-[7%] w-6 h-6 rounded-md bg-[#3178C6] text-white font-black text-[10px] items-center justify-center shadow-sm">
+            <div class="tech-float hidden sm:flex absolute bottom-6 right-[5%] lg:right-[7%] w-6 h-6 rounded-md bg-[#3178C6] text-white font-black text-[10px] items-center justify-center shadow-sm">
                 TS
             </div>
         </div>

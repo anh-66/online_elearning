@@ -12,9 +12,14 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered(): void
     {
+        User::factory()->instructor()->count(2)->create();
+        User::factory()->count(3)->create();
+
         $response = $this->get('/login');
 
-        $response->assertStatus(200);
+        $response->assertOk()
+            ->assertSee('2')
+            ->assertSee('3');
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

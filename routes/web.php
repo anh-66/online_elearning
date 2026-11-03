@@ -4,8 +4,10 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CourseCatalogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
+use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UploadController;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +30,7 @@ Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->n
 */
 Route::middleware(['auth'])->group(function () {
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
-    // Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
+    Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
     // Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
     // Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
     // Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
@@ -57,6 +59,7 @@ Route::get('/dashboard', function (Request $request) {
     return view('dashboard', [
         'enrolledCourses' => $enrolledCourses,
         'enrollmentTotal' => $request->user()->enrollments()->count(),
+        'latestNotifications' => Notification::query()->latest()->limit(3)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

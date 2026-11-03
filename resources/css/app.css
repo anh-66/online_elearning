@@ -64,6 +64,38 @@
         @apply inline-flex items-center justify-center rounded-2xl border border-white/40 bg-transparent px-6 py-2.5 text-sm font-medium text-white transition duration-200 hover:bg-white/10 active:scale-[0.98];
     }
 
+    .tech-float {
+        animation: tech-icon-float 4.2s ease-in-out infinite;
+        will-change: transform;
+    }
+
+    .tech-icons > .tech-float:nth-child(2n) {
+        animation-delay: -1.8s;
+    }
+
+    .tech-icons > .tech-float:nth-child(3n) {
+        animation-delay: -3.2s;
+    }
+
+    .tech-icons > .tech-float:nth-child(5n) {
+        animation-delay: -4.4s;
+    }
+
+    @keyframes tech-icon-float {
+        0%, 100% {
+            transform: translate3d(0, 0, 0);
+        }
+        50% {
+            transform: translate3d(0, -14px, 0) rotate(2deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .tech-float {
+            animation: none;
+        }
+    }
+
     /* Circuit Background Pattern from Uiverse.io by Gautammsharma */
     .circuit-wrapper {
         min-height: 100%;
