@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -35,11 +36,38 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            if (is_string($user->avatar) && $user->avatar !== '') {
-                Storage::disk('public')->delete($user->avatar);
+            $previousAvatar = $user->avatar;
+            $newAvatar = $request->file('avatar')->store('avatars', 'public');
+
+            if (! is_string($newAvatar) || $newAvatar === '') {
+                return back()->withErrors([
+                    'avatar' => 'Không thể lưu ảnh avatar. Vui lòng thử lại.',
+                ])->withInput();
             }
 
-            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $newAvatar;
+
+            if (is_string($previousAvatar) && $previousAvatar !== '') {
+                Storage::disk('public')->delete($previousAvatar);
+            }
+        } elseif ($request->filled('avatar_generated')) {
+            $previousAvatar = $user->avatar;
+            $payload = (string) $request->string('avatar_generated');
+            $encodedImage = substr($payload, strpos($payload, ',') + 1);
+            $image = base64_decode($encodedImage, true);
+            $path = 'avatars/'.Str::uuid().'.png';
+
+            if ($image === false || ! Storage::disk('public')->put($path, $image)) {
+                return back()->withErrors([
+                    'avatar_generated' => 'Không thể lưu ảnh avatar. Vui lòng thử lại.',
+                ])->withInput();
+            }
+
+            $user->avatar = $path;
+
+            if (is_string($previousAvatar) && $previousAvatar !== '') {
+                Storage::disk('public')->delete($previousAvatar);
+            }
         }
 
         $user->save();

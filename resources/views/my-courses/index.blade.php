@@ -5,8 +5,6 @@
 @section('content')
 <div class="bg-neutral-50 py-8 sm:py-12 dark:bg-neutral-950">
     <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-        @include('partials.latest-notifications', ['latestNotifications' => $latestNotifications])
-
         <section>
             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>

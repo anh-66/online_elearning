@@ -6,8 +6,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UploadController;
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +21,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/courses', [CourseCatalogController::class, 'index'])->name('courses.index');
 Route::get('/courses/{slug}', [CourseCatalogController::class, 'show'])->name('courses.show');
 Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->name('instructors.show');
+
+Route::get('/support', [SupportController::class, 'index'])->name('support.index');
+Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -59,11 +62,11 @@ Route::get('/dashboard', function (Request $request) {
     return view('dashboard', [
         'enrolledCourses' => $enrolledCourses,
         'enrollmentTotal' => $request->user()->enrollments()->count(),
-        'latestNotifications' => Notification::query()->latest()->limit(3)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::view('/avatar-generator', 'avatar-generator')->name('avatar-generator');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

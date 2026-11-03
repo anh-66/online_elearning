@@ -84,7 +84,7 @@
                                         <iconify-icon icon="lucide:edit-3" class="text-lg"></iconify-icon>
                                     </a>
                                     <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục &quot;{{ $category->name }}&quot;?')">
+                                          data-confirm-message="Bạn có chắc chắn muốn xóa danh mục &quot;{{ $category->name }}&quot;?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Xóa"

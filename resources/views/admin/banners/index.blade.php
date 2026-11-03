@@ -65,16 +65,16 @@
 
                             {{-- Toggle Status --}}
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <form method="POST" action="{{ route('admin.banners.toggle', $banner) }}" class="inline">
+                                <form method="POST" action="{{ route('admin.banners.toggle', $banner) }}" class="inline" data-confirm-message="{{ $banner->is_active ? 'Tắt hiển thị banner này?' : 'Bật hiển thị banner này?' }}">
                                     @csrf
                                     @method('PATCH')
                                     @if($banner->is_active)
-                                        <button type="submit" onclick="return confirm('Tắt hiển thị banner này?')"
+                                        <button type="submit"
                                                 class="status-badge bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors cursor-pointer">
                                             ● Đang bật
                                         </button>
                                     @else
-                                        <button type="submit" onclick="return confirm('Bật hiển thị banner này?')"
+                                        <button type="submit"
                                                 class="status-badge bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors cursor-pointer">
                                             ○ Đã tắt
                                         </button>
@@ -91,7 +91,7 @@
                                         <iconify-icon icon="lucide:edit-3" class="text-lg"></iconify-icon>
                                     </a>
                                     <form method="POST" action="{{ route('admin.banners.destroy', $banner) }}"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa banner này?')">
+                                          data-confirm-message="Bạn có chắc chắn muốn xóa banner này?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Xóa"

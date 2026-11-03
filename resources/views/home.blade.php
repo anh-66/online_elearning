@@ -120,8 +120,6 @@
 </section>
 @endif
 
-@include('partials.latest-notifications', ['latestNotifications' => $latestNotifications])
-
 {{-- ======================================================== --}}
 {{-- 3. DANH MỤC NỔI BẬT --}}
 {{-- ======================================================== --}}

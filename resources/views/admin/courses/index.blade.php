@@ -160,11 +160,10 @@
                                 <div class="flex items-center justify-end gap-1.5">
                                     {{-- Approve --}}
                                     @if($course->isPending())
-                                        <form method="POST" action="{{ route('admin.courses.approve', $course) }}" class="inline">
+                                        <form method="POST" action="{{ route('admin.courses.approve', $course) }}" class="inline" data-confirm-message="Xác nhận duyệt và xuất bản khóa học này?">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit"
-                                                    onclick="return confirm('Xác nhận duyệt và xuất bản khóa học này?')"
                                                     title="Duyệt"
                                                     class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
                                                 <iconify-icon icon="lucide:check-circle" class="text-lg"></iconify-icon>
@@ -184,11 +183,10 @@
 
                                     {{-- Hide --}}
                                     @if($course->isPublished())
-                                        <form method="POST" action="{{ route('admin.courses.hide', $course) }}" class="inline">
+                                        <form method="POST" action="{{ route('admin.courses.hide', $course) }}" class="inline" data-confirm-message="Khóa học sẽ chuyển về Bản nháp. Tiếp tục?">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit"
-                                                    onclick="return confirm('Khóa học sẽ chuyển về Bản nháp. Tiếp tục?')"
                                                     title="Ẩn khóa học"
                                                     class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all">
                                                 <iconify-icon icon="lucide:eye-off" class="text-lg"></iconify-icon>
@@ -207,7 +205,7 @@
 
                                     {{-- Delete --}}
                                     <form method="POST" action="{{ route('admin.courses.destroy', $course) }}"
-                                          onsubmit="return confirm('CẢNH BÁO: Xóa khóa học sẽ xóa toàn bộ dữ liệu liên quan. Bạn có chắc?')">
+                                          data-confirm-message="CẢNH BÁO: Xóa khóa học sẽ xóa toàn bộ dữ liệu liên quan. Bạn có chắc?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Xóa"

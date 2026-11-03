@@ -8,21 +8,34 @@
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "@vitejs/plugin-react": "^6.2.1",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
         "concurrently": "^10.0.3",
         "laravel-vite-plugin": "^3.1",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.1.0",
+        "typescript": "^5.9.3",
         "vite": "^8.0.0"
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
+        "@headlessui/react": "^2.2.10",
+        "@neoconfetti/react": "^0.1.1",
+        "@react-hook/media-query": "^1.1.1",
         "chart.js": "^4.6.1",
         "ckeditor5": "^49.0.0",
         "fullcalendar": "^7.1.3",
-        "tom-select": "^2.6.2"
+        "html2canvas": "^1.4.1",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
+        "react-hot-toast": "^2.6.1",
+        "tom-select": "^2.6.2",
+        "use-sound": "^4.0.4",
+        "usehooks-ts": "^3.1.1"
     }
 }

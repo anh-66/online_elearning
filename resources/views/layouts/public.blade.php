@@ -17,9 +17,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="flex flex-col min-h-screen bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased selection:bg-[#019D91] selection:text-white">
+<body class="flex min-h-screen flex-col bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased selection:bg-[#019D91] selection:text-white"
+      data-back-to-top-scroll
+      x-data="{ mobileMenuOpen: false, supportFlyoutOpen: false, supportCloseTimer: null, openSupportFlyout() { clearTimeout(this.supportCloseTimer); this.supportFlyoutOpen = true; }, scheduleSupportClose() { this.supportCloseTimer = setTimeout(() => { this.supportFlyoutOpen = false; }, 220); } }">
     <!-- Header / Navbar (Apple Glass Strip - Expanded & Proportioned) -->
-    <header class="sticky top-0 z-50 apple-glass-nav border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors" x-data="{ mobileMenuOpen: false }">
+    <header class="sticky top-0 z-50 apple-glass-nav border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors"
+            @keydown.escape="supportFlyoutOpen = false; clearTimeout(supportCloseTimer)">
         <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Left: Logo & Nav Links -->
@@ -39,6 +42,18 @@
                         <a href="{{ url('/courses') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
                             Khóa học
                         </a>
+                        <!-- Apple-style Support Nav with Flyout Trigger -->
+                        <div class="relative py-2"
+                             @mouseenter="openSupportFlyout()"
+                             @mouseleave="scheduleSupportClose()">
+                            <a href="{{ route('support.index') }}"
+                               class="inline-flex items-center gap-1.5 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                                <span>Hỗ Trợ</span>
+                                <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </a>
+                        </div>
                     </nav>
                 </div>
 
@@ -163,6 +178,7 @@
                 </form>
                 <a href="{{ url('/') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Trang chủ</a>
                 <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Khóa học</a>
+                <a href="{{ route('support.index') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d] {{ request()->routeIs('support.*') ? 'text-[#019D91] font-semibold' : '' }}">Hỗ Trợ</a>
                 @guest
                     <div class="pt-3">
                         <a href="{{ route('login') }}" class="block w-full text-center py-2.5 text-sm font-semibold rounded-2xl bg-[#019D91] text-white shadow-sm">
@@ -172,7 +188,14 @@
                 @endguest
             </div>
         </div>
+
+        @include('partials.support-mega-menu')
     </header>
+
+    <div x-show="supportFlyoutOpen"
+         x-cloak
+         class="pointer-events-none fixed inset-0 z-30 bg-black/35 backdrop-blur-md backdrop-saturate-150 transition-opacity duration-300 dark:bg-black/50"
+         aria-hidden="true"></div>
 
     <!-- Flash Messages -->
     @if(session('success') || session('error'))
@@ -187,12 +210,7 @@
         @endif
 
         @if(session('error'))
-            <div class="px-5 py-3 rounded-full bg-white dark:bg-neutral-900 border border-rose-200 dark:border-rose-900/50 text-sm flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2.5 text-rose-600 dark:text-rose-400">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="text-rose-700 dark:text-rose-300 font-medium">{{ session('error') }}</span>
-                </div>
-            </div>
+            @include('partials.error-alert', ['message' => session('error')])
         @endif
     </div>
     @endif
@@ -201,6 +219,14 @@
     <main class="flex-1">
         @yield('content')
     </main>
+
+    @if (request()->routeIs('home'))
+        @guest
+            @include('partials.cookie-consent')
+        @endguest
+    @endif
+
+    @include('partials.back-to-top')
 
     <!-- Footer -->
     <footer class="bg-white dark:bg-[#0d1117] text-[#86868B] dark:text-[#7d8590] border-t border-[#E5E5EA] dark:border-[#30363d] text-xs sm:text-[13px] mt-16">
@@ -241,6 +267,7 @@
                 <div>
                     <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Về EduLearn</h3>
                     <ul class="space-y-2.5">
+                        <li><a href="{{ route('support.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition font-medium text-[#019D91] dark:text-[#02b3a5]">Trung tâm hỗ trợ</a></li>
                         <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Giới thiệu nền tảng</a></li>
                         <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Điều khoản dịch vụ</a></li>
                         <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Chính sách bảo mật</a></li>

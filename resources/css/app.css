@@ -64,6 +64,405 @@
         @apply inline-flex items-center justify-center rounded-2xl border border-white/40 bg-transparent px-6 py-2.5 text-sm font-medium text-white transition duration-200 hover:bg-white/10 active:scale-[0.98];
     }
 
+    .refresh-button {
+        @apply inline-flex shrink-0 items-center gap-3 rounded-xl bg-[#019D91] px-5 py-2.5 text-base font-medium leading-8 text-white transition-colors hover:bg-[#008b80] focus:outline-none focus:ring-2 focus:ring-[#019D91]/40 focus:ring-offset-2 dark:bg-[#02b3a5] dark:hover:bg-[#019D91] dark:focus:ring-offset-[#0d1117];
+    }
+
+    .refresh-button svg {
+        @apply inline h-5 w-5 text-white;
+    }
+
+    .refresh-button:focus svg,
+    .refresh-button.is-refreshing svg {
+        animation: refresh-button-spin 0.5s linear;
+    }
+
+    .cookie-card {
+        width: min(440px, calc(100vw - 32px));
+        min-height: 0;
+        background-color: rgb(255, 255, 255);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 34px 26px;
+        gap: 10px;
+        position: fixed;
+        left: 24px;
+        bottom: 24px;
+        overflow: hidden;
+        z-index: 60;
+        border-radius: 12px;
+        box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.16);
+    }
+
+    .cookie-card[hidden] {
+        display: none;
+    }
+
+    #cookieSvg {
+        width: 50px;
+    }
+
+    #cookieSvg g path {
+        fill: rgb(97, 81, 81);
+    }
+
+    .cookie-heading {
+        margin: 0;
+        font-size: 1.35rem;
+        line-height: 1.25;
+        font-weight: 800;
+        color: rgb(26, 26, 26);
+    }
+
+    .cookie-description {
+        margin: 0;
+        max-width: 350px;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.45;
+        color: rgb(99, 99, 99);
+    }
+
+    .cookie-button-container {
+        width: 100%;
+        display: flex;
+        gap: 14px;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 4px;
+    }
+
+    .cookie-accept-button,
+    .cookie-decline-button {
+        flex: 1 1 0;
+        max-width: 150px;
+        min-width: 120px;
+        height: 42px;
+        transition-duration: 0.2s;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 20px;
+    }
+
+    .cookie-accept-button {
+        background-color: #019d91;
+        color: rgb(241, 241, 241);
+    }
+
+    .cookie-decline-button {
+        background-color: rgb(218, 218, 218);
+        color: rgb(46, 46, 46);
+    }
+
+    .cookie-decline-button:hover {
+        background-color: #ebebeb;
+    }
+
+    .cookie-accept-button:hover {
+        background-color: #008b80;
+    }
+
+    .cookie-accept-button:focus-visible,
+    .cookie-decline-button:focus-visible {
+        outline: 2px solid #019d91;
+        outline-offset: 3px;
+    }
+
+    .error-alert-wrapper {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        font-size: 0.75rem;
+    }
+
+    .error-alert {
+        width: min(100%, 28rem);
+        min-height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0 auto;
+        padding: 0.5rem 0.625rem;
+        border-radius: 0.5rem;
+        background-color: #232531;
+        color: white;
+    }
+
+    .error-alert-content {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .error-alert-icon {
+        flex-shrink: 0;
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+        color: #d65563;
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(24px);
+    }
+
+    .error-alert-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .error-alert-copy {
+        min-width: 0;
+    }
+
+    .error-alert-copy p {
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .error-alert-copy p:first-child {
+        color: white;
+        font-weight: 500;
+    }
+
+    .error-alert-copy p:last-child {
+        margin-top: 0.125rem;
+        color: #6b7280;
+    }
+
+    .error-alert-close {
+        flex-shrink: 0;
+        padding: 0.25rem;
+        border: 0;
+        border-radius: 0.375rem;
+        color: #4b5563;
+        background: transparent;
+        cursor: pointer;
+        transition: background-color 150ms linear, color 150ms linear;
+    }
+
+    .error-alert-close:hover {
+        color: #9ca3af;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .error-alert-close:focus-visible {
+        outline: 2px solid #d65563;
+        outline-offset: 2px;
+    }
+
+    .error-alert-close svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .admin-confirm-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background-color: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(3px);
+    }
+
+    .admin-confirm-backdrop[hidden] {
+        display: none;
+    }
+
+    .admin-confirm-card {
+        width: min(100%, 28rem);
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background-color: #232531;
+        color: white;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+    }
+
+    .admin-confirm-icon {
+        display: flex;
+        width: 2.5rem;
+        height: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.625rem;
+        color: #d65563;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .admin-confirm-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .admin-confirm-copy h2,
+    .admin-confirm-copy p {
+        margin: 0;
+    }
+
+    .admin-confirm-copy h2 {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .admin-confirm-copy p {
+        margin-top: 0.25rem;
+        color: #9ca3af;
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .admin-confirm-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.625rem;
+        margin-top: 0.25rem;
+    }
+
+    .admin-confirm-cancel,
+    .admin-confirm-submit {
+        min-width: 6rem;
+        padding: 0.5rem 0.875rem;
+        border: 0;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .admin-confirm-cancel {
+        color: #d1d5db;
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-confirm-cancel:hover {
+        background-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .admin-confirm-submit {
+        color: white;
+        background-color: #019d91;
+    }
+
+    .admin-confirm-submit:hover {
+        background-color: #008b80;
+    }
+
+    .admin-confirm-cancel:focus-visible,
+    .admin-confirm-submit:focus-visible {
+        outline: 2px solid #75cfca;
+        outline-offset: 2px;
+    }
+
+    .back-to-top {
+        position: fixed;
+        right: 1.5rem;
+        bottom: 1.5rem;
+        z-index: 55;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 7.5rem;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        border: 0;
+        border-radius: 0.875rem;
+        color: white;
+        background-color: #019d91;
+        box-shadow: 0 8px 20px rgba(1, 157, 145, 0.25);
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 700;
+        transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .back-to-top[hidden] {
+        display: none;
+    }
+
+    .back-to-top:not([hidden]) {
+        animation: back-to-top-in 180ms ease-out;
+    }
+
+    .back-to-top:hover {
+        background-color: #008b80;
+        box-shadow: 0 10px 24px rgba(1, 157, 145, 0.35);
+        transform: translateY(-2px);
+    }
+
+    .back-to-top:focus-visible {
+        outline: 2px solid #75cfca;
+        outline-offset: 3px;
+    }
+
+    .back-to-top svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    @keyframes back-to-top-in {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .cookie-card {
+            left: 16px;
+            bottom: 16px;
+            padding: 20px 22px 22px;
+        }
+
+        .back-to-top {
+            right: 1rem;
+            bottom: 1rem;
+            min-width: 6.75rem;
+            padding: 0.625rem 0.75rem;
+        }
+
+        .cookie-heading {
+            font-size: 1.2rem;
+        }
+
+        .cookie-description {
+            font-size: 0.8rem;
+        }
+
+        .cookie-accept-button,
+        .cookie-decline-button {
+            min-width: 0;
+            font-size: 0.9rem;
+        }
+    }
+
+    @keyframes refresh-button-spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
     .tech-float {
         animation: tech-icon-float 4.2s ease-in-out infinite;
         will-change: transform;

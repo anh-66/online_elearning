@@ -129,7 +129,7 @@
             </header>
 
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <main data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <!-- Flash Alerts -->
                 @if(session('success'))
                     <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-sm flex items-center space-x-2 shadow-sm">
@@ -139,10 +139,7 @@
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-300 text-sm flex items-center space-x-2 shadow-sm">
-                        <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                    @include('partials.error-alert', ['message' => session('error')])
                 @endif
 
                 @if($errors->any())
@@ -162,5 +159,6 @@
     </div>
 
     @stack('scripts')
+    @include('partials.back-to-top')
 </body>
 </html>

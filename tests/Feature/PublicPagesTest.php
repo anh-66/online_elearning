@@ -29,15 +29,24 @@ class PublicPagesTest extends TestCase
         $published = $this->createCourse($instructor, $category, 'Laravel căn bản', Course::STATUS_PUBLISHED);
         $draft = $this->createCourse($instructor, $category, 'Khóa nháp bí mật', Course::STATUS_DRAFT);
 
-        $this->get(route('home'))->assertOk()->assertSee($published->title)->assertDontSee($draft->title);
-        $this->get(route('courses.index'))->assertOk()->assertSee($published->title)->assertDontSee($draft->title);
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee($published->title)
+            ->assertSee('cookie-consent')
+            ->assertDontSee($draft->title);
+        $this->get(route('courses.index'))
+            ->assertOk()
+            ->assertSee($published->title)
+            ->assertDontSee('cookie-consent')
+            ->assertSee('Làm mới danh sách khóa học')
+            ->assertDontSee($draft->title);
         $this->get(route('courses.index', ['keyword' => 'Laravel']))->assertOk()->assertSee($published->title);
         $this->get(route('courses.show', $published->slug))->assertOk()->assertSee($published->title);
         $this->get(route('courses.show', $draft->slug))->assertNotFound();
         $this->get(route('instructors.show', $instructor->id))->assertOk()->assertSee($published->title);
     }
 
-    public function test_homepage_shows_latest_notifications_and_banner_image(): void
+    public function test_homepage_shows_banner_image_without_external_notification_panel(): void
     {
         Banner::create([
             'title' => 'Banner khóa học mới',
@@ -52,8 +61,13 @@ class PublicPagesTest extends TestCase
 
         $this->get(route('home'))
             ->assertOk()
-            ->assertSee('Thông báo trang chủ')
+            ->assertDontSee('Thông báo từ ban quản trị')
             ->assertSee('storage/banners/home.jpg');
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('home'))
+            ->assertOk()
+            ->assertDontSee('cookie-consent');
     }
 
     public function test_student_dashboard_lists_enrolled_courses(): void
@@ -81,7 +95,7 @@ class PublicPagesTest extends TestCase
             ->assertSee('Bạn chưa ghi danh khóa học nào');
     }
 
-    public function test_student_can_view_all_enrolled_courses_and_latest_notifications(): void
+    public function test_student_can_view_all_enrolled_courses_without_external_notification_panel(): void
     {
         $instructor = User::factory()->create(['role' => User::ROLE_INSTRUCTOR]);
         $category = Category::create(['name' => 'Thiết kế', 'slug' => 'thiet-ke']);
@@ -99,7 +113,41 @@ class PublicPagesTest extends TestCase
             ->get(route('my-courses'))
             ->assertOk()
             ->assertSee($course->title)
-            ->assertSee('Thông báo học tập');
+            ->assertSee('Thông báo học tập')
+            ->assertDontSee('Thông báo từ ban quản trị');
+    }
+
+    public function test_support_center_page_renders_with_categories_and_search(): void
+    {
+        $this->get(route('support.index'))
+            ->assertOk()
+            ->assertSee('Hỗ Trợ EduLearn')
+            ->assertSee('Tài khoản & Mật khẩu')
+            ->assertSee('Gói đăng ký & Học phí')
+            ->assertSee('Tìm kiếm các chủ đề khác');
+    }
+
+    public function test_support_article_page_renders_with_step_by_step_guide(): void
+    {
+        $this->get(route('support.show', 'doi-mat-khau'))
+            ->assertOk()
+            ->assertSee('Đổi mật khẩu tài khoản EduLearn của bạn')
+            ->assertSee('Đăng nhập vào tài khoản EduLearn')
+            ->assertSee('Lưu thay đổi');
+
+        $this->get(route('support.show', 'dat-lai-mat-khau'))
+            ->assertOk()
+            ->assertSee('Đặt lại mật khẩu tài khoản khi bị quên');
+
+        $this->get(route('support.show', 'goi-dang-ky'))
+            ->assertOk()
+            ->assertSee('Quản lý gói đăng ký và thanh toán học phí');
+    }
+
+    public function test_support_article_returns_404_for_unknown_slug(): void
+    {
+        $this->get(route('support.show', 'khong-ton-tai'))
+            ->assertNotFound();
     }
 
     private function createCourse(User $instructor, Category $category, string $title, string $status): Course

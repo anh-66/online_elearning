@@ -110,7 +110,7 @@
                                         <iconify-icon icon="lucide:edit-3" class="text-lg"></iconify-icon>
                                     </a>
                                     <form method="POST" action="{{ route('admin.notifications.destroy', $notification) }}"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa thông báo này?')">
+                                          data-confirm-message="Bạn có chắc chắn muốn xóa thông báo này?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Xóa"

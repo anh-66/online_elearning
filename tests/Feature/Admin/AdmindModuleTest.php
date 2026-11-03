@@ -202,7 +202,7 @@ class AdminModuleTest extends TestCase
         $this->assertModelMissing($course);
     }
 
-    public function test_notification_crud_and_latest_shown_on_home(): void
+    public function test_notification_crud_and_notification_bell_data(): void
     {
         $this->actingAs($this->admin());
 
@@ -212,8 +212,7 @@ class AdminModuleTest extends TestCase
 
         $this->post(route('admin.notifications.store'), ['title' => 'x', 'content' => 'y', 'type' => 'khac'])->assertSessionHasErrors('type');
 
-        // Partial dùng chung cho trang chủ và trang "Khóa học của tôi".
-        $this->view('partials.latest-notifications')->assertSee('Bảo trì hệ thống');
+        $this->view('partials.notification-bell')->assertSee('Bảo trì hệ thống');
 
         $this->put(route('admin.notifications.update', $notification), ['title' => 'Đã đổi tiêu đề', 'content' => 'Nội dung mới', 'type' => 'promotion']);
         $this->assertSame('Đã đổi tiêu đề', $notification->fresh()->title);

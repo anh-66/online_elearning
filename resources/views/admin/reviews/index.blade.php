@@ -156,7 +156,7 @@
                                             <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
                                         </button>
                                         <form method="POST" action="{{ route('admin.reviews.destroy', $review) }}"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?')">
+                                              data-confirm-message="Bạn có chắc chắn muốn xóa đánh giá này?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Xóa vi phạm"
@@ -285,7 +285,7 @@
                                             <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
                                         </button>
                                         <form method="POST" action="{{ route('admin.reviews.destroy-comment', $comment) }}"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa bình luận này?')">
+                                              data-confirm-message="Bạn có chắc chắn muốn xóa bình luận này?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Xóa vi phạm"
