@@ -113,7 +113,7 @@
                                     </a>
                                 @endif
 
-                                @if(Auth::user()->isInstructor() || Auth::user()->isAdmin())
+                                @if(Auth::user()->isInstructor())
                                     <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium text-[#019D91] dark:text-[#02b3a5]">
                                         Studio Giảng viên
                                     </a>

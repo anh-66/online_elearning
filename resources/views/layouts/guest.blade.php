@@ -107,11 +107,11 @@
                         </div>
                     </div>
 
-                    <!-- Thống kê 20+ và 300+ CĂN GIỮA VÀ XÍCH LÊN TRÊN -->
+                    <!-- Thống kê người dùng thực tế -->
                     <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-center gap-16 sm:gap-24 text-center">
                         <div>
                             <p class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-none">
-                                20+
+                                {{ number_format($instructorCount) }}
                             </p>
                             <p class="mt-2 text-sm text-neutral-400 font-medium">
                                 Giảng viên
@@ -120,7 +120,7 @@
 
                         <div>
                             <p class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-none">
-                                300+
+                                {{ number_format($studentCount) }}
                             </p>
                             <p class="mt-2 text-sm text-neutral-400 font-medium">
                                 Bạn học
