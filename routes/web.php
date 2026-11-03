@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UploadController;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,7 @@ Route::get('/dashboard', function (Request $request) {
     return view('dashboard', [
         'enrolledCourses' => $enrolledCourses,
         'enrollmentTotal' => $request->user()->enrollments()->count(),
+        'latestNotifications' => Notification::latest()->limit(3)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

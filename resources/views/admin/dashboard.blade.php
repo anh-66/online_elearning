@@ -1,100 +1,342 @@
 @extends('layouts.admin')
 
 @section('title', 'Quản trị hệ thống - Dashboard')
-@section('page_title', 'Bảng Điều Khiển Quản Trị')
+@section('page_title', 'Tổng quan hệ thống')
 
 @section('content')
 <div class="space-y-6">
-    @if (session('status'))
-        <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-700">
-            {{ session('status') }}
-        </div>
-    @endif
 
-    <div class="flex justify-end">
-        <a href="{{ route('admin.instructors.create') }}" class="rounded-md bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">
-            Tạo tài khoản giảng viên
-        </a>
+    {{-- KPI Cards Grid --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        {{-- Người dùng --}}
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Người dùng</p>
+                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['users']) }}</h3>
+                </div>
+                <div class="p-2.5 bg-[#019D91]/10 rounded-xl text-[#019D91]">
+                    <iconify-icon icon="lucide:users-2" class="text-2xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.users.index') }}" class="text-xs font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                    Xem chi tiết
+                    <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
+                </a>
+            </div>
+        </div>
+
+        {{-- Doanh thu --}}
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Doanh thu</p>
+                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['revenue'], 0, ',', '.') }}<span class="text-xl ml-1">đ</span></h3>
+                </div>
+                <div class="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
+                    <iconify-icon icon="lucide:banknote" class="text-2xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-xs text-gray-400">Tổng doanh thu tích lũy</span>
+            </div>
+        </div>
+
+        {{-- Khóa học --}}
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Khóa học</p>
+                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['courses']) }}</h3>
+                </div>
+                <div class="p-2.5 bg-amber-50 rounded-xl text-amber-600">
+                    <iconify-icon icon="lucide:book-open" class="text-2xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.courses.index') }}" class="text-xs font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                    Xem tất cả
+                    <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
+                </a>
+            </div>
+        </div>
+
+        {{-- Lượt ghi danh --}}
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Lượt ghi danh</p>
+                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['enrollments']) }}</h3>
+                </div>
+                <div class="p-2.5 bg-purple-50 rounded-xl text-purple-600">
+                    <iconify-icon icon="lucide:clipboard-list" class="text-2xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.enrollments.index') }}" class="text-xs font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                    Xem chi tiết
+                    <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- 4 Thẻ thống kê tổng quan -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tổng người dùng</p>
-                <p class="text-2xl font-black text-gray-900 mt-1">{{ \App\Models\User::count() }}</p>
+    {{-- Charts Row --}}
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {{-- Revenue Chart --}}
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-base font-semibold text-gray-900">Xu hướng doanh thu</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm đã chọn</p>
+                </div>
+                <form method="GET" action="{{ route('admin.dashboard') }}">
+                    <div class="relative inline-block">
+                        <select name="year" onchange="this.form.submit()"
+                                class="text-sm border border-gray-200 bg-white rounded-lg pl-3 pr-8 py-1.5 font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] cursor-pointer">
+                            @forelse($availableYears as $year)
+                                <option value="{{ $year }}" @selected($year === $selectedYear)>{{ $year }}</option>
+                            @empty
+                                <option value="{{ $selectedYear }}">{{ $selectedYear }}</option>
+                            @endforelse
+                        </select>
+                    </div>
+                </form>
             </div>
-            <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tổng khóa học</p>
-                <p class="text-2xl font-black text-gray-900 mt-1">{{ \App\Models\Course::count() }}</p>
-            </div>
-            <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            </div>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Lượt ghi danh</p>
-                <p class="text-2xl font-black text-gray-900 mt-1">{{ \App\Models\Enrollment::count() }}</p>
-            </div>
-            <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            <div class="h-64 w-full">
+                <canvas id="revenueChart"></canvas>
             </div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Khóa chờ duyệt</p>
-                <p class="text-2xl font-black text-amber-500 mt-1">{{ \App\Models\Course::pending()->count() }}</p>
+        {{-- Enrollment Chart --}}
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-base font-semibold text-gray-900">Lượt ghi danh</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm {{ $selectedYear }}</p>
+                </div>
+                <form method="GET" action="{{ route('admin.dashboard') }}">
+                    <div class="relative inline-block">
+                        <select name="year" onchange="this.form.submit()"
+                                class="text-sm border border-gray-200 bg-white rounded-lg pl-3 pr-8 py-1.5 font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] cursor-pointer">
+                            @forelse($availableYears as $year)
+                                <option value="{{ $year }}" @selected($year === $selectedYear)>{{ $year }}</option>
+                            @empty
+                                <option value="{{ $selectedYear }}">{{ $selectedYear }}</option>
+                            @endforelse
+                        </select>
+                    </div>
+                </form>
             </div>
-            <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div class="h-64 w-full">
+                <canvas id="enrollmentChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Khung vẽ biểu đồ mẫu (Chart.js) -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Biểu đồ Lượt ghi danh theo tháng</h3>
-        <div class="h-80 w-full">
-            <canvas id="enrollmentChart"></canvas>
+    {{-- Course Status + Pending Courses --}}
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {{-- Course Status Doughnut --}}
+        <div class="glass-card p-6">
+            <div class="mb-6">
+                <h2 class="text-base font-semibold text-gray-900">Phân bố khóa học</h2>
+                <p class="text-xs text-gray-400 mt-0.5">Theo trạng thái kiểm duyệt</p>
+            </div>
+            <div class="h-56 w-full">
+                <canvas id="courseStatusChart"></canvas>
+            </div>
         </div>
+
+        {{-- Pending Courses --}}
+        @if($pendingCourses->isNotEmpty())
+            <div class="xl:col-span-2 glass-card overflow-hidden">
+                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                    <div>
+                        <h2 class="text-base font-semibold text-gray-900">Khóa học chờ duyệt</h2>
+                        <p class="text-xs text-gray-400 mt-0.5">Cần xem xét trước khi xuất bản</p>
+                    </div>
+                    <a href="{{ route('admin.courses.index', ['status' => 'pending']) }}"
+                       class="text-sm font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                        Xem tất cả
+                        <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
+                    </a>
+                </div>
+                <div class="divide-y divide-gray-100 max-h-72 overflow-y-auto">
+                    @foreach($pendingCourses as $course)
+                        <div class="flex items-center justify-between gap-4 px-6 py-4 hover:bg-gray-50/50 transition-colors">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                                    <iconify-icon icon="lucide:book-open" class="text-amber-500 text-lg"></iconify-icon>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-gray-900 truncate">{{ $course->title }}</p>
+                                    <p class="text-xs text-gray-400 truncate mt-0.5">{{ $course->instructor->name ?? 'Chưa có giảng viên' }}</p>
+                                </div>
+                            </div>
+                            <a href="{{ route('admin.courses.index', ['status' => 'pending', 'keyword' => $course->title]) }}"
+                               class="shrink-0 text-xs font-semibold text-[#019D91] hover:underline whitespace-nowrap">
+                                Xem xét
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @else
+            <div class="xl:col-span-2 glass-card p-6 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 flex items-center justify-center mb-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-500 text-2xl"></iconify-icon>
+                    </div>
+                    <p class="text-sm font-medium text-gray-600">Không có khóa học chờ duyệt</p>
+                    <p class="text-xs text-gray-400 mt-1">Tất cả khóa học đã được kiểm duyệt</p>
+                </div>
+            </div>
+        @endif
     </div>
+
 </div>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('enrollmentChart');
-        if (ctx && window.Chart) {
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
-                    datasets: [{
-                        label: 'Số lượt ghi danh học viên',
-                        data: [15, 28, 42, 60, 85, 110],
-                        backgroundColor: 'rgba(225, 29, 72, 0.85)',
-                        borderRadius: 8
-                    }]
+        if (!window.Chart) {
+            return;
+        }
+
+        const baseOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { size: 12, weight: '500' },
+                        color: '#6b7280',
+                        maxRotation: 0,
+                        autoSkip: false
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f3f4f6' },
+                    ticks: { precision: 0, font: { size: 11 }, color: '#9ca3af' }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: @json($revenueChart['labels']),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @json($revenueChart['data']),
+                    borderColor: '#019D91',
+                    backgroundColor: 'rgba(1, 157, 145, 0.08)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#019D91',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                ...baseOptions,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                return 'Tháng ' + items[0].label;
+                            },
+                            label: function(context) {
+                                return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.raw) + ' đ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    ...baseOptions.scales,
+                    y: {
+                        ...baseOptions.scales.y,
+                        suggestedMin: 0,
+                        suggestedMax: 2000000,
+                        ticks: {
+                            ...baseOptions.scales.y.ticks,
+                            stepSize: 500000,
+                            callback: function(value) {
+                                if (value === 0) return '0';
+                                if (value >= 1000000) {
+                                    const tr = value / 1000000;
+                                    return (Number.isInteger(tr) ? tr : tr.toFixed(1)) + ' tr';
+                                }
+                                if (value >= 1000) {
+                                    return (value / 1000) + 'k';
+                                }
+                                return value;
+                            }
+                        }
                     }
                 }
-            });
-        }
+            }
+        });
+
+        new Chart(document.getElementById('enrollmentChart'), {
+            type: 'bar',
+            data: {
+                labels: @json($enrollmentChart['labels']),
+                datasets: [{
+                    label: 'Lượt ghi danh',
+                    data: @json($enrollmentChart['data']),
+                    backgroundColor: 'rgba(1, 157, 145, 0.15)',
+                    borderColor: '#019D91',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                ...baseOptions,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                return 'Tháng ' + items[0].label;
+                            },
+                            label: function(context) {
+                                return 'Lượt ghi danh: ' + context.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('courseStatusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: @json($courseStatusChart['labels']),
+                datasets: [{
+                    data: @json($courseStatusChart['data']),
+                    backgroundColor: ['#94a3b8', '#f59e0b', '#019D91', '#ef4444'],
+                    borderWidth: 3,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 10, font: { size: 11 }, padding: 12 }
+                    }
+                },
+                cutout: '68%'
+            }
+        });
     });
 </script>
 @endpush
