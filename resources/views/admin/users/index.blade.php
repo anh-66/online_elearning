@@ -182,7 +182,7 @@
                                     </a>
                                     @if($user->id !== auth()->id())
                                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản {{ $user->name }}?')">
+                                              data-confirm-message="Bạn có chắc chắn muốn xóa tài khoản {{ $user->name }}?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Xóa"

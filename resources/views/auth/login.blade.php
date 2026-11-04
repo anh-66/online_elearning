@@ -8,7 +8,7 @@
     <x-auth-session-status class="mb-4 rounded-lg bg-[#019D91]/10 px-4 py-2.5 text-xs text-[#018076]" :status="session('status')" />
 
     @if (session('error'))
-        <p class="mb-4 rounded-lg bg-rose-50 px-4 py-2.5 text-xs text-rose-600">{{ session('error') }}</p>
+        @include('partials.error-alert', ['message' => session('error')])
     @endif
 
     {{-- Google OAuth Button --}}

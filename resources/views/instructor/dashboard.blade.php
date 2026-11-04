@@ -70,8 +70,12 @@
             <ul class="space-y-3">
                 @forelse($recentEnrollments as $enrollment)
                     <li class="flex items-start space-x-3">
-                        <div class="w-9 h-9 rounded-full bg-brand-100 dark:bg-brand-500/15 text-brand-800 dark:text-brand-300 font-bold text-sm flex items-center justify-center shrink-0">
-                            {{ mb_strtoupper(mb_substr($enrollment->user->name, 0, 1)) }}
+                        <div class="w-9 h-9 rounded-full bg-brand-100 dark:bg-brand-500/15 text-brand-800 dark:text-brand-300 font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
+                            @if($enrollment->user->avatar)
+                                <img src="{{ asset('storage/'.$enrollment->user->avatar) }}" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover">
+                            @else
+                                {{ mb_strtoupper(mb_substr($enrollment->user->name, 0, 1)) }}
+                            @endif
                         </div>
                         <div class="min-w-0">
                             <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate">{{ $enrollment->user->name }}</p>

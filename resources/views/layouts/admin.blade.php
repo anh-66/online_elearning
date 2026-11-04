@@ -251,8 +251,12 @@
                 <!-- Profile Trigger Card -->
                 <div @click="userMenuOpen = !userMenuOpen"
                      class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
-                    <div class="w-8 h-8 rounded-full bg-[#019D91]/10 text-[#019D91] flex items-center justify-center font-bold text-sm shrink-0">
-                        {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 1)) }}
+                    <div class="w-8 h-8 rounded-full bg-[#019D91]/10 text-[#019D91] flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ asset('storage/'.Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 1)) }}
+                        @endif
                     </div>
                     <div class="user-info min-w-0 flex-1 transition-all duration-300">
                         <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-[#019D91] transition-colors">{{ Auth::user()->name ?? 'Admin' }}</p>
@@ -297,8 +301,12 @@
                                 type="button"
                                 class="flex items-center gap-2 py-1 pl-3 pr-2 hover:bg-gray-50 rounded-full border border-gray-200 cursor-pointer transition-colors">
                             <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Admin' }}</span>
-                            <div class="flex h-7 w-7 items-center justify-center rounded-full bg-[#019D91]/10 text-xs font-bold text-[#019D91]">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 1)) }}
+                            <div class="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-[#019D91]/10 text-xs font-bold text-[#019D91]">
+                                @if(Auth::user()->avatar)
+                                    <img src="{{ asset('storage/'.Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-full w-full object-cover">
+                                @else
+                                    {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 1)) }}
+                                @endif
                             </div>
                             <iconify-icon icon="lucide:chevron-down" class="text-gray-400 text-xs"></iconify-icon>
                         </button>
@@ -342,7 +350,7 @@
             </header>
 
             <!-- Main Content -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f9fafb]">
+            <main id="admin-main-content" data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f9fafb]">
                 <!-- Flash Messages -->
                 @if(session('success'))
                     <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5 shadow-sm">
@@ -352,10 +360,7 @@
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center gap-2.5 shadow-sm">
-                        <iconify-icon icon="lucide:alert-circle" class="text-red-600 shrink-0 text-lg"></iconify-icon>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                    @include('partials.error-alert', ['message' => session('error')])
                 @endif
 
                 @if($errors->any())
@@ -376,6 +381,9 @@
             </main>
         </div>
     </div>
+
+    @include('partials.admin-confirm-modal')
+    @include('partials.back-to-top')
 
     @stack('scripts')
 

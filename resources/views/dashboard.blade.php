@@ -17,8 +17,6 @@
 
 <div class="bg-neutral-50 py-8 sm:py-12 dark:bg-neutral-950">
     <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-        @include('partials.latest-notifications', ['latestNotifications' => $latestNotifications])
-
         <section class="relative overflow-hidden rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-brand-100/60 dark:from-neutral-900 dark:via-neutral-950 dark:to-brand-950/40 p-6 text-neutral-900 dark:border-neutral-800 dark:text-white sm:p-8">
             <div class="absolute -right-16 -top-24 h-64 w-64 rounded-full bg-brand-300/30 blur-3xl dark:bg-brand-700/20"></div>
             <div class="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

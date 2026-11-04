@@ -83,7 +83,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center justify-end">
                                     <form method="POST" action="{{ route('admin.enrollments.destroy', $enrollment) }}"
-                                          onsubmit="return confirm('Bạn có chắc muốn hủy lượt ghi danh này?')">
+                                          data-confirm-message="Bạn có chắc muốn hủy lượt ghi danh này?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Hủy ghi danh"

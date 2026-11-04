@@ -96,7 +96,7 @@
         {{-- ===== MAIN CONTENT ===== --}}
         <div class="flex-1 min-w-0">
             {{-- Header info --}}
-            <div class="flex items-end justify-between mb-6 pb-4 border-b border-[#E5E5EA] dark:border-[#30363d]">
+            <div class="flex items-end justify-between gap-4 mb-6 pb-4 border-b border-[#E5E5EA] dark:border-[#30363d]">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc]">
                         Tất cả khóa học
@@ -108,6 +108,16 @@
                         @endif
                     </p>
                 </div>
+                <button type="button"
+                        aria-label="Làm mới danh sách khóa học"
+                        class="refresh-button"
+                        onclick="this.classList.add('is-refreshing'); setTimeout(() => window.location.reload(), 500)">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"></path>
+                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"></path>
+                    </svg>
+                    <span>Làm mới</span>
+                </button>
             </div>
 
             {{-- Course Grid --}}

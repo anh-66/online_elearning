@@ -6,7 +6,6 @@ use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
-use App\Models\Notification;
 use App\Models\User;
 
 class HomeController extends Controller
@@ -16,9 +15,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Thông báo hệ thống mới nhất (tối đa 3 thông báo)
-        $latestNotifications = Notification::latest()->limit(3)->get();
-
         // Banner đang hoạt động, sắp xếp theo order
         $banners = Banner::where('is_active', true)
             ->orderBy('order')
@@ -49,6 +45,6 @@ class HomeController extends Controller
             'total_enrollments' => Enrollment::count(),
         ];
 
-        return view('home', compact('banners', 'featuredCategories', 'featuredCourses', 'stats', 'latestNotifications'));
+        return view('home', compact('banners', 'featuredCategories', 'featuredCourses', 'stats'));
     }
 }

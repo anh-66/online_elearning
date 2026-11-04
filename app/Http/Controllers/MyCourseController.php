@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,11 +17,6 @@ class MyCourseController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $latestNotifications = Notification::query()
-            ->latest()
-            ->limit(3)
-            ->get();
-
-        return view('my-courses.index', compact('courses', 'latestNotifications'));
+        return view('my-courses.index', compact('courses'));
     }
 }

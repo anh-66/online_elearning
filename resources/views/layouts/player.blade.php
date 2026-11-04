@@ -55,7 +55,7 @@
     <!-- Main Learning Layout Container (2 Columns) -->
     <div class="flex-1 flex overflow-hidden relative">
         <!-- Main Content Area: Video Player, Lesson Content, Q&A -->
-        <main class="flex-1 overflow-y-auto bg-slate-900 flex flex-col">
+        <main data-back-to-top-scroll class="flex-1 overflow-y-auto bg-slate-900 flex flex-col">
             <!-- Alerts Banner -->
             <div class="p-4 sm:p-6 max-w-5xl mx-auto w-full pb-0">
                 @if(session('success'))
@@ -66,10 +66,7 @@
                 @endif
 
                 @if(session('error'))
-                    <div class="p-3.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-sm flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                    @include('partials.error-alert', ['message' => session('error')])
                 @endif
             </div>
 
@@ -107,5 +104,6 @@
     </div>
 
     @stack('scripts')
+    @include('partials.back-to-top')
 </body>
 </html>
