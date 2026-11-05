@@ -314,11 +314,12 @@
                         <div class="mt-6 pt-5 border-t border-[#E5E5EA] dark:border-[#30363d]">
                             <span class="text-[11px] uppercase tracking-wider text-[#86868B] dark:text-[#8b949e] block mb-2">Giảng viên</span>
                             <a href="{{ route('instructors.show', $course->instructor->id) }}" class="flex items-center space-x-3 group">
-                                <div class="w-9 h-9 rounded-full bg-[#1D1D1F] text-white dark:bg-[#21262d] dark:text-white font-semibold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-transparent dark:border-[#30363d]">
-                                    @if($course->instructor->avatar)
-                                        <img src="{{ asset('storage/' . $course->instructor->avatar) }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
+                                <div class="w-9 h-9 rounded-full bg-black text-white dark:bg-black dark:text-white font-semibold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-transparent dark:border-[#30363d]">
+                                    @if($course->instructor->avatar_url)
+                                        <img src="{{ $course->instructor->avatar_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                        <span class="hidden flex items-center justify-center w-full h-full">{{ $course->instructor->initialLetter() }}</span>
                                     @else
-                                        {{ mb_strtoupper(mb_substr($course->instructor->name, 0, 1)) }}
+                                        <span>{{ $course->instructor->initialLetter() }}</span>
                                     @endif
                                 </div>
                                 <div>

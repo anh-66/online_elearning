@@ -78,7 +78,7 @@
                         </li>
                     @endauth
                     <li>
-                        <a href="mailto:support@edulearn.vn" class="text-[#1D1D1F] dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition flex items-center gap-2">
+                        <a href="{{ route('support.feedback') }}" class="text-[#1D1D1F] dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition flex items-center gap-2">
                             <span>Báo Cáo Sự Cố & Góp Ý</span>
                         </a>
                     </li>

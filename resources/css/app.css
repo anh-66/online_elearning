@@ -34,14 +34,14 @@
 }
 
 @layer components {
-    /* Glass Navbar Effect (GitHub Dark Compatible) */
+    /* Glass Navbar Effect (Apple / GitHub Style Frosted Glass) */
     .apple-glass-nav {
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255, 255, 255, 0.95);
         backdrop-filter: saturate(180%) blur(20px);
         -webkit-backdrop-filter: saturate(180%) blur(20px);
     }
     .dark .apple-glass-nav {
-        background-color: rgba(13, 17, 23, 0.85);
+        background-color: rgba(13, 17, 23, 0.95);
         backdrop-filter: saturate(180%) blur(20px);
         -webkit-backdrop-filter: saturate(180%) blur(20px);
         border-color: #30363d;

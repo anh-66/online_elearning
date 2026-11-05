@@ -23,6 +23,9 @@ Route::get('/courses/{slug}', [CourseCatalogController::class, 'show'])->name('c
 Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->name('instructors.show');
 
 Route::get('/support', [SupportController::class, 'index'])->name('support.index');
+Route::get('/support/bao-cao-su-co', [SupportController::class, 'feedback'])->name('support.feedback');
+Route::post('/support/bao-cao-su-co', [SupportController::class, 'submitFeedback'])->name('support.feedback.submit');
+Route::get('/support/feedback', fn () => redirect()->route('support.feedback'));
 Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support.show');
 
 /*
@@ -68,12 +71,23 @@ Route::get('/dashboard', function (Request $request) {
 Route::middleware('auth')->group(function () {
     Route::view('/avatar-generator', 'avatar-generator')->name('avatar-generator');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/export-data', [ProfileController::class, 'exportData'])->name('profile.export-data');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Endpoint upload ảnh cho CKEditor 5
     Route::post('/upload/image', [UploadController::class, 'uploadImage'])->name('upload.image');
 });
+
+// Fallback phục vụ file public storage trên môi trường thiếu symlink (Windows)
+Route::get('/storage/{path}', function (string $path) {
+    $filePath = storage_path('app/public/'.$path);
+    if (! file_exists($filePath)) {
+        abort(404);
+    }
+
+    return response()->file($filePath);
+})->where('path', '.*');
 
 Route::middleware('guest')->group(function () {
     Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');

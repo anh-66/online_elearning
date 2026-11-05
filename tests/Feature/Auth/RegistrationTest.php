@@ -27,8 +27,8 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
         ]);
 
         $this->assertAuthenticated();
@@ -44,8 +44,8 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register', [
             'name' => 'Instructor User',
             'email' => 'instructor@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
             'role' => 'instructor',
         ]);
 
@@ -62,8 +62,8 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
             'role' => 'admin',
         ]);
 
@@ -82,8 +82,8 @@ class RegistrationTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.instructors.store'), [
             'name' => 'Instructor User',
             'email' => 'created-instructor@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
         ]);
 
         $response->assertRedirect(route('admin.dashboard', absolute: false));
@@ -91,6 +91,36 @@ class RegistrationTest extends TestCase
             'email' => 'created-instructor@example.com',
             'role' => User::ROLE_INSTRUCTOR,
         ]);
+    }
+
+    public function test_registration_requires_password_with_letters_and_numbers(): void
+    {
+        // Missing numbers
+        $responseWithoutNumbers = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'test1@example.com',
+            'password' => 'passwordonly',
+            'password_confirmation' => 'passwordonly',
+        ]);
+        $responseWithoutNumbers->assertSessionHasErrors('password');
+
+        // Missing letters
+        $responseWithoutLetters = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'test2@example.com',
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ]);
+        $responseWithoutLetters->assertSessionHasErrors('password');
+
+        // Valid letters and numbers
+        $validResponse = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'valid@example.com',
+            'password' => 'ValidPass123',
+            'password_confirmation' => 'ValidPass123',
+        ]);
+        $validResponse->assertSessionHasNoErrors();
     }
 
     public function test_students_cannot_create_instructor_accounts(): void

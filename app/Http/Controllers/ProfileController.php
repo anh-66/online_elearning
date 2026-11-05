@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProfileController extends Controller
 {
@@ -98,5 +99,52 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Export all personal user data as JSON download.
+     */
+    public function exportData(Request $request): StreamedResponse
+    {
+        $user = $request->user()->load(['enrollments.course', 'reviews.course', 'comments.lesson']);
+
+        $data = [
+            'platform' => 'EduLearn Online E-Learning',
+            'exported_at' => now()->toIso8601String(),
+            'profile' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'status' => $user->status,
+                'bio' => $user->bio,
+                'created_at' => $user->created_at?->toIso8601String(),
+            ],
+            'enrolled_courses' => $user->enrollments->map(fn ($e) => [
+                'course_id' => $e->course_id,
+                'course_title' => $e->course?->title,
+                'enrolled_at' => $e->enrolled_at?->toIso8601String(),
+                'status' => $e->status,
+            ]),
+            'reviews' => $user->reviews->map(fn ($r) => [
+                'course_title' => $r->course?->title,
+                'rating' => $r->rating,
+                'comment' => $r->comment,
+                'created_at' => $r->created_at?->toIso8601String(),
+            ]),
+            'lesson_comments' => $user->comments->map(fn ($c) => [
+                'lesson_title' => $c->lesson?->title,
+                'content' => $c->content,
+                'created_at' => $c->created_at?->toIso8601String(),
+            ]),
+        ];
+
+        $filename = 'edulearn-personal-data-'.Str::slug($user->name ?: 'user').'-'.now()->format('Ymd').'.json';
+
+        return response()->streamDownload(function () use ($data) {
+            echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }, $filename, [
+            'Content-Type' => 'application/json',
+        ]);
     }
 }

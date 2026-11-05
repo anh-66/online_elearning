@@ -11,13 +11,15 @@
         <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
 
             {{-- Avatar --}}
-            <div class="w-24 h-24 rounded-full bg-brand-700 text-white ring-4 ring-white font-bold dark:ring-neutral-800 flex items-center justify-center text-3xl overflow-hidden shrink-0">
-                @if($instructor->avatar)
-                    <img src="{{ asset('storage/' . $instructor->avatar) }}"
+            <div class="w-24 h-24 rounded-full bg-black text-white ring-4 ring-white font-bold dark:ring-neutral-800 flex items-center justify-center text-3xl overflow-hidden shrink-0">
+                @if($instructor->avatar_url)
+                    <img src="{{ $instructor->avatar_url }}"
                          alt="{{ $instructor->name }}"
-                         class="w-full h-full object-cover">
+                         class="w-full h-full object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                    <span class="hidden flex items-center justify-center w-full h-full">{{ $instructor->initialLetter() }}</span>
                 @else
-                    {{ mb_strtoupper(mb_substr($instructor->name, 0, 1)) }}
+                    <span>{{ $instructor->initialLetter() }}</span>
                 @endif
             </div>
 

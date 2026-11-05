@@ -6,11 +6,13 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['name', 'email', 'password', 'role', 'avatar', 'bio', 'status', 'google_id'])]
 #[Hidden(['password', 'remember_token'])]
@@ -76,6 +78,48 @@ class User extends Authenticatable
         };
     }
 
+    /**
+     * Get the URL for the user's avatar if the file exists on public disk or is an external URL.
+     */
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function (): ?string {
+                if (! is_string($this->avatar) || trim($this->avatar) === '') {
+                    return null;
+                }
+
+                if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+                    return $this->avatar;
+                }
+
+                if (! Storage::disk('public')->exists($this->avatar)) {
+                    return null;
+                }
+
+                return asset('storage/'.$this->avatar);
+            }
+        );
+    }
+
+    /**
+     * Determine if the user has an existing avatar file or image URL.
+     */
+    public function hasAvatar(): bool
+    {
+        return $this->avatar_url !== null;
+    }
+
+    /**
+     * Get the uppercase first letter of the user's name for default avatar.
+     */
+    public function initialLetter(): string
+    {
+        $name = trim((string) ($this->name ?? ''));
+
+        return $name !== '' ? mb_strtoupper(mb_substr($name, 0, 1)) : '?';
+    }
+
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class, 'instructor_id');
@@ -111,6 +155,11 @@ class User extends Authenticatable
     public function comments(): HasMany
     {
         return $this->hasMany(LessonComment::class);
+    }
+
+    public function lessonComments(): HasMany
+    {
+        return $this->comments();
     }
 
     public function wishlists(): HasMany

@@ -88,11 +88,12 @@
                             <button @click="open = !open"
                                     class="flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-[#019D91] transition hover:opacity-90 active:scale-95"
                                     aria-label="Tài khoản cá nhân">
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1D1D1F] text-white dark:bg-[#21262d] dark:text-white font-semibold text-sm sm:text-base flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
-                                    @if(Auth::user()->avatar)
-                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black text-white dark:bg-black dark:text-white font-semibold text-sm sm:text-base flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
+                                    @if(Auth::user()->avatar_url)
+                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                        <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
                                     @else
-                                        {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                                        <span>{{ Auth::user()->initialLetter() }}</span>
                                     @endif
                                 </div>
                             </button>
@@ -268,6 +269,7 @@
                     <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Về EduLearn</h3>
                     <ul class="space-y-2.5">
                         <li><a href="{{ route('support.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition font-medium text-[#019D91] dark:text-[#02b3a5]">Trung tâm hỗ trợ</a></li>
+                        <li><a href="{{ route('support.feedback') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Báo cáo sự cố & góp ý</a></li>
                         <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Giới thiệu nền tảng</a></li>
                         <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Điều khoản dịch vụ</a></li>
                         <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Chính sách bảo mật</a></li>
