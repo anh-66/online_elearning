@@ -7,7 +7,11 @@ use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\MyCourseController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\WishlistController;
 /*
 |--------------------------------------------------------------------------
 | Public Routes (Thành viên 2: HomeController, CourseCatalogController, InstructorProfileController)
@@ -27,11 +31,11 @@ Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->n
 */
 Route::middleware(['auth'])->group(function () {
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
-    // Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
-    // Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
-    // Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
-    // Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
-    // Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
+    Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
+    Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
+    Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
+    Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
     // Route::get('/quizzes/{id}', [QuizController::class, 'show'])->name('quizzes.show');
