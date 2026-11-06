@@ -7,7 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        @include('partials.theme-script')
+        {{-- Layout khách (đăng nhập/đăng ký) dùng bố cục split 50/50 cố định, form bên phải luôn là nền sáng --}}
+        <script>
+            document.documentElement.classList.remove('dark');
+        </script>
 
         <title>{{ $title }} · {{ config('app.name', 'EduLearn') }}</title>
 

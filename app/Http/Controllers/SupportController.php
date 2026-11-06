@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Feedback;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -47,6 +49,51 @@ class SupportController extends Controller
             'searchKeyword' => $searchKeyword,
             'activeCategory' => $activeCategory,
         ]);
+    }
+
+    /**
+     * Display the feedback & bug report form.
+     */
+    public function feedback(): View
+    {
+        return view('support.feedback');
+    }
+
+    /**
+     * Handle submission of feedback or bug report.
+     */
+    public function submitFeedback(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'in:bug,feature,question,other'],
+            'priority' => ['required', 'string', 'in:low,medium,high'],
+            'description' => ['required', 'string', 'max:5000'],
+            'sender_email' => ['nullable', 'email', 'max:255'],
+            'sender_name' => ['nullable', 'string', 'max:255'],
+            'attachment' => ['nullable', 'file', 'max:10240', 'mimes:png,jpg,jpeg,webp,pdf,log,txt'],
+        ]);
+
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('feedbacks', 'public');
+        }
+
+        $user = $request->user();
+
+        Feedback::create([
+            'user_id' => $user?->id,
+            'sender_name' => $user?->name ?? $validated['sender_name'] ?? 'Khách truy cập',
+            'sender_email' => $user?->email ?? $validated['sender_email'] ?? null,
+            'title' => $validated['title'],
+            'category' => $validated['category'],
+            'priority' => $validated['priority'],
+            'description' => $validated['description'],
+            'attachment' => $attachmentPath,
+            'status' => Feedback::STATUS_PENDING,
+        ]);
+
+        return back()->with('success', 'Báo cáo sự cố / góp ý của bạn đã được lưu thành công vào hệ thống và chuyển đến ban quản trị EduLearn! Chúng tôi sẽ xem xét và phản hồi trong vòng 24h.');
     }
 
     /**
@@ -179,7 +226,7 @@ class SupportController extends Controller
                 'summary' => 'Hướng dẫn thay đổi mật khẩu định kỳ hoặc đổi sang mật khẩu an toàn hơn khi bạn đã đăng nhập vào hệ thống.',
                 'intro' => 'Bạn có thể cập nhật mật khẩu trực tiếp trong mục Hồ sơ cá nhân của mình bất kỳ lúc nào nếu bạn vẫn nhớ mật khẩu hiện tại. Việc đổi mật khẩu định kỳ giúp bảo vệ lịch sử học tập và thông tin cá nhân của bạn.',
                 'action_label' => 'Đi đến trang Đổi mật khẩu trong Cài đặt',
-                'action_url' => route('profile.edit'),
+                'action_url' => route('profile.edit').'#password',
                 'action_help' => 'Bạn sẽ được chuyển trực tiếp đến khu vực Cập nhật mật khẩu trong phần Hồ sơ tài khoản.',
                 'illustration_type' => 'password_change',
                 'device_title' => 'EduLearn - Quản lý Hồ sơ & Bảo mật',
@@ -197,12 +244,12 @@ class SupportController extends Controller
                         'title' => 'Mở trang Hồ sơ cá nhân',
                         'description' => 'Nhấp vào ảnh đại diện hình tròn ở góc trên bên phải thanh Menu Header, sau đó chọn "Hồ sơ cá nhân" từ danh sách thả xuống.',
                         'link_label' => 'Mở Hồ sơ cá nhân',
-                        'link_url' => route('profile.edit'),
+                        'link_url' => route('profile.edit').'#password',
                     ],
                     [
                         'step_number' => 3,
-                        'title' => 'Cuộn xuống phần "Cập nhật mật khẩu"',
-                        'description' => 'Tại giao diện Hồ sơ, bạn sẽ nhìn thấy khung "Cập nhật mật khẩu" kèm ghi chú yêu cầu mật khẩu dài và an toàn.',
+                        'title' => 'Chuyển sang mục "Quyền riêng tư"',
+                        'description' => 'Tại giao diện Cài đặt, chọn thẻ "Quyền riêng tư" để mở khu vực "Thay đổi mật khẩu" kèm ghi chú bảo mật.',
                     ],
                     [
                         'step_number' => 4,
@@ -211,10 +258,10 @@ class SupportController extends Controller
                     ],
                     [
                         'step_number' => 5,
-                        'title' => 'Nhấn "Lưu" để hoàn tất cập nhật',
-                        'description' => 'Bấm nút "Lưu". Thông báo thành công sẽ hiển thị và mật khẩu mới sẽ có hiệu lực tức thì cho các lần đăng nhập tiếp theo.',
+                        'title' => 'Nhấn "Cập nhật mật khẩu" để hoàn tất',
+                        'description' => 'Bấm nút "Cập nhật mật khẩu". Thông báo thành công sẽ hiển thị và mật khẩu mới sẽ có hiệu lực tức thì cho các lần đăng nhập tiếp theo.',
                         'link_label' => 'Thực hiện đổi mật khẩu ngay',
-                        'link_url' => route('profile.edit'),
+                        'link_url' => route('profile.edit').'#password',
                     ],
                 ],
                 'notes' => [
@@ -422,9 +469,11 @@ class SupportController extends Controller
                 'badge' => 'Studio Giảng dạy',
                 'summary' => 'Bộ hướng dẫn chi tiết dành cho Giảng viên: cách đăng ký tài khoản giảng dạy, tải video, tổ chức chương mục và phát hành bài học.',
                 'intro' => 'EduLearn Studio được xây dựng nhằm mang lại sự tự do và thuận tiện nhất cho giảng viên trong việc tạo bài giảng, quản lý học viên và chia sẻ kiến thức hữu ích đến cộng đồng.',
-                'action_label' => 'Đi đến Studio Giảng viên',
-                'action_url' => route('instructor.dashboard'),
-                'action_help' => 'Mở bảng điều khiển giảng dạy để tạo mới hoặc quản lý danh sách các khóa học của bạn.',
+                'action_label' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin()) ? 'Đi đến Studio Giảng viên' : 'Khám phá các khóa học',
+                'action_url' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin()) ? route('instructor.dashboard') : route('courses.index'),
+                'action_help' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin())
+                    ? 'Mở bảng điều khiển giảng dạy để tạo mới hoặc quản lý danh sách các khóa học của bạn.'
+                    : 'Lưu ý: Tính năng Studio Giảng viên chỉ dành riêng cho tài khoản Giảng viên và Quản trị viên.',
                 'illustration_type' => 'instructor',
                 'device_title' => 'EduLearn - Bảng điều khiển Studio Giảng viên',
                 'steps_heading' => 'Các bước xuất bản khóa học trên hệ thống EduLearn',
@@ -433,15 +482,15 @@ class SupportController extends Controller
                         'step_number' => 1,
                         'title' => 'Truy cập Studio Giảng viên',
                         'description' => 'Đăng nhập bằng tài khoản giảng viên và chọn "Studio Giảng viên" từ thanh Menu thả xuống ở góc phải trên cùng.',
-                        'link_label' => 'Vào Studio Giảng viên',
-                        'link_url' => route('instructor.dashboard'),
+                        'link_label' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin()) ? 'Vào Studio Giảng viên' : 'Xem danh mục khóa học',
+                        'link_url' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin()) ? route('instructor.dashboard') : route('courses.index'),
                     ],
                     [
                         'step_number' => 2,
                         'title' => 'Tạo khóa học mới',
                         'description' => 'Nhấn nút "Tạo khóa học mới", nhập tiêu đề khóa học, chọn danh mục phù hợp, mức học phí và viết nội dung mô tả chi tiết.',
-                        'link_label' => 'Tạo khóa học ngay',
-                        'link_url' => route('instructor.courses.create'),
+                        'link_label' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin()) ? 'Tạo khóa học ngay' : 'Khám phá khóa học',
+                        'link_url' => auth()->check() && (auth()->user()->isInstructor() || auth()->user()->isAdmin()) ? route('instructor.courses.create') : route('courses.index'),
                     ],
                     [
                         'step_number' => 3,
@@ -477,7 +526,7 @@ class SupportController extends Controller
         return [
             [
                 'question' => 'Làm sao để đổi mật khẩu tài khoản EduLearn của tôi?',
-                'answer' => 'Bạn có thể vào trang Hồ sơ cá nhân (nhấp vào ảnh đại diện ở góc phải trên), cuộn xuống phần "Cập nhật mật khẩu", nhập mật khẩu hiện tại và mật khẩu mới rồi bấm "Lưu".',
+                'answer' => 'Bạn có thể vào Cài đặt tài khoản (nhấp vào ảnh đại diện ở góc phải trên), chọn mục "Quyền riêng tư", nhập mật khẩu hiện tại và mật khẩu mới rồi bấm "Cập nhật mật khẩu".',
                 'article_slug' => 'doi-mat-khau',
             ],
             [

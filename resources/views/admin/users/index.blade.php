@@ -83,11 +83,12 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="relative shrink-0">
-                                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm text-gray-600 border border-gray-200 overflow-hidden">
-                                            @if($user->avatar)
-                                                <img src="{{ asset('storage/'.$user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                        <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm overflow-hidden">
+                                            @if($user->avatar_url)
+                                                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                                <span class="hidden flex items-center justify-center w-full h-full">{{ $user->initialLetter() }}</span>
                                             @else
-                                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                <span>{{ $user->initialLetter() }}</span>
                                             @endif
                                         </div>
                                         @if($user->isActive())

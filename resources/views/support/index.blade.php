@@ -240,7 +240,7 @@
                         </div>
                         <div class="flex items-start space-x-3 text-xs sm:text-sm">
                             <span class="w-5 h-5 rounded-full bg-[#019D91] text-white flex items-center justify-center font-bold shrink-0 text-xs">2</span>
-                            <span>Cuộn đến phần "Cập nhật mật khẩu" và điền mật khẩu mới.</span>
+                            <span>Chọn mục "Quyền riêng tư" và điền mật khẩu mới.</span>
                         </div>
                         <div class="flex items-start space-x-3 text-xs sm:text-sm">
                             <span class="w-5 h-5 rounded-full bg-[#019D91] text-white flex items-center justify-center font-bold shrink-0 text-xs">3</span>
@@ -249,7 +249,7 @@
                     </div>
 
                     <div class="pt-4 flex flex-wrap gap-3">
-                        <a href="{{ route('profile.edit') }}"
+                        <a href="{{ route('profile.edit') }}#password"
                            class="btn-apple-primary text-xs sm:text-sm px-5 py-2.5">
                             Đi đến Đổi mật khẩu ngay →
                         </a>
@@ -323,14 +323,15 @@
                 Đội ngũ hỗ trợ kỹ thuật và chăm sóc học viên EduLearn luôn sẵn sàng đồng hành cùng bạn 24/7.
             </p>
             <div class="mt-6 flex flex-wrap justify-center items-center gap-4">
-                <a href="mailto:support@edulearn.vn"
+                <a href="{{ route('support.feedback') }}"
                    class="btn-apple-primary px-6 py-3 text-sm inline-flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    <span>Gửi email tới support@edulearn.vn</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                    <span>Báo cáo sự cố & Góp ý</span>
                 </a>
-                <a href="{{ route('courses.index') }}"
+                <a href="mailto:support@edulearn.vn"
                    class="btn-apple-outline px-6 py-3 text-sm inline-flex items-center gap-2">
-                    <span>Khám phá các khóa học</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>support@edulearn.vn</span>
                 </a>
             </div>
         </div>

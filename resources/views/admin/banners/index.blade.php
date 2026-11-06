@@ -38,12 +38,16 @@
                             {{-- Banner Image & Title --}}
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-28 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200">
+                                    <div class="w-28 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center">
                                         @if($banner->image_path)
-                                            <img src="{{ asset('storage/'.$banner->image_path) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
+                                            <img src="{{ asset('storage/'.$banner->image_path) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                            <div class="hidden w-full h-full flex items-center justify-center text-gray-400">
+                                                <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>
+                                            </div>
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center">
-                                                <iconify-icon icon="lucide:image" class="text-gray-400 text-xl"></iconify-icon>
+                                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                                <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>
                                             </div>
                                         @endif
                                     </div>

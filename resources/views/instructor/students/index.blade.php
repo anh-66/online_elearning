@@ -44,13 +44,14 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-neutral-800">
                             <td class="px-6 py-3">
                                 <div class="flex items-center gap-3">
-                                    @if($enrollment->user->avatar)
-                                        <img src="{{ asset('storage/'.$enrollment->user->avatar) }}" alt="{{ $enrollment->user->name }}" class="w-9 h-9 rounded-full object-cover">
-                                    @else
-                                        <div class="w-9 h-9 rounded-full bg-brand-100 dark:bg-brand-500/15 text-brand-800 dark:text-brand-300 font-bold text-sm flex items-center justify-center">
-                                            {{ mb_strtoupper(mb_substr($enrollment->user->name, 0, 1)) }}
-                                        </div>
-                                    @endif
+                                    <div class="w-9 h-9 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
+                                        @if($enrollment->user->avatar_url)
+                                            <img src="{{ $enrollment->user->avatar_url }}" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                            <span class="hidden flex items-center justify-center w-full h-full">{{ $enrollment->user->initialLetter() }}</span>
+                                        @else
+                                            <span>{{ $enrollment->user->initialLetter() }}</span>
+                                        @endif
+                                    </div>
                                     <div class="min-w-0">
                                         <p class="font-semibold text-gray-900 dark:text-neutral-100 truncate">{{ $enrollment->user->name }}</p>
                                         <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">{{ $enrollment->user->email }}</p>

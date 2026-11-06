@@ -84,7 +84,8 @@
                     <img src="{{ asset('storage/'.$banner->image_path) }}"
                          alt="{{ $banner->title }}"
                          class="absolute inset-0 h-full w-full object-cover opacity-30"
-                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                         onerror="this.style.display='none'">
                     <div class="absolute inset-0 bg-[#161b22]/70"></div>
                     <div class="relative z-10">
                     <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 max-w-4xl mx-auto leading-tight">

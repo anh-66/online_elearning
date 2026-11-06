@@ -88,11 +88,12 @@
             <div class="p-4 border-t border-neutral-200 dark:border-neutral-800">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3 truncate">
-                        <div class="w-9 h-9 rounded-lg bg-brand-700 text-white font-bold flex items-center justify-center shrink-0 overflow-hidden">
-                            @if(Auth::user()->avatar)
-                                <img src="{{ asset('storage/'.Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                        <div class="w-9 h-9 rounded-lg bg-black text-white font-bold flex items-center justify-center shrink-0 overflow-hidden">
+                            @if(Auth::user()->avatar_url)
+                                <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
                             @else
-                                {{ mb_strtoupper(mb_substr(Auth::user()->name ?? 'GV', 0, 1)) }}
+                                <span>{{ Auth::user()->initialLetter() }}</span>
                             @endif
                         </div>
                         <div class="truncate">
