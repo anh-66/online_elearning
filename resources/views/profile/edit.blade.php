@@ -1,45 +1,394 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-indigo-600">Tài khoản</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ __('Hồ sơ cá nhân') }}</h1>
-        </div>
-    </x-slot>
+@extends('layouts.public')
 
-    <div class="bg-slate-50 py-8 sm:py-12">
-        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 p-6 text-white shadow-lg shadow-indigo-900/10 sm:p-8">
-                    <div class="absolute -right-12 -top-24 h-64 w-64 rounded-full border border-white/10"></div>
-                    <div class="absolute -bottom-32 right-32 h-64 w-64 rounded-full bg-cyan-300/10 blur-3xl"></div>
-                    <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-indigo-100">Xin chào, {{ $user->name }}</p>
-                            <h2 class="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Quản lý hồ sơ của bạn</h2>
-                            <p class="mt-2 max-w-xl text-sm leading-6 text-indigo-100/90">Cập nhật thông tin, ảnh đại diện và bảo mật tài khoản tại một nơi.</p>
+@section('title', 'Cài đặt người dùng')
+
+@push('styles')
+<style>
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.25s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+@endpush
+
+@section('content')
+<div class="min-h-[calc(100vh-140px)] bg-white text-gray-900 dark:bg-[#0d1117] dark:text-gray-100 border-b border-gray-100 dark:border-neutral-800"
+     x-init="
+         const handleHash = () => {
+             let h = window.location.hash.replace('#', '');
+             let allowed = @js($user->isStudent() ? ['account', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'notifications', 'privacy', 'display']);
+             if (h === 'password') {
+                 activeTab = 'privacy';
+                 setTimeout(() => document.getElementById('password')?.scrollIntoView({ behavior: 'smooth' }), 100);
+             } else if (allowed.includes(h)) {
+                 activeTab = h;
+             }
+         };
+         handleHash();
+         window.addEventListener('hashchange', handleHash);
+         window.addEventListener('theme-changed', (e) => {
+             if (e.detail?.theme) {
+                 currentTheme = e.detail.theme;
+             }
+         });
+         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+             if (currentTheme === 'system') {
+                 document.documentElement.classList.toggle('dark', e.matches);
+                 window.dispatchEvent(new CustomEvent('theme-changed', {
+                     detail: { theme: 'system', dark: e.matches }
+                 }));
+             }
+         });
+     "
+     x-data="{
+         activeTab: (function() {
+             let h = window.location.hash.replace('#', '');
+             if (h === 'password') return 'privacy';
+             let allowed = @js($user->isStudent() ? ['account', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'notifications', 'privacy', 'display']);
+             if (allowed.includes(h)) return h;
+             return @js($errors->updatePassword->isNotEmpty() ? 'privacy' : ($errors->userDeletion->isNotEmpty() ? 'privacy' : 'account'));
+         })(),
+         tabTitles: {
+             'account': 'Cài đặt tài khoản',
+             'notifications': 'Cài đặt thông báo',
+             'privacy': 'Quyền riêng tư & Bảo mật',
+             'display': 'Giao diện & Hiển thị',
+             'billing': 'Đăng ký & Thanh toán'
+         },
+         tabDescriptions: {
+             'account': 'Quản lý thông tin cá nhân và cấu hình tài khoản của bạn.',
+             'notifications': 'Tùy chỉnh cách bạn nhận tin tức và cập nhật từ hệ thống.',
+             'privacy': 'Quản lý bảo mật tài khoản và dữ liệu cá nhân của bạn.',
+             'display': 'Tùy chỉnh cách ứng dụng hiển thị trên thiết bị của bạn.',
+             'billing': 'Quản lý các khóa học đã ghi danh và lịch sử thanh toán.'
+         },
+         // Notifications toggles
+         emailActivity: true,
+         emailNewsletter: false,
+         pushDiscussion: true,
+         pushReminder: false,
+         // Theme selection - mặc định là 'light' khi vào web
+         currentTheme: localStorage.getItem('theme') || 'light',
+         setTheme(mode) {
+             this.currentTheme = mode;
+             let isDark = false;
+             if (mode === 'dark') {
+                 isDark = true;
+                 document.documentElement.classList.add('dark');
+                 localStorage.setItem('theme', 'dark');
+             } else if (mode === 'light') {
+                 isDark = false;
+                 document.documentElement.classList.remove('dark');
+                 localStorage.setItem('theme', 'light');
+             } else {
+                 isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                 document.documentElement.classList.toggle('dark', isDark);
+                 localStorage.setItem('theme', 'system');
+             }
+             window.dispatchEvent(new CustomEvent('theme-changed', {
+                 detail: { theme: mode, dark: isDark }
+             }));
+         }
+     }">
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col md:flex-row gap-8 lg:gap-12">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 shrink-0 flex flex-col">
+            <nav class="flex-1 space-y-1">
+                <button type="button" @click="activeTab = 'account'"
+                        :class="activeTab === 'account' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                        class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                    <iconify-icon icon="lucide:user" class="text-lg"></iconify-icon>
+                    <span>Tài khoản</span>
+                </button>
+
+                <button type="button" @click="activeTab = 'notifications'"
+                        :class="activeTab === 'notifications' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                        class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                    <iconify-icon icon="lucide:bell" class="text-lg"></iconify-icon>
+                    <span>Thông báo</span>
+                </button>
+
+                <button type="button" @click="activeTab = 'privacy'"
+                        :class="activeTab === 'privacy' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                        class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                    <iconify-icon icon="lucide:shield" class="text-lg"></iconify-icon>
+                    <span>Quyền riêng tư</span>
+                </button>
+
+                <button type="button" @click="activeTab = 'display'"
+                        :class="activeTab === 'display' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                        class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                    <iconify-icon icon="lucide:monitor" class="text-lg"></iconify-icon>
+                    <span>Hiển thị</span>
+                </button>
+
+                @if($user->isStudent())
+                    <button type="button" @click="activeTab = 'billing'"
+                            :class="activeTab === 'billing' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                            class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                        <iconify-icon icon="lucide:credit-card" class="text-lg"></iconify-icon>
+                        <span>Thanh toán</span>
+                    </button>
+                @endif
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-3xl min-w-0">
+            <!-- Header -->
+            <header class="mb-10">
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight mb-2 text-gray-900 dark:text-white" x-text="tabTitles[activeTab]">Cài đặt tài khoản</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400" x-text="tabDescriptions[activeTab]">Quản lý thông tin cá nhân và cấu hình tài khoản của bạn.</p>
+            </header>
+
+            <!-- TAB 1: TÀI KHOẢN -->
+            <section x-show="activeTab === 'account'" class="tab-content active space-y-10">
+                @include('profile.partials.update-profile-information-form')
+            </section>
+
+            <!-- TAB 2: THÔNG BÁO -->
+            <section x-show="activeTab === 'notifications'" x-cloak class="tab-content active space-y-10">
+                <div class="space-y-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Email thông báo</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-2">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Hoạt động tài khoản</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Nhận email khi có hoạt động đăng nhập từ thiết bị mới hoặc đổi mật khẩu.</p>
+                            </div>
+                            <button type="button" @click="emailActivity = !emailActivity"
+                                    :class="emailActivity ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
+                                <div :class="emailActivity ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                            </button>
                         </div>
-                        <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-white/15 text-2xl font-semibold text-white shadow-inner">
-                            @if ($user->avatar)
-                                <img src="{{ asset('storage/'.$user->avatar) }}" alt="Ảnh đại diện của {{ $user->name }}" class="h-full w-full object-cover">
-                            @else
-                                {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
-                            @endif
+
+                        <div class="flex items-center justify-between py-2 border-t border-gray-50 dark:border-neutral-800">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Bản tin & Khóa học mới</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Cập nhật các tính năng, công nghệ mới và khóa học được đề xuất.</p>
+                            </div>
+                            <button type="button" @click="emailNewsletter = !emailNewsletter"
+                                    :class="emailNewsletter ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
+                                <div :class="emailNewsletter ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                            </button>
                         </div>
                     </div>
+                </div>
+
+                <div class="space-y-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Thông báo đẩy</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between py-2">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Thảo luận bài học</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Nhận thông báo khi có người trả lời câu hỏi hoặc phản hồi bình luận của bạn.</p>
+                            </div>
+                            <button type="button" @click="pushDiscussion = !pushDiscussion"
+                                    :class="pushDiscussion ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
+                                <div :class="pushDiscussion ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between py-2 border-t border-gray-50 dark:border-neutral-800">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Nhắc nhở học tập</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Nhắc nhở tiếp tục tiến độ bài học dang dở vào các ngày cuối tuần.</p>
+                            </div>
+                            <button type="button" @click="pushReminder = !pushReminder"
+                                    :class="pushReminder ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
+                                <div :class="pushReminder ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <div class="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
-                    <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-8">
-                        @include('profile.partials.update-profile-information-form')
-                    </section>
+            <!-- TAB 3: QUYỀN RIÊNG TƯ -->
+            <section x-show="activeTab === 'privacy'" x-cloak class="tab-content active space-y-10">
+                @include('profile.partials.update-password-form')
 
-                    <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-8">
-                        @include('profile.partials.update-password-form')
-                    </section>
-            </div>
+                <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Dữ liệu cá nhân</h2>
+                    <div class="p-4 bg-gray-50 dark:bg-[#161b22] rounded-xl border border-gray-100 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <iconify-icon icon="lucide:download" class="text-xl text-gray-500 shrink-0"></iconify-icon>
+                            <div class="min-w-0">
+                                <span class="text-sm font-medium text-gray-900 dark:text-white block">Tải xuống dữ liệu của tôi</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Xuất bản sao hồ sơ cá nhân, khóa học và lịch sử học tập (file .JSON).</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('profile.export-data') }}"
+                           class="text-xs font-semibold px-4 py-2 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 transition shrink-0 inline-flex items-center justify-center gap-1.5 shadow-sm">
+                            <iconify-icon icon="lucide:download" class="text-sm"></iconify-icon>
+                            Tải về file
+                        </a>
+                    </div>
+                </div>
 
-            <section class="rounded-2xl border border-rose-100 bg-white p-5 shadow-sm sm:p-8">
+                <div class="pt-6 border-t border-gray-100 dark:border-neutral-800">
                     @include('profile.partials.delete-user-form')
+                </div>
             </section>
-        </div>
+
+            <!-- TAB 4: HIỂN THỊ -->
+            <section x-show="activeTab === 'display'" x-cloak class="tab-content active space-y-10">
+                <div class="space-y-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Giao diện hệ thống</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button type="button" @click="setTheme('light')"
+                                :class="currentTheme === 'light' ? 'border-black dark:border-white bg-gray-50 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-700 hover:border-gray-300'"
+                                class="p-4 border rounded-xl text-left transition-all">
+                            <div class="w-full h-20 bg-white border border-gray-100 rounded mb-3 flex items-center justify-center">
+                                <div class="w-12 h-2 bg-gray-200 rounded-full"></div>
+                            </div>
+                            <span :class="currentTheme === 'light' ? 'font-semibold text-gray-900 dark:text-white' : 'font-medium text-gray-500 dark:text-gray-400'" class="text-xs">Sáng</span>
+                        </button>
+
+                        <button type="button" @click="setTheme('dark')"
+                                :class="currentTheme === 'dark' ? 'border-black dark:border-white bg-gray-50 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-700 hover:border-gray-300'"
+                                class="p-4 border rounded-xl text-left transition-all">
+                            <div class="w-full h-20 bg-gray-900 rounded mb-3 flex items-center justify-center">
+                                <div class="w-12 h-2 bg-gray-700 rounded-full"></div>
+                            </div>
+                            <span :class="currentTheme === 'dark' ? 'font-semibold text-gray-900 dark:text-white' : 'font-medium text-gray-500 dark:text-gray-400'" class="text-xs">Tối</span>
+                        </button>
+
+                        <button type="button" @click="setTheme('system')"
+                                :class="currentTheme === 'system' ? 'border-black dark:border-white bg-gray-50 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-700 hover:border-gray-300'"
+                                class="p-4 border rounded-xl text-left transition-all">
+                            <div class="w-full h-20 bg-gray-100 dark:bg-neutral-900 rounded mb-3 flex items-center justify-center gap-1">
+                                <div class="w-6 h-12 bg-white rounded-sm border border-gray-200"></div>
+                                <div class="w-6 h-12 bg-gray-900 rounded-sm"></div>
+                            </div>
+                            <span :class="currentTheme === 'system' ? 'font-semibold text-gray-900 dark:text-white' : 'font-medium text-gray-500 dark:text-gray-400'" class="text-xs">Hệ thống</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-900 dark:text-white">Ngôn ngữ</label>
+                        <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-[#0d1117] focus:border-black dark:focus:border-white focus:outline-none">
+                            <option value="vi">Tiếng Việt</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-900 dark:text-white">Cỡ chữ</label>
+                        <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-[#0d1117] focus:border-black dark:focus:border-white focus:outline-none">
+                            <option value="normal">Mặc định</option>
+                            <option value="small">Nhỏ</option>
+                            <option value="large">Lớn</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            @if($user->isStudent())
+            <!-- TAB 5: THANH TOÁN -->
+            <section x-show="activeTab === 'billing'" x-cloak class="tab-content active space-y-10">
+                <div class="p-6 border border-gray-100 dark:border-neutral-800 rounded-2xl bg-gray-50 dark:bg-[#161b22] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Tài khoản</span>
+                        <h3 class="text-xl font-bold mt-1 text-gray-900 dark:text-white">
+                            {{ $user->isAdmin() ? 'Quản trị viên' : ($user->isInstructor() ? 'Giảng viên' : 'Học viên EduLearn') }}
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Đã tham gia hệ thống từ {{ $user->created_at?->format('d/m/Y') ?? '2026' }}
+                        </p>
+                    </div>
+                    @if (Route::has('my-courses'))
+                        <a href="{{ route('my-courses') }}" class="inline-flex items-center justify-center px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
+                            Khóa học của tôi
+                        </a>
+                    @endif
+                </div>
+
+                <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Phương thức thanh toán</h2>
+                    <div class="border border-gray-100 dark:border-neutral-800 rounded-xl p-4 flex items-center gap-4 bg-white dark:bg-[#161b22]">
+                        <div class="w-12 h-8 bg-gray-100 dark:bg-neutral-800 rounded flex items-center justify-center shrink-0">
+                            <iconify-icon icon="logos:visa" class="text-2xl"></iconify-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">Visa kết thúc bằng •••• 4242</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Hết hạn 04/28</p>
+                        </div>
+                        <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">Mặc định</span>
+                    </div>
+
+                    <button type="button" class="w-full py-3 border border-dashed border-gray-300 dark:border-neutral-700 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center justify-center gap-2 transition">
+                        <iconify-icon icon="lucide:plus" class="text-lg"></iconify-icon>
+                        Thêm phương thức mới
+                    </button>
+                </div>
+
+                <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-neutral-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Lịch sử thanh toán & Ghi danh</h2>
+                    @php
+                        $recentEnrollments = $user->enrollments()->with('course')->latest()->take(5)->get();
+                    @endphp
+
+                    @if($recentEnrollments->isNotEmpty())
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="border-b border-gray-100 dark:border-neutral-800 text-gray-400 font-medium text-xs">
+                                    <tr>
+                                        <th class="py-3 pr-4">Ngày</th>
+                                        <th class="py-3 px-4">Khóa học</th>
+                                        <th class="py-3 px-4">Số tiền</th>
+                                        <th class="py-3 pl-4">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-50 dark:divide-neutral-800 text-xs">
+                                    @foreach($recentEnrollments as $enrollment)
+                                        <tr>
+                                            <td class="py-3.5 pr-4 text-gray-500 dark:text-gray-400">{{ $enrollment->created_at?->format('d/m/Y') }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-900 dark:text-white max-w-xs truncate">{{ $enrollment->course->title ?? 'Khóa học' }}</td>
+                                            <td class="py-3.5 px-4 text-gray-700 dark:text-gray-300">
+                                                {{ $enrollment->course && $enrollment->course->price > 0 ? number_format($enrollment->course->price) . ' đ' : 'Miễn phí' }}
+                                            </td>
+                                            <td class="py-3.5 pl-4">
+                                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 text-[10px] font-bold rounded uppercase">
+                                                    {{ $enrollment->status === 'paid' ? 'Đã thanh toán' : ($enrollment->status ?? 'Hoàn thành') }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-8 text-gray-400 text-sm">
+                            <p>Chưa có giao dịch thanh toán nào.</p>
+                        </div>
+                    @endif
+                </div>
+            </section>
+            @endif
+        </main>
     </div>
-</x-app-layout>
+</div>
+@endsection

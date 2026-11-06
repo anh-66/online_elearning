@@ -1,3 +1,3 @@
-<button {{ $attributes->merge(['type' => 'button', 'class' => 'inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150']) }}>
+<button {{ $attributes->merge(['type' => 'button', 'class' => 'inline-flex items-center justify-center rounded-full bg-[#E8E8ED] dark:bg-neutral-800 text-[#1D1D1F] dark:text-neutral-100 px-5 py-2.5 text-xs font-medium hover:bg-[#DEDEE3] dark:hover:bg-neutral-700 transition focus:outline-none focus:ring-2 focus:ring-[#0071E3]/30 active:scale-[0.98]']) }}>
     {{ $slot }}
 </button>

@@ -9,5 +9,36 @@
 .ck-content p { margin: .5rem 0; }
 .ck-content ul { list-style: disc; padding-left: 1.5rem; }
 .ck-content ol { list-style: decimal; padding-left: 1.5rem; }
-.ck-content a { color: #4f46e5; text-decoration: underline; }
-.ck-content blockquote { border-left: 4px solid #c7d2fe; padding-left: 1rem; color: #4b5563; font-style: italic; }
+.ck-content a { color: #0f766e; text-decoration: underline; }
+.ck-content blockquote { border-left: 4px solid #99f6e4; padding-left: 1rem; color: #4b5563; font-style: italic; }
+
+/* Giao diện tối: ghi đè biến màu của CKEditor 5 khi <html> có class "dark" */
+html.dark {
+    --ck-color-base-background: #171717;
+    --ck-color-base-foreground: #262626;
+    --ck-color-base-border: #404040;
+    --ck-color-text: #e5e5e5;
+    --ck-color-shadow-drop: rgba(0, 0, 0, .4);
+    --ck-color-toolbar-background: #262626;
+    --ck-color-toolbar-border: #404040;
+    --ck-color-button-default-hover-background: #404040;
+    --ck-color-button-default-active-background: #525252;
+    --ck-color-button-on-background: #134e4a;
+    --ck-color-button-on-hover-background: #115e59;
+    --ck-color-button-on-color: #ccfbf1;
+    --ck-color-split-button-hover-background: #404040;
+    --ck-color-dropdown-panel-background: #262626;
+    --ck-color-dropdown-panel-border: #404040;
+    --ck-color-list-background: #262626;
+    --ck-color-list-button-hover-background: #404040;
+    --ck-color-list-button-on-background: #134e4a;
+    --ck-color-panel-background: #262626;
+    --ck-color-panel-border: #404040;
+    --ck-color-input-background: #171717;
+    --ck-color-input-border: #404040;
+    --ck-color-input-text: #e5e5e5;
+    --ck-color-labeled-field-label-background: #262626;
+}
+
+html.dark .ck-content a { color: #2dd4bf; }
+html.dark .ck-content blockquote { border-left-color: #115e59; color: #a3a3a3; }

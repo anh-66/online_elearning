@@ -5,45 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'E-Learning')) - Nền tảng Học trực tuyến</title>
+    <title>@yield('title', config('app.name', 'EduLearn')) - Nền tảng Học trực tuyến</title>
 
-    <!-- Fonts -->
+    @include('partials.theme-script')
+
+    <!-- Preconnect Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700&display=swap" rel="stylesheet" />
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="flex flex-col min-h-screen font-sans bg-white text-gray-800 antialiased">
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 bg-black text-white backdrop-blur border-b border-gray-800 shadow-sm" x-data="{ mobileMenuOpen: false }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo & Brand -->
-                <div class="flex items-center space-x-8">
-                    <a href="{{ url('/') }}" class="flex items-center space-x-2">
-                        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-black shadow-md shadow-black/30">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                            </svg>
-                        </div>
-                        <span class="text-xl font-bold text-white">EduLearn</span>
+<body class="flex min-h-screen flex-col bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased selection:bg-[#019D91] selection:text-white"
+      data-back-to-top-scroll
+      x-data="{ mobileMenuOpen: false, supportFlyoutOpen: false, supportCloseTimer: null, openSupportFlyout() { clearTimeout(this.supportCloseTimer); this.supportFlyoutOpen = true; }, scheduleSupportClose() { this.supportCloseTimer = setTimeout(() => { this.supportFlyoutOpen = false; }, 220); } }">
+    <!-- Header / Navbar (Apple Glass Strip - Expanded & Proportioned) -->
+    <header class="sticky top-0 z-50 apple-glass-nav border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors"
+            @keydown.escape="supportFlyoutOpen = false; clearTimeout(supportCloseTimer)">
+        <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Left: Logo & Nav Links -->
+                <div class="flex items-center space-x-10">
+                    <a href="{{ url('/') }}" class="flex items-center space-x-2.5 text-[#1D1D1F] dark:text-white group">
+                        <svg class="w-7 h-7 text-[#1D1D1F] dark:text-white group-hover:text-[#019D91] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                        </svg>
+                        <span class="text-lg sm:text-xl font-bold tracking-tight">EduLearn</span>
                     </a>
 
-                    <!-- Desktop Nav links -->
-                    <nav class="hidden md:flex items-center space-x-6 text-sm font-semibold text-white">
-                        <a href="{{ url('/') }}" class="font-bold text-white hover:text-gray-200 transition">Trang chủ</a>
-                        <a href="{{ url('/courses') }}" class="font-bold text-white hover:text-gray-200 transition">Khóa học</a>
+                    <!-- Desktop Nav Links (Bigger Font Size & Spacing) -->
+                    <nav class="hidden md:flex items-center space-x-8 text-sm sm:text-[15px] font-medium text-[#1D1D1F]/80 dark:text-[#e6edf3]">
+                        <a href="{{ url('/') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('home') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                            Trang chủ
+                        </a>
+                        <a href="{{ url('/courses') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                            Khóa học
+                        </a>
+                        <!-- Apple-style Support Nav with Flyout Trigger -->
+                        <div class="relative py-2"
+                             @mouseenter="openSupportFlyout()"
+                             @mouseleave="scheduleSupportClose()">
+                            <a href="{{ route('support.index') }}"
+                               class="inline-flex items-center gap-1.5 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                                <span>Hỗ Trợ</span>
+                                <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </a>
+                        </div>
                     </nav>
                 </div>
 
-                <!-- Search Bar -->
-                <div class="hidden lg:flex items-center flex-1 max-w-md mx-8">
+                <!-- Center: Expanded Search Form -->
+                <div class="hidden lg:flex items-center flex-1 max-w-lg mx-10">
                     <form action="{{ url('/courses') }}" method="GET" class="w-full relative">
-                        <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm khóa học, kỹ năng..." 
-                               class="w-full pl-10 pr-4 py-2 text-sm bg-gray-800 text-white placeholder:text-gray-400 border-none rounded-full focus:bg-gray-700 focus:ring-2 focus:ring-white transition">
-                        <span class="absolute left-3 top-2.5 text-gray-400">
+                        <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm các khóa học..."
+                                class="w-full h-10 pl-10 pr-4 text-sm bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] focus:border-[#019D91]/40 dark:focus:border-[#02b3a5] rounded-full focus:ring-2 focus:ring-[#019D91]/20 transition">
+                        <span class="absolute left-3.5 top-2.5 text-[#86868B] dark:text-[#7d8590]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -51,88 +70,100 @@
                     </form>
                 </div>
 
-                <!-- Right Actions: Auth / User Menu -->
-                <div class="flex items-center space-x-4">
-                    @auth
-                        <!-- Khóa học của tôi -->
-                        <a href="{{ url('/my-courses') }}" class="hidden sm:inline-flex items-center space-x-1.5 text-sm font-bold text-white hover:text-gray-200 transition">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                            <span>Khóa học của tôi</span>
-                        </a>
+                <!-- Right: Actions (Notification Bell + Theme Toggle + User Dropdown / Auth Buttons) -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    @include('partials.notification-bell')
 
-                        <!-- User Dropdown (Alpine.js) -->
+                    <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2 transition" />
+
+                    @auth
+                        @if (Route::has('my-courses'))
+                            <a href="{{ route('my-courses') }}" class="hidden sm:inline-block text-sm font-medium text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-2 py-1">
+                                Khóa học của tôi
+                            </a>
+                        @endif
+
+                        <!-- User Profile Dropdown (Chỉ hiện avatar tròn có chữ bên trong, click vào là sổ menu) -->
                         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                            <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none">
-                                <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 font-semibold flex items-center justify-center border-2 border-indigo-200 overflow-hidden">
-                                    @if(Auth::user()->avatar)
-                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                            <button @click="open = !open"
+                                    class="flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-[#019D91] transition hover:opacity-90 active:scale-95"
+                                    aria-label="Tài khoản cá nhân">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black text-white dark:bg-black dark:text-white font-semibold text-sm sm:text-base flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
+                                    @if(Auth::user()->avatar_url)
+                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                        <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
                                     @else
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                        <span>{{ Auth::user()->initialLetter() }}</span>
                                     @endif
                                 </div>
-                                <span class="hidden md:inline text-sm font-bold text-white max-w-[120px] truncate">{{ Auth::user()->name }}</span>
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
                             </button>
 
                             <!-- Dropdown Menu -->
-                            <div x-show="open" x-cloak 
-                                 x-transition:enter="transition ease-out duration-100"
+                            <div x-show="open" x-cloak
+                                 x-transition:enter="transition ease-out duration-150"
                                  x-transition:enter-start="transform opacity-0 scale-95"
                                  x-transition:enter-end="transform opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave="transition ease-in duration-100"
                                  x-transition:leave-start="transform opacity-100 scale-100"
                                  x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50 text-sm">
-                                
-                                <div class="px-4 py-2 border-b border-gray-100">
-                                    <p class="font-semibold text-gray-900 truncate">{{ Auth::user()->name }}</p>
-                                    <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
-                                    <span class="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium rounded-full 
-                                        {{ Auth::user()->isAdmin() ? 'bg-rose-100 text-rose-700' : (Auth::user()->isInstructor() ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700') }}">
-                                        {{ strtoupper(Auth::user()->role) }}
+                                 class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] rounded-2xl shadow-xl border border-[#E5E5EA] dark:border-[#30363d] py-2 z-50 text-sm">
+
+                                <div class="px-4 py-3 border-b border-[#E5E5EA] dark:border-[#30363d]">
+                                    <p class="font-semibold truncate">{{ Auth::user()->name }}</p>
+                                    <p class="text-xs text-[#86868B] dark:text-[#7d8590] truncate mt-0.5">{{ Auth::user()->email }}</p>
+                                    <span class="inline-block mt-2 px-2.5 py-0.5 text-[11px] font-medium rounded-full
+                                        {{ Auth::user()->isAdmin() ? 'bg-neutral-900 text-white dark:bg-[#30363d] dark:text-white' : (Auth::user()->isInstructor() ? 'bg-[#019D91]/15 text-[#018076] dark:bg-[#019D91]/20 dark:text-[#02b3a5]' : 'bg-neutral-100 text-neutral-800 dark:bg-[#21262d] dark:text-[#c9d1d9]') }}">
+                                        {{ Auth::user()->isAdmin() ? 'Quản trị viên' : (Auth::user()->isInstructor() ? 'Giảng viên' : 'Học viên') }}
                                     </span>
                                 </div>
 
+                                @unless(Auth::user()->isAdmin() || Auth::user()->isInstructor())
+                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition">
+                                        Bảng điều khiển
+                                    </a>
+                                @endunless
+
                                 @if(Auth::user()->isAdmin())
-                                    <a href="{{ url('/admin/dashboard') }}" class="flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium text-[#019D91] dark:text-[#02b3a5]">
                                         Trang Quản trị Admin
                                     </a>
                                 @endif
 
-                                @if(Auth::user()->isInstructor() || Auth::user()->isAdmin())
-                                    <a href="{{ url('/instructor/dashboard') }}" class="flex items-center px-4 py-2 text-indigo-600 hover:bg-indigo-50 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                                @if(Auth::user()->isInstructor())
+                                    <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium text-[#019D91] dark:text-[#02b3a5]">
                                         Studio Giảng viên
                                     </a>
                                 @endif
 
-                                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition">
                                     Hồ sơ cá nhân
                                 </a>
 
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="w-full text-left flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition border-t border-gray-100">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                    <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 text-rose-600 dark:text-rose-400 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition border-t border-[#E5E5EA] dark:border-[#30363d]">
                                         Đăng xuất
                                     </button>
                                 </form>
                             </div>
                         </div>
                     @else
-                        <!-- Guest Auth buttons -->
-                        <a href="{{ route('login') }}" class="text-sm font-medium text-gray-300 hover:text-white transition px-3 py-2">Đăng nhập</a>
-                        <a href="{{ route('register') }}" class="text-sm font-medium text-black bg-white hover:bg-gray-200 px-4 py-2 rounded-lg shadow-sm transition">Đăng ký</a>
+                        <!-- Single Uiverse Interactive 'Đăng nhập' Button (with embedded sign up) -->
+                        <a href="{{ route('login') }}"
+                           class="relative inline-flex items-center justify-center h-11 w-36 rounded-2xl bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] text-sm font-semibold text-[#1D1D1F] dark:text-[#f0f6fc] overflow-hidden group shadow-sm transition-all hover:shadow hover:border-[#019D91]/40 active:scale-[0.98]">
+                            <!-- Expanding Teal Box with Arrow (centers when expanded) -->
+                            <div class="absolute left-1 top-[3px] bottom-[3px] w-9 rounded-xl bg-[#019D91] flex items-center justify-center text-white transition-all duration-300 ease-out group-hover:w-[calc(100%-8px)] z-10 shadow-sm">
+                                <svg class="w-4 h-4 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </div>
+                            <!-- Text disappears completely on hover leaving only the arrow -->
+                            <span class="pl-8 transition-all duration-200 group-hover:opacity-0 group-hover:scale-90 select-none">Đăng nhập</span>
+                        </a>
                     @endauth
 
-                    <!-- Mobile menu button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                    <!-- Mobile Menu Hamburger -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-[#1D1D1F] dark:text-white p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-[#21262d]" aria-label="Mở menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -140,93 +171,122 @@
                 </div>
             </div>
 
-            <!-- Mobile Search & Menu -->
-            <div x-show="mobileMenuOpen" x-cloak class="md:hidden border-t border-gray-800 py-3 space-y-2">
+            <!-- Mobile Navigation Drawer -->
+            <div x-show="mobileMenuOpen" x-cloak class="md:hidden border-t border-[#E5E5EA] dark:border-[#30363d] py-4 space-y-3">
                 <form action="{{ url('/courses') }}" method="GET" class="mb-3">
-                    <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm khóa học..." 
-                           class="w-full text-sm bg-gray-800 text-white border-none rounded-lg px-3 py-2">
+                    <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm khóa học..."
+                           class="w-full h-10 text-sm bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] rounded-2xl px-4 focus:ring-1 focus:ring-[#019D91]">
                 </form>
-                <a href="{{ url('/') }}" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-gray-800">Trang chủ</a>
-                <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-gray-800">Danh sách Khóa học</a>
-                @auth
-                    <a href="{{ url('/my-courses') }}" class="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-gray-800">Khóa học của tôi</a>
-                @endauth
+                <a href="{{ url('/') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Trang chủ</a>
+                <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Khóa học</a>
+                <a href="{{ route('support.index') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d] {{ request()->routeIs('support.*') ? 'text-[#019D91] font-semibold' : '' }}">Hỗ Trợ</a>
+                @guest
+                    <div class="pt-3">
+                        <a href="{{ route('login') }}" class="block w-full text-center py-2.5 text-sm font-semibold rounded-2xl bg-[#019D91] text-white shadow-sm">
+                            Đăng nhập / Đăng ký
+                        </a>
+                    </div>
+                @endguest
             </div>
         </div>
+
+        @include('partials.support-mega-menu')
     </header>
 
-    <!-- Flash Messages Banner -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+    <div x-show="supportFlyoutOpen"
+         x-cloak
+         class="pointer-events-none fixed inset-0 z-30 bg-black/35 backdrop-blur-md backdrop-saturate-150 transition-opacity duration-300 dark:bg-black/50"
+         aria-hidden="true"></div>
+
+    <!-- Flash Messages -->
+    @if(session('success') || session('error'))
+    <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 mt-4">
         @if(session('success'))
-            <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span>{{ session('success') }}</span>
+            <div class="px-5 py-3 rounded-full bg-white dark:bg-neutral-900 border border-[#D2D2D7]/60 dark:border-neutral-800 text-sm flex items-center justify-between shadow-sm">
+                <div class="flex items-center space-x-2.5 text-emerald-600 dark:text-emerald-400">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span class="text-[#1D1D1F] dark:text-white font-medium">{{ session('success') }}</span>
                 </div>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>{{ session('error') }}</span>
-                </div>
-            </div>
+            @include('partials.error-alert', ['message' => session('error')])
         @endif
     </div>
+    @endif
 
     <!-- Main Content Area -->
     <main class="flex-1">
         @yield('content')
     </main>
 
+    @if (request()->routeIs('home'))
+        @guest
+            @include('partials.cookie-consent')
+        @endguest
+    @endif
+
+    @include('partials.back-to-top')
+
     <!-- Footer -->
-    <footer class="bg-black text-gray-400 mt-20 border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Col 1: Brand Info -->
-                <div class="space-y-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">E</div>
-                        <span class="text-xl font-bold text-white">EduLearn</span>
-                    </div>
-                    <p class="text-sm leading-relaxed">
-                        Nền tảng kết nối giảng viên tâm huyết và học viên đam mê kiến thức. Học trực tuyến mọi lúc, mọi nơi, nâng tầm sự nghiệp.
-                    </p>
-                </div>
-
-                <!-- Col 2: Liên kết nhanh -->
+    <footer class="bg-white dark:bg-[#0d1117] text-[#86868B] dark:text-[#7d8590] border-t border-[#E5E5EA] dark:border-[#30363d] text-xs sm:text-[13px] mt-16">
+        <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 py-10">
+            <!-- Multi-Column Navigation -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 pb-10">
                 <div>
-                    <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Khám phá</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="{{ url('/courses') }}" class="hover:text-white transition">Tất cả khóa học</a></li>
-                        <li><a href="{{ url('/courses?filter=free') }}" class="hover:text-white transition">Khóa học miễn phí</a></li>
-                        <li><a href="{{ url('/courses?filter=popular') }}" class="hover:text-white transition">Khóa học nổi bật</a></li>
+                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Khám phá khóa học</h3>
+                    <ul class="space-y-2.5">
+                        <li><a href="{{ route('courses.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Tất cả khóa học</a></li>
+                        <li><a href="{{ route('courses.index', ['price' => 'free']) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Khóa học miễn phí</a></li>
+                        <li><a href="{{ route('courses.index', ['sort' => 'popular']) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Khóa học phổ biến</a></li>
+                        <li><a href="{{ route('courses.index', ['sort' => 'rating']) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Đánh giá cao nhất</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 3: Hỗ trợ & Chính sách -->
                 <div>
-                    <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Hỗ trợ</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition">Điều khoản sử dụng</a></li>
-                        <li><a href="#" class="hover:text-white transition">Chính sách bảo mật</a></li>
-                        <li><a href="#" class="hover:text-white transition">Câu hỏi thường gặp (FAQ)</a></li>
+                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Tài khoản & Học tập</h3>
+                    <ul class="space-y-2.5">
+                        <li><a href="{{ route('login') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Đăng nhập tài khoản</a></li>
+                        <li><a href="{{ route('register') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Đăng ký thành viên</a></li>
+                        @if (Route::has('my-courses'))
+                            <li><a href="{{ route('my-courses') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Khóa học của tôi</a></li>
+                        @endif
+                        <li><a href="{{ route('profile.edit') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Quản lý hồ sơ</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 4: Liên hệ -->
                 <div>
-                    <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Liên hệ</h3>
-                    <p class="text-sm">Email: support@edulearn.vn</p>
-                    <p class="text-sm mt-1">Hotline: 1900 xxxx</p>
-                    <p class="text-sm mt-1">Địa chỉ: Hà Nội / TP. Hồ Chí Minh</p>
+                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Dành cho Giảng viên</h3>
+                    <ul class="space-y-2.5">
+                        <li><a href="{{ route('instructor.dashboard') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Studio giảng dạy</a></li>
+                        <li><a href="{{ route('instructor.courses.create') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Tạo khóa học mới</a></li>
+                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Quy chuẩn giảng dạy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Về EduLearn</h3>
+                    <ul class="space-y-2.5">
+                        <li><a href="{{ route('support.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition font-medium text-[#019D91] dark:text-[#02b3a5]">Trung tâm hỗ trợ</a></li>
+                        <li><a href="{{ route('support.feedback') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Báo cáo sự cố & góp ý</a></li>
+                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Giới thiệu nền tảng</a></li>
+                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Điều khoản dịch vụ</a></li>
+                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Chính sách bảo mật</a></li>
+                        <li><a href="mailto:support@edulearn.vn" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Liên hệ hỗ trợ</a></li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
-                &copy; {{ date('Y') }} EduLearn Platform. All rights reserved. Thiết kế cho môn Học phần Team Project.
+            <!-- Copyright and Region Line -->
+            <div class="pt-8 border-t border-[#E5E5EA] dark:border-[#30363d] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                <p>&copy; {{ date('Y') }} EduLearn Inc. Bản quyền thuộc về dự án e-learning.</p>
+                <div class="flex items-center space-x-6">
+                    <a href="#" class="hover:underline">Bảo mật</a>
+                    <a href="#" class="hover:underline">Điều khoản</a>
+                    <a href="#" class="hover:underline">Sơ đồ trang</a>
+                    <span class="text-[#1D1D1F] dark:text-white font-medium">Việt Nam</span>
+                </div>
             </div>
         </div>
     </footer>

@@ -1,73 +1,100 @@
-{{-- Partial: Card hiển thị một khóa học --}}
-<a href="{{ route('courses.show', $course->slug) }}"
-   class="group flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md hover:border-gray-300 transition">
+{{-- Component: Uiverse Course Card by nehal_6967 (Tailored for EduLearn & BE/DB Data) --}}
+@php
+    $rating = (float) ($course->reviews_avg_rating ?? $course->reviews->avg('rating') ?? 0);
+    $reviewsCount = $course->reviews_count ?? $course->reviews->count();
+@endphp
 
-    {{-- Thumbnail --}}
-    <div class="relative overflow-hidden bg-gray-100 aspect-video">
+<div class="w-full rounded-2xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-sm overflow-hidden group flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:border-[#019D91]/40 dark:hover:border-[#019D91]/40">
+    {{-- Thumbnail Media Section --}}
+    <a href="{{ route('courses.show', $course->slug) }}"
+       class="h-44 w-full flex items-center justify-center bg-gray-100 dark:bg-[#0d1117] text-gray-400 overflow-hidden relative block">
         @if($course->thumbnail)
             <img src="{{ asset('storage/' . $course->thumbnail) }}"
                  alt="{{ $course->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
         @else
-            <div class="w-full h-full flex items-center justify-center bg-indigo-50">
-                <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            <div class="flex flex-col items-center justify-center gap-2 p-4 text-center">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-10 w-10 text-gray-400 dark:text-[#8b949e]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 7.5A4.5 4.5 0 017.5 3h9A4.5 4.5 0 0121 7.5v9a4.5 4.5 0 01-4.5 4.5h-9A4.5 4.5 0 013 16.5v-9z"
+                    ></path>
                 </svg>
+                @if($course->category)
+                    <span class="text-xs font-medium text-gray-500 dark:text-[#8b949e]">{{ $course->category->name }}</span>
+                @endif
             </div>
         @endif
+    </a>
 
-        {{-- Badge trình độ --}}
-        <span class="absolute top-2 left-2 px-2 py-0.5 text-xs font-medium rounded-md
-            @if($course->level === 'beginner') bg-emerald-100 text-emerald-700
-            @elseif($course->level === 'intermediate') bg-amber-100 text-amber-700
-            @else bg-rose-100 text-rose-700 @endif">
-            @if($course->level === 'beginner') Cơ bản
-            @elseif($course->level === 'intermediate') Trung cấp
-            @else Nâng cao @endif
-        </span>
-    </div>
+    {{-- Main Content Section --}}
+    <div class="p-4 flex-1 flex flex-col justify-between">
+        <div>
+            {{-- Title, Subtitle and Top Badges --}}
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                    <a href="{{ route('courses.show', $course->slug) }}"
+                       class="text-sm font-semibold text-gray-900 dark:text-[#f0f6fc] truncate block hover:text-[#019D91] dark:hover:text-[#02b3a5] transition"
+                       title="{{ $course->title }}">
+                        {{ $course->title }}
+                    </a>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-[#8b949e] truncate">
+                        {{ $course->instructor->name ?? 'Giảng viên EduLearn' }}
+                    </p>
+                </div>
 
-    {{-- Content --}}
-    <div class="flex flex-col flex-1 p-4">
-        {{-- Category --}}
-        @if($course->category)
-        <p class="text-xs font-medium text-indigo-600 mb-1">{{ $course->category->name }}</p>
-        @endif
+                {{-- Badges: Level & Status/Price --}}
+                <div class="flex-shrink-0 ml-2 flex items-center gap-1">
+                    <span class="text-xs px-2 py-0.5 rounded-full border border-gray-200 dark:border-[#30363d] bg-gray-50 dark:bg-[#21262d] text-gray-600 dark:text-[#c9d1d9]">
+                        @if($course->level === 'beginner') Cơ bản
+                        @elseif($course->level === 'intermediate') Trung cấp
+                        @else Nâng cao @endif
+                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full border border-[#019D91]/20 dark:border-[#019D91]/30 bg-[#019D91]/10 text-[#018076] dark:text-[#02b3a5] font-semibold">
+                        @if($course->price == 0)
+                            Miễn phí
+                        @else
+                            {{ number_format($course->price, 0, ',', '.') }} ₫
+                        @endif
+                    </span>
+                </div>
+            </div>
 
-        {{-- Title --}}
-        <h3 class="font-semibold text-gray-800 text-sm leading-snug mb-2 line-clamp-2 group-hover:text-indigo-700 transition">
-            {{ $course->title }}
-        </h3>
-
-        {{-- Instructor --}}
-        <p class="text-xs text-gray-500 mb-3">{{ $course->instructor->name ?? 'N/A' }}</p>
-
-        {{-- Rating --}}
-        @php $rating = $course->averageRating(); @endphp
-        <div class="flex items-center space-x-1 mb-3">
-            @for($i = 1; $i <= 5; $i++)
-                <svg class="w-3.5 h-3.5 {{ $i <= round($rating) ? 'text-amber-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-            @endfor
-            <span class="text-xs text-gray-500 ml-1">
-                {{ number_format($rating, 1) }}
-                ({{ $course->reviews->count() }})
-            </span>
+            {{-- Additional Info / Meta Text --}}
+            <div class="mt-3 text-xs text-gray-500 dark:text-[#8b949e] flex items-center justify-between">
+                <div class="flex items-center space-x-1.5">
+                    <span class="font-semibold text-gray-900 dark:text-[#f0f6fc]">{{ number_format($rating, 1) }}</span>
+                    <span class="text-amber-400">★</span>
+                    <span>({{ $reviewsCount }})</span>
+                </div>
+                <span>{{ number_format($course->enrollments_count ?? 0) }} học viên</span>
+            </div>
         </div>
 
-        {{-- Footer: price + enrollments --}}
-        <div class="mt-auto flex items-center justify-between">
-            <span class="font-bold text-gray-900">
-                @if($course->price == 0)
-                    <span class="text-emerald-600">Miễn phí</span>
-                @else
-                    {{ number_format($course->price, 0, ',', '.') }} ₫
-                @endif
-            </span>
-            <span class="text-xs text-gray-400">
-                {{ number_format($course->enrollments_count ?? 0) }} học viên
-            </span>
+        {{-- Action Buttons --}}
+        <div class="mt-4 flex items-center gap-2">
+            <a href="{{ route('courses.show', $course->slug) }}"
+               class="flex-1 rounded-xl border border-transparent px-3 py-2 text-xs font-semibold bg-[#019D91] text-white hover:bg-[#008b80] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#019D91]/40 text-center transition shadow-sm active:scale-[0.98]">
+                Xem khóa học
+            </a>
+            <button type="button"
+                    onclick="if(navigator.share) { navigator.share({title: '{{ addslashes($course->title) }}', url: '{{ route('courses.show', $course->slug) }}'}); } else { navigator.clipboard.writeText('{{ route('courses.show', $course->slug) }}'); alert('Đã sao chép liên kết khóa học!'); }"
+                    class="rounded-xl border border-gray-200 dark:border-[#30363d] px-3 py-2 text-xs font-medium text-gray-700 dark:text-[#c9d1d9] bg-white dark:bg-[#21262d] hover:bg-gray-50 dark:hover:bg-[#30363d] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300 transition active:scale-[0.98]">
+                Chia sẻ
+            </button>
         </div>
     </div>
-</a>
+
+    {{-- Bottom Tagline / Category Footer --}}
+    <div class="px-4 py-2 text-xs text-gray-400 dark:text-[#7d8590] border-t border-gray-100 dark:border-[#30363d] text-center truncate">
+        {{ $course->category->name ?? 'Công nghệ' }} • {{ $course->level === 'beginner' ? 'Cơ bản' : ($course->level === 'intermediate' ? 'Trung cấp' : 'Nâng cao') }} • EduLearn
+    </div>
+</div>

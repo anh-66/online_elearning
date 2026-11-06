@@ -4,8 +4,11 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CourseCatalogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
+use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UploadController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\ReviewController;
@@ -24,6 +27,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/courses', [CourseCatalogController::class, 'index'])->name('courses.index');
 Route::get('/courses/{slug}', [CourseCatalogController::class, 'show'])->name('courses.show');
 Route::get('/instructors/{id}', [InstructorProfileController::class, 'show'])->name('instructors.show');
+
+Route::get('/support', [SupportController::class, 'index'])->name('support.index');
+Route::get('/support/bao-cao-su-co', [SupportController::class, 'feedback'])->name('support.feedback');
+Route::post('/support/bao-cao-su-co', [SupportController::class, 'submitFeedback'])->name('support.feedback.submit');
+Route::get('/support/feedback', fn () => redirect()->route('support.feedback'));
+Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -53,18 +62,40 @@ Route::middleware(['auth'])->group(function () {
 | Profile & System Upload Routes (Thành viên 1 & Dùng chung)
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function () {
-    return view('dashboard');
+Route::get('/dashboard', function (Request $request) {
+    $enrolledCourses = $request->user()->enrolledCourses()
+        ->with(['instructor', 'category', 'reviews'])
+        ->withCount('enrollments')
+        ->latest('enrollments.enrolled_at')
+        ->take(6)
+        ->get();
+
+    return view('dashboard', [
+        'enrolledCourses' => $enrolledCourses,
+        'enrollmentTotal' => $request->user()->enrollments()->count(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::view('/avatar-generator', 'avatar-generator')->name('avatar-generator');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/export-data', [ProfileController::class, 'exportData'])->name('profile.export-data');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Endpoint upload ảnh cho CKEditor 5
     Route::post('/upload/image', [UploadController::class, 'uploadImage'])->name('upload.image');
 });
+
+// Fallback phục vụ file public storage trên môi trường thiếu symlink (Windows)
+Route::get('/storage/{path}', function (string $path) {
+    $filePath = storage_path('app/public/'.$path);
+    if (! file_exists($filePath)) {
+        abort(404);
+    }
+
+    return response()->file($filePath);
+})->where('path', '.*');
 
 Route::middleware('guest')->group(function () {
     Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
