@@ -10,7 +10,13 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\MyCourseController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\WishlistController;
 /*
 |--------------------------------------------------------------------------
 | Public Routes (Thành viên 2: HomeController, CourseCatalogController, InstructorProfileController)
@@ -36,17 +42,19 @@ Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support
 */
 Route::middleware(['auth'])->group(function () {
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
-    Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
-    // Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
-    // Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
-    // Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
-    // Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+     Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
+     Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
+     Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
+     Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
+     Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
-    // Route::get('/quizzes/{id}', [QuizController::class, 'show'])->name('quizzes.show');
-    // Route::post('/quizzes/{id}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
-    // Route::post('/courses/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-    // Route::post('/lessons/{id}/comments', [LessonCommentController::class, 'store'])->name('comments.store');
+     Route::get('/quiz/{id}', [App\Http\Controllers\QuizController::class, 'show'])->name('quiz.show');
+     Route::post('/quiz/{id}/submit', [App\Http\Controllers\QuizController::class, 'submit'])->name('quiz.submit');
+     Route::get('/quiz/{id}/result', [App\Http\Controllers\QuizController::class, 'result'])->name('quiz.result');
+    
+     Route::post('/courses/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+     Route::post('/lessons/{id}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 
 /*
@@ -94,5 +102,5 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
 });
-
+Route::get('/courses/{id}/learn', [App\Http\Controllers\LearningController::class, 'index'])->name('learning.index');
 require __DIR__.'/auth.php';

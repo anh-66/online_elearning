@@ -260,15 +260,13 @@
                     {{-- Action CTA --}}
                     @auth
                         @if($isEnrolled)
-                            @if(Route::has('learning.player'))
-                                <a href="{{ route('learning.player', $course->slug) }}"
-                                   class="btn-apple-primary w-full py-2.5 text-sm mb-2 text-center">
-                                    Tiếp tục bài học
-                                </a>
-                            @endif
-                            <p class="text-xs text-center text-emerald-600 dark:text-emerald-400 font-medium">✓ Đã tham gia khóa học này</p>
-                        @elseif(Route::has('courses.enroll'))
-                            <form method="POST" action="{{ route('courses.enroll', $course->id) }}">
+<a href="{{ url('/courses/' . $course->id . '/learn') }}"
+                               class="block w-full text-center bg-emerald-600 text-white font-semibold px-5 py-3 rounded-lg hover:bg-emerald-700 transition mb-3">
+                                Vào học ngay
+                            </a>
+                            <p class="text-xs text-center text-emerald-600 font-medium">✓ Bạn đã ghi danh khóa học này</p>
+                        @else
+                            <form method="POST" action="{{ url('/courses/' . $course->id . '/enroll') }}">
                                 @csrf
                                 <button type="submit" class="btn-apple-primary w-full py-2.5 text-sm">
                                     Ghi danh học ngay
