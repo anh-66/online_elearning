@@ -37,6 +37,19 @@
          };
          handleHash();
          window.addEventListener('hashchange', handleHash);
+         window.addEventListener('theme-changed', (e) => {
+             if (e.detail?.theme) {
+                 currentTheme = e.detail.theme;
+             }
+         });
+         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+             if (currentTheme === 'system') {
+                 document.documentElement.classList.toggle('dark', e.matches);
+                 window.dispatchEvent(new CustomEvent('theme-changed', {
+                     detail: { theme: 'system', dark: e.matches }
+                 }));
+             }
+         });
      "
      x-data="{
          activeTab: (function() {
@@ -65,21 +78,27 @@
          emailNewsletter: false,
          pushDiscussion: true,
          pushReminder: false,
-         // Theme selection
-         currentTheme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+         // Theme selection - mặc định là 'light' khi vào web
+         currentTheme: localStorage.getItem('theme') || 'light',
          setTheme(mode) {
              this.currentTheme = mode;
+             let isDark = false;
              if (mode === 'dark') {
+                 isDark = true;
                  document.documentElement.classList.add('dark');
                  localStorage.setItem('theme', 'dark');
              } else if (mode === 'light') {
+                 isDark = false;
                  document.documentElement.classList.remove('dark');
                  localStorage.setItem('theme', 'light');
              } else {
-                 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                 isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                  document.documentElement.classList.toggle('dark', isDark);
-                 localStorage.removeItem('theme');
+                 localStorage.setItem('theme', 'system');
              }
+             window.dispatchEvent(new CustomEvent('theme-changed', {
+                 detail: { theme: mode, dark: isDark }
+             }));
          }
      }">
 

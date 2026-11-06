@@ -17,9 +17,9 @@
         letter-spacing: -0.022em;
     }
 
-    .dark input:not([type='checkbox'], [type='radio'], [type='file'], [type='range']),
-    .dark select,
-    .dark textarea {
+    .dark input:not([type='checkbox'], [type='radio'], [type='file'], [type='range']):not(.bg-white):not(section.bg-white *),
+    .dark select:not(.bg-white):not(section.bg-white *),
+    .dark textarea:not(.bg-white):not(section.bg-white *) {
         @apply border-[#30363d] bg-[#0d1117] text-[#e6edf3] placeholder-[#7d8590] focus:border-[#388bfd] focus:ring-1 focus:ring-[#388bfd];
     }
 
@@ -30,6 +30,27 @@
 
     .dark {
         color-scheme: dark;
+    }
+
+    /* Fix Chrome/Edge/Safari Autofill: ngăn chặn màu xám/xanh nhạt làm mờ chữ khi tự động điền */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-text-fill-color: #171717 !important;
+        caret-color: #171717 !important;
+        transition: background-color 5000s ease-in-out 0s;
+        box-shadow: 0 0 0px 1000px #ffffff inset !important;
+    }
+
+    .dark input:not(.bg-white):not(section.bg-white *):-webkit-autofill,
+    .dark input:not(.bg-white):not(section.bg-white *):-webkit-autofill:hover,
+    .dark input:not(.bg-white):not(section.bg-white *):-webkit-autofill:focus,
+    .dark input:not(.bg-white):not(section.bg-white *):-webkit-autofill:active {
+        -webkit-text-fill-color: #e6edf3 !important;
+        caret-color: #e6edf3 !important;
+        transition: background-color 5000s ease-in-out 0s;
+        box-shadow: 0 0 0px 1000px #0d1117 inset !important;
     }
 }
 

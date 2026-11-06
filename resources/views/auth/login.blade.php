@@ -38,7 +38,7 @@
             <label for="email" class="block text-sm font-semibold text-neutral-800 mb-1.5">Địa chỉ email</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
                    placeholder="name@example.com"
-                   class="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition">
+                   class="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition">
             <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs" />
         </div>
 
@@ -47,7 +47,7 @@
             <label for="password" class="block text-sm font-semibold text-neutral-800 mb-1.5">Mật khẩu</label>
             <input id="password" type="password" name="password" required autocomplete="current-password"
                    placeholder="••••••••"
-                   class="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition">
+                   class="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition">
             <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs" />
         </div>
 

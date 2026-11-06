@@ -1,6 +1,6 @@
 <form method="post" action="{{ route('profile.update') }}" class="space-y-6" enctype="multipart/form-data"
       x-data="{ avatarPickerOpen: false, avatarMode: 'options', avatarGenerated: @js(old('avatar_generated')), avatarPreview: @js($user->avatar_url) }"
-      @message.window="if ($event.origin === window.location.origin && $event.data?.type === 'avatar-ready' && typeof $event.data.dataUrl === 'string') { avatarGenerated = $event.data.dataUrl; avatarPreview = avatarGenerated; avatarPickerOpen = false; avatarMode = 'options'; $nextTick(() => $el.requestSubmit()); }">
+      @avatar-saved.window="avatarGenerated = $event.detail.dataUrl; avatarPreview = avatarGenerated; avatarPickerOpen = false; avatarMode = 'options'; $nextTick(() => $el.requestSubmit())">
     @csrf
     @method('patch')
 
@@ -27,7 +27,7 @@
             <span x-show="avatarGenerated" x-cloak class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1 block">Đã chọn avatar thiết kế</span>
         </div>
         <input id="avatar" x-ref="avatarInput" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only"
-               @change="avatarGenerated = ''; if ($event.target.files[0]) { const reader = new FileReader(); reader.onload = () => avatarPreview = reader.result; reader.readAsDataURL($event.target.files[0]); }">
+               @change="const file = $event.target.files[0]; if (! file) { return; } if (file.size > 2 * 1024 * 1024) { alert('Ảnh vượt quá 2MB, vui lòng chọn ảnh nhỏ hơn.'); $event.target.value = ''; return; } avatarGenerated = ''; const reader = new FileReader(); reader.onload = () => avatarPreview = reader.result; reader.readAsDataURL(file); $nextTick(() => $el.closest('form').requestSubmit())">
         <input type="hidden" name="avatar_generated" x-model="avatarGenerated">
     </div>
 
@@ -70,7 +70,7 @@
 
                 <div x-show="avatarMode === 'designer'" x-cloak class="min-h-0 overflow-y-auto p-3 sm:p-5">
                     <button type="button" @click="avatarMode = 'options'" class="mb-3 inline-flex items-center gap-1 text-sm font-semibold text-gray-900 hover:underline dark:text-white">← Quay lại lựa chọn</button>
-                    <iframe src="{{ route('avatar-generator') }}" title="Thiết kế avatar" class="block h-[460px] w-full rounded-lg border border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-900" loading="lazy"></iframe>
+                    <x-avatar-designer mode="modal" />
                 </div>
             </div>
         </div>
