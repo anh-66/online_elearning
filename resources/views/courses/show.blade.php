@@ -263,7 +263,7 @@
                     {{-- Nút đăng ký / học tiếp --}}
                     @auth
                         @if($isEnrolled)
-                            <a href="{{ url('/my-courses') }}"
+<a href="{{ url('/courses/' . $course->id . '/learn') }}"
                                class="block w-full text-center bg-emerald-600 text-white font-semibold px-5 py-3 rounded-lg hover:bg-emerald-700 transition mb-3">
                                 Vào học ngay
                             </a>
