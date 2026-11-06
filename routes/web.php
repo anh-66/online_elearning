@@ -11,7 +11,7 @@ use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\WishlistController;
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes (Thành viên 2: HomeController, CourseCatalogController, InstructorProfileController)
