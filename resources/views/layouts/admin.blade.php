@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,169 +7,378 @@
 
     <title>@yield('title', 'Quản Trị Hệ Thống') - Admin Control Panel</title>
 
-    <!-- Fonts -->
+    <!-- Fonts: Be Vietnam Pro (Đồng bộ font trang chủ) -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700&display=swap" rel="stylesheet" />
+
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
-</head>
-<body class="h-full bg-white font-sans antialiased text-gray-800" x-data="{ sidebarOpen: false }">
-    <div class="min-h-full flex">
-        <!-- Sidebar Mobile Backdrop -->
-        <div x-show="sidebarOpen" x-cloak 
-             @click="sidebarOpen = false" 
-             class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm lg:hidden transition-opacity"></div>
 
-        <!-- Admin Sidebar -->
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-               class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 text-slate-300 flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl">
+    <style>
+        :root {
+            --accent: #019D91;
+            --accent-hover: #008b80;
+            --sidebar-w: 260px;
+            --sidebar-collapsed: 72px;
+        }
+
+        * {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        /* Sidebar transitions */
+        #admin-sidebar {
+            width: var(--sidebar-w);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #admin-sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        #admin-sidebar.collapsed .nav-text,
+        #admin-sidebar.collapsed .logo-text,
+        #admin-sidebar.collapsed .user-info {
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        #admin-sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        #admin-sidebar.collapsed .sidebar-divider-label {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            margin: 0.15rem 0.625rem;
+            border-radius: 0.5rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: #f3f4f6;
+            color: var(--accent);
+        }
+
+        .nav-item.is-active {
+            background-color: #e6f6f5;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .glass-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="h-full bg-[#f9fafb] antialiased text-gray-800" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen bg-[#f9fafb] overflow-hidden">
+
+        <!-- Mobile Backdrop -->
+        <div x-show="sidebarOpen"
+             x-cloak
+             @click="sidebarOpen = false"
+             class="fixed inset-0 z-40 bg-gray-900/50 lg:hidden"></div>
+
+        <!-- ====== SIDEBAR ====== -->
+        <aside id="admin-sidebar"
+               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+               class="fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col bg-white border-r border-gray-200 transition-transform duration-200 lg:static lg:translate-x-0">
+
             <!-- Brand -->
-            <div class="h-16 flex items-center justify-between px-6 bg-slate-900/90 border-b border-slate-800/80">
-                <a href="{{ url('/admin/dashboard') }}" class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white font-black shadow-md shadow-rose-600/30">
-                        AD
+            <div class="h-16 flex items-center px-5 border-b border-gray-100 shrink-0">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 bg-[#019D91] rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                        <iconify-icon icon="lucide:graduation-cap" class="text-white text-lg"></iconify-icon>
                     </div>
-                    <div>
-                        <span class="text-base font-bold text-white tracking-wide block leading-tight">Admin System</span>
-                        <span class="text-[10px] text-rose-400 font-semibold tracking-wider uppercase">Quản Trị Toàn Quyền</span>
-                    </div>
+                    <span class="logo-text font-bold text-gray-900 tracking-tight text-base whitespace-nowrap transition-all duration-300">ADMIN CORE</span>
                 </a>
-                <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <!-- Mobile close button -->
+                <button @click="sidebarOpen = false" class="ml-auto text-gray-400 hover:text-gray-700 lg:hidden">
+                    <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
                 </button>
             </div>
 
-            <!-- Nav Items -->
-            <nav class="flex-1 px-4 py-5 space-y-1 overflow-y-auto text-sm font-medium">
+            <!-- Navigation -->
+            <nav class="flex-1 py-5 overflow-y-auto space-y-0.5">
                 <!-- Dashboard -->
-                <a href="{{ url('/admin/dashboard') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/dashboard') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span>Thống kê & Biểu đồ</span>
+                <a href="{{ route('admin.dashboard') }}"
+                   class="nav-item {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:layout-dashboard" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Dashboard</span>
                 </a>
-
-                <div class="pt-3 pb-1">
-                    <span class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Nghiệp vụ cốt lõi</span>
-                </div>
 
                 <!-- Người dùng -->
-                <a href="{{ url('/admin/users') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/users*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span>Quản lý Người dùng</span>
+                <a href="{{ route('admin.users.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.users.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:users" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Người dùng</span>
                 </a>
 
-                <!-- Khóa học & Duyệt -->
-                <a href="{{ url('/admin/courses') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/courses*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span>Quản lý & Duyệt Khóa học</span>
+                <!-- Nội dung / Khóa học -->
+                <a href="{{ route('admin.courses.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.courses.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:book-open" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Khóa học</span>
                 </a>
 
                 <!-- Danh mục -->
-                <a href="{{ url('/admin/categories') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/categories*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                    <span>Quản lý Danh mục</span>
+                <a href="{{ route('admin.categories.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.categories.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:tag" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Danh mục</span>
                 </a>
 
                 <!-- Ghi danh -->
-                <a href="{{ url('/admin/enrollments') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/enrollments*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    <span>Quản lý Ghi danh</span>
+                <a href="{{ route('admin.enrollments.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.enrollments.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:clipboard-list" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Ghi danh</span>
                 </a>
 
-                <!-- Đánh giá & Bình luận -->
-                <a href="{{ url('/admin/reviews') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/reviews*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-                    <span>Kiểm duyệt Đánh giá</span>
+                <!-- Đánh giá -->
+                <a href="{{ route('admin.reviews.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.reviews.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:star" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Đánh giá</span>
                 </a>
 
-                <div class="pt-3 pb-1">
-                    <span class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Cấu hình Trang</span>
+                <!-- Divider -->
+                <div class="pt-3 pb-1 px-5">
+                    <div class="h-px bg-gray-100"></div>
                 </div>
 
                 <!-- Banners -->
-                <a href="{{ url('/admin/banners') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/banners*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span>Quản lý Banners</span>
+                <a href="{{ route('admin.banners.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.banners.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:image" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Banners</span>
                 </a>
 
-                <!-- Notifications -->
-                <a href="{{ url('/admin/notifications') }}" 
-                   class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->is('admin/notifications*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                    <span>Quản lý Thông báo</span>
+                <!-- Thông báo -->
+                <a href="{{ route('admin.notifications.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:bell" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Thông báo</span>
                 </a>
 
-                <!-- Quay về trang chủ -->
-                <a href="{{ url('/') }}" class="flex items-center px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-white transition mt-4">
-                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    <span>Về trang chủ</span>
+                <!-- Phản hồi & Báo cáo -->
+                <a href="{{ route('admin.feedbacks.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.feedbacks.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:message-square-warning" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Phản hồi & Báo cáo</span>
+                </a>
+
+                <!-- Về trang chủ -->
+                <a href="{{ route('home') }}" class="nav-item">
+                    <iconify-icon icon="lucide:arrow-left" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Về trang chủ</span>
                 </a>
             </nav>
 
-            <!-- Bottom User -->
-            <div class="p-4 border-t border-slate-800/80 bg-slate-900/60">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-lg bg-rose-600 text-white font-bold flex items-center justify-center shrink-0">
-                        {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 1)) }}
+            <!-- User Profile Footer with Hover / Click Popover -->
+            <div class="relative border-t border-gray-100 p-3 shrink-0"
+                 x-data="{ userMenuOpen: false }"
+                 @mouseenter="userMenuOpen = true"
+                 @mouseleave="userMenuOpen = false">
+
+                <!-- Popover Menu -->
+                <div x-show="userMenuOpen"
+                     x-cloak
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                     class="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
+                     @click.away="userMenuOpen = false">
+                    <div class="px-3 py-2">
+                        <p class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
+                        <p class="text-[11px] text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
                     </div>
-                    <div class="truncate flex-1">
-                        <p class="text-xs font-semibold text-white truncate">{{ Auth::user()->name ?? 'Admin' }}</p>
-                        <span class="text-[10px] text-rose-400 font-semibold uppercase">Super Admin</span>
+                    <div class="py-1">
+                        <a href="{{ route('profile.edit') }}"
+                           class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors">
+                            <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400"></iconify-icon>
+                            Cài đặt tài khoản admin
+                        </a>
                     </div>
+                    <div class="pt-1">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                    class="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon>
+                                Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Profile Trigger Card -->
+                <div @click="userMenuOpen = !userMenuOpen"
+                     class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
+                    <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
+                        @if(Auth::user()->avatar_url)
+                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                            <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
+                        @else
+                            <span>{{ Auth::user()->initialLetter() }}</span>
+                        @endif
+                    </div>
+                    <div class="user-info min-w-0 flex-1 transition-all duration-300">
+                        <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-[#019D91] transition-colors">{{ Auth::user()->name ?? 'Admin' }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@system.com' }}</p>
+                    </div>
+                    <iconify-icon icon="lucide:chevron-up" class="nav-text text-gray-400 group-hover:text-gray-600 text-sm transition-all"></iconify-icon>
                 </div>
             </div>
         </aside>
 
-        <!-- Right Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            <!-- Top Bar -->
-            <header class="h-16 bg-black text-white border-b border-gray-800 flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-sm">
-                <div class="flex items-center space-x-3">
-                    <button @click="sidebarOpen = true" class="lg:hidden text-gray-300 hover:text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        <!-- ====== MAIN CONTENT ====== -->
+        <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
+
+            <!-- Header -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
+                <div class="flex items-center gap-3">
+                    <!-- Toggle Sidebar (Desktop) -->
+                    <button id="toggle-sidebar"
+                            class="hidden lg:flex p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
+                        <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
                     </button>
-                    <h1 class="text-lg font-bold text-white truncate">
+                    <!-- Toggle Sidebar (Mobile) -->
+                    <button @click="sidebarOpen = true"
+                            class="flex lg:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
+                        <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
+                    </button>
+                    <h1 class="text-base font-semibold text-gray-800 truncate">
                         @yield('page_title', 'Bảng Quản Trị Hệ Thống')
                     </h1>
                 </div>
 
-                <div class="flex items-center space-x-4">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="text-sm font-medium text-rose-600 hover:text-rose-700 transition">Đăng xuất</button>
-                    </form>
+                <div class="flex items-center gap-2">
+                    <!-- Notification Bell -->
+                    @include('partials.notification-bell')
+
+                    <div class="h-7 w-px bg-gray-200 mx-1"></div>
+
+                    <!-- Profile Header Button with Dropdown -->
+                    <div class="relative" x-data="{ headerMenuOpen: false }">
+                        <button @click="headerMenuOpen = !headerMenuOpen"
+                                @mouseenter="headerMenuOpen = true"
+                                type="button"
+                                class="flex items-center gap-2 py-1 pl-3 pr-2 hover:bg-gray-50 rounded-full border border-gray-200 cursor-pointer transition-colors">
+                            <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Admin' }}</span>
+                            <div class="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-black text-xs font-bold text-white">
+                                @if(Auth::user()->avatar_url)
+                                    <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="h-full w-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                    <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
+                                @else
+                                    <span>{{ Auth::user()->initialLetter() }}</span>
+                                @endif
+                            </div>
+                            <iconify-icon icon="lucide:chevron-down" class="text-gray-400 text-xs"></iconify-icon>
+                        </button>
+
+                        <div x-show="headerMenuOpen"
+                             x-cloak
+                             @mouseleave="headerMenuOpen = false"
+                             @click.away="headerMenuOpen = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                             class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
+                             style="display: none;">
+                            <div class="px-3 py-2">
+                                <p class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
+                                <p class="text-[11px] text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="{{ route('profile.edit') }}"
+                                   class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors">
+                                    <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400"></iconify-icon>
+                                    Cài đặt tài khoản admin
+                                </a>
+                            </div>
+                            <div class="pt-1">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                            class="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                        <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon>
+                                        Đăng xuất
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            <!-- Main Content Container -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                <!-- Alerts -->
+            <!-- Main Content -->
+            <main id="admin-main-content" data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f9fafb]">
+                <!-- Flash Messages -->
                 @if(session('success'))
-                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center space-x-2 shadow-sm">
-                        <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5 shadow-sm">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-600 shrink-0 text-lg"></iconify-icon>
                         <span>{{ session('success') }}</span>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center space-x-2 shadow-sm">
-                        <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                    @include('partials.error-alert', ['message' => session('error')])
                 @endif
 
                 @if($errors->any())
-                    <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm shadow-sm">
-                        <p class="font-semibold mb-1">Vui lòng kiểm tra lại dữ liệu:</p>
-                        <ul class="list-disc list-inside space-y-0.5 text-xs">
+                    <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm shadow-sm">
+                        <p class="font-semibold mb-1 flex items-center gap-2">
+                            <iconify-icon icon="lucide:alert-triangle" class="text-red-600 text-lg"></iconify-icon>
+                            Vui lòng kiểm tra lại dữ liệu:
+                        </p>
+                        <ul class="list-disc list-inside space-y-0.5 text-xs ml-6">
                             @foreach($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -182,6 +391,20 @@
         </div>
     </div>
 
+    @include('partials.admin-confirm-modal')
+    @include('partials.back-to-top')
+
     @stack('scripts')
+
+    <script>
+        // Desktop sidebar toggle
+        const sidebar = document.getElementById('admin-sidebar');
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+            });
+        }
+    </script>
 </body>
 </html>

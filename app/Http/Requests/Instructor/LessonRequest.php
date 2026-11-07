@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Instructor;
 
+use App\Models\Lesson;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -10,6 +11,19 @@ class LessonRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Tự động đồng bộ link YouTube từ CKEditor sang input video_url trước khi validate
+     */
+    protected function prepareForValidation(): void
+    {
+        if (blank($this->input('video_url')) && filled($this->input('content'))) {
+            $extracted = Lesson::extractYouTubeUrl($this->input('content'));
+            if ($extracted) {
+                $this->merge(['video_url' => $extracted]);
+            }
+        }
     }
 
     /**

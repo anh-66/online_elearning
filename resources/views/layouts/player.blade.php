@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,105 +7,99 @@
 
     <title>@yield('title', 'Phòng học trực tuyến') - {{ config('app.name', 'EduLearn') }}</title>
 
-    <!-- Fonts -->
+    @include('partials.theme-script')
+
+    <!-- Preconnect Fonts: Be Vietnam Pro đồng nhất với toàn bộ hệ thống EduLearn -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700,800&display=swap" rel="stylesheet" />
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #262c36;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+    </style>
 </head>
-<body class="h-full flex flex-col font-sans antialiased text-gray-100 overflow-hidden" x-data="{ sidebarOpen: true }">
-    <!-- Top Learning Navigation Bar -->
-    <header class="h-14 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-4 sm:px-6 shrink-0 z-30">
-        <!-- Left: Back to My Courses & Course Title -->
-        <div class="flex items-center space-x-4 truncate">
-            <a href="{{ url('/my-courses') }}" class="flex items-center space-x-1.5 text-xs sm:text-sm font-medium text-slate-400 hover:text-white transition shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span class="hidden sm:inline">Khóa học của tôi</span>
-            </a>
-
-            <div class="h-4 w-px bg-slate-800 hidden sm:block shrink-0"></div>
-
-            <h1 class="text-xs sm:text-sm font-semibold text-white truncate max-w-xs md:max-w-md lg:max-w-xl">
-                @yield('course_title', 'Tên khóa học')
-            </h1>
-        </div>
-
-        <!-- Right: Progress Indicator & Sidebar Toggle -->
-        <div class="flex items-center space-x-4 shrink-0">
-            <!-- Progress Bar Info -->
-            <div class="hidden md:flex items-center space-x-3 text-xs">
-                <div class="w-32 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-                    <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300" 
-                         style="width: @yield('progress_percent', '0')%;"></div>
-                </div>
-                <span class="font-bold text-emerald-400">@yield('progress_percent', '0')%</span>
+<body class="min-h-screen flex flex-col bg-[#F9FAFB] text-[#111827] dark:bg-[#0d1117] dark:text-[#e6edf3] font-sans antialiased selection:bg-[#10B981] selection:text-white transition-colors">
+    <!-- Navigation Bar (Minimal Modern Learning Dashboard) -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-[#161b22] border-b border-gray-100 dark:border-neutral-800 transition-colors shadow-sm" data-sd-id="2">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between" data-sd-id="3">
+            <!-- Left: Back link + Course Title -->
+            <div class="flex items-center gap-4 sm:gap-6 min-w-0" data-sd-id="4">
+                <a href="@yield('back_url', url('/my-courses'))" id="nav-back-link" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors group shrink-0" data-sd-id="5">
+                    <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span class="ml-2 text-sm font-semibold" data-sd-id="6">Quay lại khóa học</span>
+                </a>
+                <div class="h-4 w-[1px] bg-gray-200 dark:bg-neutral-700 shrink-0" data-sd-id="7"></div>
+                <h1 class="text-sm sm:text-base font-bold tracking-tight text-gray-900 dark:text-white truncate max-w-xs md:max-w-md lg:max-w-xl" data-sd-id="8">
+                    @yield('course_title', 'Tên khóa học')
+                </h1>
             </div>
+            
+            <!-- Right: Progress + Theme toggle + User Avatar -->
+            <div class="flex items-center gap-4 sm:gap-8 shrink-0" data-sd-id="9">
+                <div class="flex flex-col items-end">
+                    <div class="flex items-center gap-2.5 mb-1">
+                        <span class="text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">Tiến độ học tập</span>
+                        <span class="text-xs sm:text-sm font-extrabold text-[#059669] dark:text-[#34D399]">@yield('progress_text', '0%')</span>
+                    </div>
+                    <div class="w-36 sm:w-48 h-2 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-[#10B981] rounded-full transition-all duration-300" style="width: @yield('progress_percent', '0')%"></div>
+                    </div>
+                </div>
+                <div class="h-8 w-[1px] bg-gray-100 dark:bg-neutral-800 shrink-0"></div>
 
-            <!-- Toggle Course Curriculum Sidebar -->
-            <button @click="sidebarOpen = !sidebarOpen" 
-                    class="flex items-center space-x-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                <span class="hidden sm:inline" x-text="sidebarOpen ? 'Đóng mục lục' : 'Mở mục lục'"></span>
-            </button>
+                <!-- Theme Toggle -->
+                <x-theme-toggle class="!text-gray-600 dark:!text-gray-300 hover:!text-gray-900 dark:hover:!text-white hover:!bg-black/5 dark:hover:!bg-white/10 rounded-full p-2 transition" />
+
+                <!-- User Avatar -->
+                <button id="nav-user-menu" class="flex items-center gap-2" data-sd-id="17">
+                    <div class="w-9 h-9 rounded-full bg-gray-900 dark:bg-neutral-800 text-white flex items-center justify-center text-xs font-bold overflow-hidden ring-1 ring-black/5 dark:ring-white/10 shadow-sm" data-sd-id="18">
+                        @auth
+                            @if(Auth::user()->avatar_url)
+                                <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                            @else
+                                <span>{{ Auth::user()->initialLetter() }}</span>
+                            @endif
+                        @else
+                            <span>JD</span>
+                        @endauth
+                    </div>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Learning Layout Container (2 Columns) -->
-    <div class="flex-1 flex overflow-hidden relative">
-        <!-- Main Content Area: Video Player, Lesson Content, Q&A -->
-        <main class="flex-1 overflow-y-auto bg-slate-900 flex flex-col">
-            <!-- Alerts Banner -->
-            <div class="p-4 sm:p-6 max-w-5xl mx-auto w-full pb-0">
-                @if(session('success'))
-                    <div class="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-sm flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                @endif
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col">
+        @yield('content')
+    </main>
 
-                @if(session('error'))
-                    <div class="p-3.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-sm flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Page / Video Content -->
-            <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
-                @yield('content')
-            </div>
-        </main>
-
-        <!-- Right Sidebar: Curriculum / List of Chapters & Lessons & Quizzes -->
-        <aside x-show="sidebarOpen" x-cloak
-               x-transition:enter="transition ease-out duration-200"
-               x-transition:enter-start="translate-x-full"
-               x-transition:enter-end="translate-x-0"
-               x-transition:leave="transition ease-in duration-150"
-               x-transition:leave-start="translate-x-0"
-               x-transition:leave-end="translate-x-full"
-               class="w-80 lg:w-96 bg-slate-950 border-l border-slate-800 flex flex-col shrink-0 z-20">
-            <!-- Curriculum Header -->
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <span>Nội dung khóa học</span>
-                </h2>
-                <button @click="sidebarOpen = false" class="text-slate-400 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <!-- Curriculum List Container -->
-            <div class="flex-1 overflow-y-auto divide-y divide-slate-800/80 text-sm">
-                @yield('player_sidebar')
-            </div>
-        </aside>
-    </div>
-
+    @include('partials.back-to-top')
     @stack('scripts')
 </body>
 </html>

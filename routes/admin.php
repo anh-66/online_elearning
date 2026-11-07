@@ -1,31 +1,70 @@
 <?php
 
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EnrollmentController;
+use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\InstructorController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (Dành riêng cho Thành viên 6)
+| Admin Routes (Thành viên 6)
 |--------------------------------------------------------------------------
-| Tất cả các route trong file này tự động:
-| - Có tiền tố: /admin (ví dụ: /admin/dashboard)
-| - Có name prefix: admin. (ví dụ: route('admin.dashboard'))
-| - Đã được bảo vệ qua middleware: ['web', 'auth', 'role:admin']
+| Tất cả routes trong file này tự động:
+| - Prefix: /admin
+| - Name prefix: admin.
+| - Middleware: ['web', 'auth', 'role:admin'] (cấu hình tại bootstrap/app.php)
 */
 
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+// Dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+// Users
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
+Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+
+// Tạo tài khoản giảng viên
 Route::get('/instructors/create', [InstructorController::class, 'create'])->name('instructors.create');
 Route::post('/instructors', [InstructorController::class, 'store'])->name('instructors.store');
 
-// TV6 sẽ tiếp tục khai báo các Controller và routes cho:
-// - DashboardController (Thống kê Chart.js)
-// - UserController (Quản lý User & phân vai trò)
-// - CourseApprovalController (Duyệt/từ chối/khóa khóa học)
-// - CategoryController (CRUD danh mục)
-// - ReviewModerationController (Xóa đánh giá/bình luận vi phạm)
-// - EnrollmentController (Quản lý lượt ghi danh)
-// - NotificationController (CRUD thông báo hệ thống)
-// - BannerController (CRUD banner trang chủ)
+// Quản lý & Duyệt Khóa học
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+Route::patch('/courses/{course}/approve', [CourseController::class, 'approve'])->name('courses.approve');
+Route::patch('/courses/{course}/reject', [CourseController::class, 'reject'])->name('courses.reject');
+Route::patch('/courses/{course}/hide', [CourseController::class, 'hide'])->name('courses.hide');
+Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+// Danh mục
+Route::resource('categories', CategoryController::class);
+
+// Lượt ghi danh
+Route::get('/enrollments', [EnrollmentController::class, 'index'])->name('enrollments.index');
+Route::delete('/enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
+
+// Kiểm duyệt Đánh giá & Bình luận
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+Route::delete('/comments/{comment}', [ReviewController::class, 'destroyComment'])->name('reviews.destroy-comment');
+
+// Thông báo hệ thống
+Route::resource('notifications', NotificationController::class);
+
+// Banners
+Route::resource('banners', BannerController::class);
+Route::patch('/banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
+
+// Phản hồi & Báo cáo sự cố
+Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
+Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('feedbacks.show');
+Route::patch('/feedbacks/{feedback}', [FeedbackController::class, 'update'])->name('feedbacks.update');
+Route::delete('/feedbacks/{feedback}', [FeedbackController::class, 'destroy'])->name('feedbacks.destroy');

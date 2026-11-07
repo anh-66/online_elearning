@@ -90,6 +90,55 @@ class ProfileTest extends TestCase
         Storage::disk('public')->assertExists($user->avatar);
     }
 
+    public function test_designed_avatar_is_stored_on_the_public_disk(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create(['avatar' => null]);
+        $avatar = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_generated' => $avatar,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+
+        $this->assertNotNull($user->avatar);
+        $this->assertStringStartsWith('avatars/', $user->avatar);
+        $this->assertStringEndsWith('.png', $user->avatar);
+        Storage::disk('public')->assertExists($user->avatar);
+    }
+
+    public function test_profile_update_rejects_an_invalid_designed_avatar(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_generated' => 'data:image/png;base64,not-an-image',
+            ]);
+
+        $response
+            ->assertSessionHasErrors('avatar_generated')
+            ->assertRedirect('/profile');
+
+        $this->assertNull($user->refresh()->avatar);
+    }
+
     public function test_previous_avatar_is_deleted_when_a_new_avatar_is_uploaded(): void
     {
         Storage::fake('public');

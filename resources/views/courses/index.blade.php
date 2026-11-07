@@ -3,27 +3,35 @@
 @section('title', 'Danh sách Khóa học')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="w-full min-h-screen bg-white dark:bg-[#0d1117]">
+    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 py-10">
     <div class="flex flex-col lg:flex-row gap-8">
 
-        {{-- ===== SIDEBAR BỘ LỌC ===== --}}
+        {{-- ===== SIDEBAR BỘ LỌC (GitHub Dark Bordered Surface) ===== --}}
         <aside class="w-full lg:w-64 shrink-0">
             <form method="GET" action="{{ url('/courses') }}" id="filter-form">
-                <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-6 sticky top-20">
-                    <h3 class="font-semibold text-gray-800 text-base">Bộ lọc</h3>
+                <div class="bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] rounded-3xl p-5 space-y-6 sticky top-24 transition-colors">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#E5E5EA] dark:border-[#30363d]">
+                        <h3 class="font-semibold text-[#1D1D1F] dark:text-[#f0f6fc] text-sm">Bộ lọc tìm kiếm</h3>
+                        @if(request()->hasAny(['keyword', 'category', 'price', 'level', 'sort']))
+                            <a href="{{ url('/courses') }}" class="text-[11px] text-[#019D91] dark:text-[#02b3a5] hover:underline">
+                                Đặt lại
+                            </a>
+                        @endif
+                    </div>
 
                     {{-- Từ khóa --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Từ khóa</label>
+                        <label class="block text-[11px] font-medium text-[#86868B] dark:text-[#8b949e] uppercase tracking-wider mb-2">Từ khóa</label>
                         <input type="text" name="keyword" value="{{ request('keyword') }}"
-                               placeholder="Tìm kiếm khóa học..."
-                               class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent outline-none">
+                               placeholder="Tìm tên khóa học..."
+                               class="w-full px-3.5 py-2 text-xs border border-[#E5E5EA] dark:border-[#30363d] rounded-xl bg-[#F5F5F7] dark:bg-[#0d1117] text-[#1D1D1F] dark:text-[#f0f6fc] focus:ring-1 focus:ring-[#019D91] dark:focus:border-[#02b3a5] outline-none transition">
                     </div>
 
                     {{-- Danh mục --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Danh mục</label>
-                        <select name="category" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none bg-white">
+                        <label class="block text-[11px] font-medium text-[#86868B] dark:text-[#8b949e] uppercase tracking-wider mb-2">Danh mục</label>
+                        <select name="category" class="w-full px-3 py-2 text-xs border border-[#E5E5EA] dark:border-[#30363d] rounded-xl bg-[#F5F5F7] dark:bg-[#0d1117] text-[#1D1D1F] dark:text-[#f0f6fc] focus:ring-1 focus:ring-[#019D91] dark:focus:border-[#02b3a5] outline-none transition">
                             <option value="">Tất cả danh mục</option>
                             @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -35,14 +43,14 @@
 
                     {{-- Giá --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Giá</label>
-                        <div class="space-y-2">
+                        <label class="block text-[11px] font-medium text-[#86868B] dark:text-[#8b949e] uppercase tracking-wider mb-2">Mức phí</label>
+                        <div class="space-y-1.5">
                             @foreach([''=>'Tất cả', 'free'=>'Miễn phí', 'paid'=>'Có phí'] as $value => $label)
-                            <label class="flex items-center space-x-2 cursor-pointer">
+                            <label class="flex items-center space-x-2.5 cursor-pointer py-0.5">
                                 <input type="radio" name="price" value="{{ $value }}"
                                        {{ request('price', '') === $value ? 'checked' : '' }}
-                                       class="text-indigo-600 focus:ring-indigo-400">
-                                <span class="text-sm text-gray-700">{{ $label }}</span>
+                                       class="text-[#019D91] focus:ring-[#019D91] border-[#D2D2D7] dark:border-[#30363d] bg-white dark:bg-[#0d1117]">
+                                <span class="text-xs text-[#1D1D1F] dark:text-[#c9d1d9]">{{ $label }}</span>
                             </label>
                             @endforeach
                         </div>
@@ -50,14 +58,14 @@
 
                     {{-- Trình độ --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Trình độ</label>
-                        <div class="space-y-2">
+                        <label class="block text-[11px] font-medium text-[#86868B] dark:text-[#8b949e] uppercase tracking-wider mb-2">Trình độ</label>
+                        <div class="space-y-1.5">
                             @foreach(['' => 'Tất cả', 'beginner' => 'Cơ bản', 'intermediate' => 'Trung cấp', 'advanced' => 'Nâng cao'] as $value => $label)
-                            <label class="flex items-center space-x-2 cursor-pointer">
+                            <label class="flex items-center space-x-2.5 cursor-pointer py-0.5">
                                 <input type="radio" name="level" value="{{ $value }}"
                                        {{ request('level', '') === $value ? 'checked' : '' }}
-                                       class="text-indigo-600 focus:ring-indigo-400">
-                                <span class="text-sm text-gray-700">{{ $label }}</span>
+                                       class="text-[#019D91] focus:ring-[#019D91] border-[#D2D2D7] dark:border-[#30363d] bg-white dark:bg-[#0d1117]">
+                                <span class="text-xs text-[#1D1D1F] dark:text-[#c9d1d9]">{{ $label }}</span>
                             </label>
                             @endforeach
                         </div>
@@ -65,22 +73,20 @@
 
                     {{-- Sắp xếp --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Sắp xếp</label>
-                        <select name="sort" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none bg-white">
+                        <label class="block text-[11px] font-medium text-[#86868B] dark:text-[#8b949e] uppercase tracking-wider mb-2">Sắp xếp</label>
+                        <select name="sort" class="w-full px-3 py-2 text-xs border border-[#E5E5EA] dark:border-[#30363d] rounded-xl bg-[#F5F5F7] dark:bg-[#0d1117] text-[#1D1D1F] dark:text-[#f0f6fc] focus:ring-1 focus:ring-[#019D91] dark:focus:border-[#02b3a5] outline-none transition">
                             <option value="newest" {{ request('sort', 'newest') === 'newest' ? 'selected' : '' }}>Mới nhất</option>
-                            <option value="rating"  {{ request('sort') === 'rating'  ? 'selected' : '' }}>Đánh giá cao</option>
+                            <option value="rating"  {{ request('sort') === 'rating'  ? 'selected' : '' }}>Đánh giá cao nhất</option>
                             <option value="popular" {{ request('sort') === 'popular' ? 'selected' : '' }}>Phổ biến nhất</option>
                         </select>
                     </div>
 
-                    <div class="flex space-x-2 pt-1">
-                        <button type="submit"
-                                class="flex-1 bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                            Áp dụng
+                    <div class="flex flex-col gap-2 pt-2">
+                        <button type="submit" class="btn-apple-primary w-full py-2 text-xs">
+                            Áp dụng bộ lọc
                         </button>
-                        <a href="{{ url('/courses') }}"
-                           class="flex-1 text-center bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-200 transition">
-                            Xóa lọc
+                        <a href="{{ url('/courses') }}" class="btn-apple-secondary w-full py-2 text-xs text-center">
+                            Xóa bộ lọc
                         </a>
                     </div>
                 </div>
@@ -89,44 +95,56 @@
 
         {{-- ===== MAIN CONTENT ===== --}}
         <div class="flex-1 min-w-0">
-            {{-- Tiêu đề + tổng số kết quả --}}
-            <div class="flex items-center justify-between mb-6">
+            {{-- Header info --}}
+            <div class="flex items-end justify-between gap-4 mb-6 pb-4 border-b border-[#E5E5EA] dark:border-[#30363d]">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Danh sách Khóa học</h1>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Tìm thấy <span class="font-semibold text-gray-800">{{ $courses->total() }}</span> khóa học
+                    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc]">
+                        Tất cả khóa học
+                    </h1>
+                    <p class="text-xs text-[#86868B] dark:text-[#8b949e] mt-1">
+                        Hiện có <span class="font-medium text-[#1D1D1F] dark:text-[#f0f6fc]">{{ $courses->total() }}</span> khóa học phù hợp
                         @if(request('keyword'))
-                            cho từ khóa "<span class="text-indigo-600">{{ request('keyword') }}</span>"
+                            với từ khóa "<span class="text-[#019D91] dark:text-[#02b3a5]">{{ request('keyword') }}</span>"
                         @endif
                     </p>
                 </div>
-            </div>
-
-            {{-- Danh sách khóa học --}}
-            @if($courses->isNotEmpty())
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                @foreach($courses as $course)
-                @include('partials.course-card', ['course' => $course])
-                @endforeach
-            </div>
-
-            {{-- Phân trang --}}
-            <div class="mt-10">
-                {{ $courses->links() }}
-            </div>
-            @else
-            <div class="flex flex-col items-center justify-center py-24 text-center">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <button type="button"
+                        aria-label="Làm mới danh sách khóa học"
+                        class="refresh-button"
+                        onclick="this.classList.add('is-refreshing'); setTimeout(() => window.location.reload(), 500)">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"></path>
+                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"></path>
                     </svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Không tìm thấy khóa học</h3>
-                <p class="text-gray-400 text-sm mb-6">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
-                <a href="{{ url('/courses') }}" class="inline-block bg-indigo-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-indigo-700 transition">
-                    Xem tất cả khóa học
-                </a>
+                    <span>Làm mới</span>
+                </button>
             </div>
+
+            {{-- Course Grid --}}
+            @if($courses->isNotEmpty())
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    @foreach($courses as $course)
+                        @include('partials.course-card', ['course' => $course])
+                    @endforeach
+                </div>
+
+                {{-- Pagination --}}
+                <div class="mt-12 flex justify-center">
+                    {{ $courses->links() }}
+                </div>
+            @else
+                <div class="flex flex-col items-center justify-center py-24 text-center bg-[#F5F5F7] dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] rounded-3xl p-8">
+                    <div class="w-16 h-16 bg-white dark:bg-[#0d1117] border border-[#E5E5EA] dark:border-[#30363d] rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-[#86868B] dark:text-[#7d8590]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-semibold text-[#1D1D1F] dark:text-[#f0f6fc] mb-1">Không tìm thấy khóa học nào</h3>
+                    <p class="text-xs text-[#86868B] dark:text-[#8b949e] max-w-sm mb-6">Hãy thử tìm với từ khóa khác hoặc điều chỉnh lại các tiêu chí bộ lọc</p>
+                    <a href="{{ url('/courses') }}" class="btn-apple-primary px-5 py-2 text-xs">
+                        Xóa tất cả bộ lọc
+                    </a>
+                </div>
             @endif
         </div>
     </div>

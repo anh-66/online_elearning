@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Chapter;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Feedback;
 use App\Models\Lesson;
 use App\Models\LessonComment;
 use App\Models\LessonProgress;
@@ -37,9 +38,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
         ], [
             'name' => 'Quản Trị Viên Hệ Thống',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_ADMIN,
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         // 2 Tài khoản Giảng viên
@@ -47,10 +49,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'instructor1@gmail.com',
         ], [
             'name' => 'ThS. Nguyễn Văn Giảng',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_INSTRUCTOR,
             'bio' => 'Thạc sĩ Khoa học Máy tính, chuyên gia Fullstack Web & Cloud Computing với hơn 8 năm kinh nghiệm giảng dạy tại các trường đại học lớn.',
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         // Tạo alias instructor@gmail.com để tương thích các test cũ
@@ -58,20 +61,22 @@ class DatabaseSeeder extends Seeder
             'email' => 'instructor@gmail.com',
         ], [
             'name' => 'ThS. Nguyễn Văn Giảng',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_INSTRUCTOR,
             'bio' => 'Thạc sĩ Khoa học Máy tính, chuyên gia Fullstack Web & Cloud Computing.',
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         $instructor2 = User::updateOrCreate([
             'email' => 'instructor2@gmail.com',
         ], [
             'name' => 'TS. Trần Thị Minh',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_INSTRUCTOR,
             'bio' => 'Tiến sĩ Trí tuệ Nhân tạo & Khoa học Dữ liệu, tác giả nhiều công trình nghiên cứu và khóa học lập trình thực chiến.',
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         // 3 Tài khoản Học viên
@@ -79,36 +84,40 @@ class DatabaseSeeder extends Seeder
             'email' => 'student1@gmail.com',
         ], [
             'name' => 'Lê Hoàng Học Viên',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         User::updateOrCreate([
             'email' => 'student@gmail.com',
         ], [
             'name' => 'Lê Hoàng Học Viên',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         $student2 = User::updateOrCreate([
             'email' => 'student2@gmail.com',
         ], [
             'name' => 'Phạm Minh Anh',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         $student3 = User::updateOrCreate([
             'email' => 'student3@gmail.com',
         ], [
             'name' => 'Võ Quốc Huy',
-            'password' => '12345678',
+            'password' => 'Password123',
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
         ]);
 
         // ==========================================
@@ -456,6 +465,48 @@ class DatabaseSeeder extends Seeder
         ], [
             'content' => 'Hệ thống sẽ tiến hành bảo trì định kỳ từ 02:00 đến 04:00 ngày Chủ Nhật tới. Rất mong quý học viên thông cảm.',
             'type' => 'system',
+        ]);
+
+        // ==========================================
+        // 9. PHẢN HỒI & BÁO CÁO SỰ CỐ (FEEDBACKS)
+        // ==========================================
+        Feedback::updateOrCreate([
+            'title' => 'Video bài giảng số 4 khóa học Laravel bị giật hình',
+        ], [
+            'user_id' => $student3->id,
+            'sender_name' => $student3->name,
+            'sender_email' => $student3->email,
+            'category' => Feedback::CATEGORY_BUG,
+            'priority' => Feedback::PRIORITY_HIGH,
+            'description' => 'Khi phát video bài 4 ở độ phân giải 1080p, âm thanh vẫn chạy bình thường nhưng hình ảnh bị đứng ở giây 45. Mong ban quản trị kiểm tra lại encoder video giúp em.',
+            'status' => Feedback::STATUS_PENDING,
+        ]);
+
+        Feedback::updateOrCreate([
+            'title' => 'Đề xuất thêm tính năng chế độ xem video tốc độ 1.75x',
+        ], [
+            'user_id' => $student2->id,
+            'sender_name' => $student2->name,
+            'sender_email' => $student2->email,
+            'category' => Feedback::CATEGORY_FEATURE,
+            'priority' => Feedback::PRIORITY_MEDIUM,
+            'description' => 'Trình phát hiện chỉ có 1x, 1.25x, 1.5x và 2x. Em mong hệ thống có thể bổ sung thêm mốc 1.75x để tiện học nhanh các đoạn lý thuyết dài.',
+            'status' => Feedback::STATUS_IN_PROGRESS,
+            'admin_notes' => 'Đang thảo luận với team frontend để bổ sung thêm option vào video player settings.',
+        ]);
+
+        Feedback::updateOrCreate([
+            'title' => 'Hỏi về thời hạn sử dụng voucher giảm giá khóa học',
+        ], [
+            'user_id' => null,
+            'sender_name' => 'Trần Hoàng Long',
+            'sender_email' => 'longtran@gmail.com',
+            'category' => Feedback::CATEGORY_QUESTION,
+            'priority' => Feedback::PRIORITY_LOW,
+            'description' => 'Em nhận được mã giảm giá qua email sinh nhật nhưng không rõ hạn sử dụng là bao nhiêu ngày kể từ khi nhận. Nhờ admin giải đáp giúp em.',
+            'status' => Feedback::STATUS_RESOLVED,
+            'admin_notes' => 'Đã gửi email giải đáp cho học viên: mã có hiệu lực 30 ngày.',
+            'resolved_at' => now()->subDay(),
         ]);
     }
 }

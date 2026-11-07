@@ -56,7 +56,7 @@ class CourseCatalogController extends Controller
         $courses = $query->paginate(12)->withQueryString();
         $categories = Category::withCount(['courses' => function ($q) {
             $q->where('status', Course::STATUS_PUBLISHED);
-        }])->having('courses_count', '>', 0)->orderBy('name')->get();
+        }])->whereHas('courses', fn ($q) => $q->where('status', Course::STATUS_PUBLISHED))->orderBy('name')->get();
 
         return view('courses.index', compact('courses', 'categories'));
     }
@@ -73,27 +73,41 @@ class CourseCatalogController extends Controller
             'chapters.lessons',
             'chapters.quizzes',
         ])
+            ->withCount('enrollments')
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
 
-        // Đánh giá với phân trang
+        // Đánh giá với phân trang (eager-load học viên và giảng viên phản hồi)
         $reviews = $course->reviews()
-            ->with('user')
+            ->with(['user', 'instructor'])
             ->orderByDesc('created_at')
             ->paginate(5, ['*'], 'review_page');
 
         $averageRating = $course->averageRating();
         $totalReviews = $course->reviews()->count();
 
-        // Kiểm tra xem user đã ghi danh chưa (nếu đã đăng nhập)
+        // Số lượt đánh giá theo từng mức sao (5 → 1) để vẽ thanh phân bố
+        $ratingCounts = $course->reviews()
+            ->selectRaw('rating, count(*) as total')
+            ->groupBy('rating')
+            ->pluck('total', 'rating');
+        $ratingBreakdown = collect([5, 4, 3, 2, 1])
+            ->mapWithKeys(fn (int $star) => [$star => (int) ($ratingCounts[$star] ?? 0)]);
+
+        // Kiểm tra xem user đã ghi danh và đã đánh giá chưa (nếu đã đăng nhập)
         $isEnrolled = false;
+        $userReview = null;
         if (auth()->check()) {
             $isEnrolled = $course->enrollments()
                 ->where('user_id', auth()->id())
                 ->exists();
+
+            $userReview = $course->reviews()
+                ->where('user_id', auth()->id())
+                ->first();
         }
 
-        return view('courses.show', compact('course', 'reviews', 'averageRating', 'totalReviews', 'isEnrolled'));
+        return view('courses.show', compact('course', 'reviews', 'averageRating', 'totalReviews', 'ratingBreakdown', 'isEnrolled', 'userReview'));
     }
 }
