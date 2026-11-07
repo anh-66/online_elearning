@@ -79,6 +79,19 @@ document.querySelectorAll('textarea[data-editor]').forEach((textarea) => {
                 Accept: 'application/json',
             },
         },
+    }).then((editor) => {
+        // Tự động đồng bộ link YouTube từ CKEditor sang ô 'Link video YouTube' nếu ô đó đang trống
+        editor.model.document.on('change:data', () => {
+            const videoInput = document.getElementById('video_url');
+            if (videoInput && !videoInput.value.trim()) {
+                const data = editor.getData();
+                const match = data.match(/(?:https?:)?\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([\w-]{11})/i);
+                if (match) {
+                    videoInput.value = `https://www.youtube.com/watch?v=${match[1]}`;
+                    videoInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+        });
     }).catch((error) => {
         console.error('Không khởi tạo được CKEditor:', error);
     });

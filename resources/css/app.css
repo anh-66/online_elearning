@@ -9,7 +9,7 @@
 @layer base {
     body {
         @apply bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased;
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         letter-spacing: -0.011em;
     }
 
@@ -96,6 +96,35 @@
     .refresh-button:focus svg,
     .refresh-button.is-refreshing svg {
         animation: refresh-button-spin 0.5s linear;
+    }
+
+    .course-title-marquee {
+        animation: course-title-marquee 18s ease-in-out infinite;
+    }
+
+    .course-title-marquee:hover,
+    .course-title-marquee:has(a:focus-visible) {
+        animation-play-state: paused;
+    }
+
+    @keyframes course-title-marquee {
+        0%, 12% {
+            transform: translateX(0);
+        }
+
+        45%, 55% {
+            transform: translateX(-50%);
+        }
+
+        88%, 100% {
+            transform: translateX(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .course-title-marquee {
+            animation: none;
+        }
     }
 
     .cookie-card {

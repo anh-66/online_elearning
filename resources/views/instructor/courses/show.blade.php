@@ -92,20 +92,24 @@
 
                         @if($canEdit)
                             <div class="flex items-center gap-1 shrink-0" x-show="!renaming">
-                                @unless($loop->first)
-                                    <form method="POST" action="{{ route('instructor.chapters.move', $chapter) }}">
-                                        @csrf @method('PATCH')
-                                        <input type="hidden" name="direction" value="up">
-                                        <button type="submit" title="Lên trên" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800">↑</button>
-                                    </form>
-                                @endunless
-                                @unless($loop->last)
-                                    <form method="POST" action="{{ route('instructor.chapters.move', $chapter) }}">
-                                        @csrf @method('PATCH')
-                                        <input type="hidden" name="direction" value="down">
-                                        <button type="submit" title="Xuống dưới" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800">↓</button>
-                                    </form>
-                                @endunless
+                                        @unless($loop->first)
+                                            <form method="POST" action="{{ route('instructor.chapters.move', $chapter) }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="direction" value="up">
+                                                <button type="submit" title="Lên trên" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                                </button>
+                                            </form>
+                                        @endunless
+                                        @unless($loop->last)
+                                            <form method="POST" action="{{ route('instructor.chapters.move', $chapter) }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="direction" value="down">
+                                                <button type="submit" title="Xuống dưới" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                                </button>
+                                            </form>
+                                        @endunless
                                 <button type="button" @click="renaming = true" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-600 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-800">Đổi tên</button>
                                 <form method="POST" action="{{ route('instructor.chapters.destroy', $chapter) }}" onsubmit="return confirm('Xóa chương này cùng toàn bộ bài học bên trong?')">
                                     @csrf @method('DELETE')
@@ -123,11 +127,26 @@
                                     <span class="w-7 h-7 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 text-xs font-bold flex items-center justify-center shrink-0">{{ $loop->iteration }}</span>
                                     <div class="min-w-0">
                                         <p class="text-sm font-medium text-gray-900 dark:text-neutral-100 truncate">{{ $lesson->title }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-neutral-400 flex items-center gap-3">
-                                            @if($lesson->video_url)<span>▶ Video</span>@endif
-                                            @if($lesson->attachment_path)<span>📎 Tài liệu</span>@endif
-                                            @if($lesson->content)<span>📝 Nội dung</span>@endif
-                                        </p>
+                                        <div class="text-xs text-gray-500 dark:text-neutral-400 flex items-center gap-3 mt-0.5">
+                                            @if($lesson->video_url)
+                                                <span class="inline-flex items-center gap-1 text-slate-500 dark:text-neutral-400">
+                                                    <svg class="w-3.5 h-3.5 text-[#019D91]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    <span>Video</span>
+                                                </span>
+                                            @endif
+                                            @if($lesson->attachment_path)
+                                                <span class="inline-flex items-center gap-1 text-slate-500 dark:text-neutral-400">
+                                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                    <span>Tài liệu</span>
+                                                </span>
+                                            @endif
+                                            @if($lesson->content)
+                                                <span class="inline-flex items-center gap-1 text-slate-500 dark:text-neutral-400">
+                                                    <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                    <span>Nội dung</span>
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 @if($canEdit)
@@ -136,20 +155,24 @@
                                             <form method="POST" action="{{ route('instructor.lessons.move', $lesson) }}">
                                                 @csrf @method('PATCH')
                                                 <input type="hidden" name="direction" value="up">
-                                                <button type="submit" title="Lên trên" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800">↑</button>
+                                                <button type="submit" title="Lên trên" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                                </button>
                                             </form>
                                         @endunless
                                         @unless($loop->last)
                                             <form method="POST" action="{{ route('instructor.lessons.move', $lesson) }}">
                                                 @csrf @method('PATCH')
                                                 <input type="hidden" name="direction" value="down">
-                                                <button type="submit" title="Xuống dưới" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800">↓</button>
+                                                <button type="submit" title="Xuống dưới" class="p-1.5 rounded-lg text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                                </button>
                                             </form>
                                         @endunless
-                                        <a href="{{ route('instructor.lessons.edit', $lesson) }}" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/15">Sửa</a>
+                                        <a href="{{ route('instructor.lessons.edit', $lesson) }}" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:bg-[#019D91]/10 transition">Sửa</a>
                                         <form method="POST" action="{{ route('instructor.lessons.destroy', $lesson) }}" onsubmit="return confirm('Xóa bài học này?')">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/15">Xóa</button>
+                                            <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/15 transition">Xóa</button>
                                         </form>
                                     </div>
                                 @endif
@@ -160,20 +183,20 @@
 
                         <!-- Quiz cuối chương -->
                         @foreach($quizzesByChapter->get($chapter->id, collect()) as $quiz)
-                            <li class="px-5 py-3 flex items-center justify-between gap-3 bg-violet-50/40 dark:bg-violet-500/10">
+                            <li class="px-5 py-3 flex items-center justify-between gap-3 bg-[#019D91]/5 dark:bg-[#019D91]/10 border-t border-[#019D91]/10">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <span class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-400 text-xs font-bold flex items-center justify-center shrink-0">Q</span>
+                                    <span class="w-7 h-7 rounded-lg bg-[#019D91]/15 text-[#018076] dark:text-[#02b3a5] text-xs font-bold flex items-center justify-center shrink-0">Q</span>
                                     <p class="text-sm font-medium text-gray-900 dark:text-neutral-100 truncate">{{ $quiz->title }} <span class="text-xs text-gray-500 dark:text-neutral-400">({{ $quiz->questions_count }} câu hỏi)</span></p>
                                 </div>
-                                <a href="{{ route('instructor.quizzes.show', $quiz) }}" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-violet-700 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-500/15 shrink-0">Quản lý câu hỏi</a>
+                                <a href="{{ route('instructor.quizzes.show', $quiz) }}" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:bg-[#019D91]/15 shrink-0 transition">Quản lý câu hỏi</a>
                             </li>
                         @endforeach
                     </ul>
 
                     @if($canEdit)
                         <div class="px-5 py-3 border-t border-gray-100 dark:border-neutral-800 flex flex-wrap gap-2">
-                            <a href="{{ route('instructor.chapters.lessons.create', $chapter) }}" class="px-3 py-1.5 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-800 dark:text-brand-300 text-xs font-semibold hover:bg-brand-100 dark:hover:bg-brand-500/15">+ Thêm bài học</a>
-                            <a href="{{ route('instructor.courses.quizzes.create', [$course, 'chapter_id' => $chapter->id]) }}" class="px-3 py-1.5 rounded-lg bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/15">+ Thêm quiz cho chương</a>
+                            <a href="{{ route('instructor.chapters.lessons.create', $chapter) }}" class="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-200 text-xs font-semibold hover:bg-gray-200 dark:hover:bg-neutral-700 transition">+ Thêm bài học</a>
+                            <a href="{{ route('instructor.courses.quizzes.create', [$course, 'chapter_id' => $chapter->id]) }}" class="px-3 py-1.5 rounded-lg bg-[#019D91]/10 text-[#019D91] dark:text-[#02b3a5] text-xs font-semibold hover:bg-[#019D91]/20 transition">+ Thêm quiz cho chương</a>
                         </div>
                     @endif
                 </div>
@@ -198,7 +221,7 @@
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-neutral-100">Quiz trắc nghiệm</h3>
                 @if($canEdit)
-                    <a href="{{ route('instructor.courses.quizzes.create', $course) }}" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700">+ Tạo quiz</a>
+                    <a href="{{ route('instructor.courses.quizzes.create', $course) }}" class="px-3 py-1.5 rounded-lg bg-[#019D91] text-white text-xs font-semibold hover:bg-[#008b80] transition shadow-sm">+ Tạo quiz</a>
                 @endif
             </div>
 

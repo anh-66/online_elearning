@@ -35,6 +35,12 @@ class LessonController extends Controller
         Gate::authorize('update', $chapter->course);
 
         $data = $request->safe()->only(['title', 'content', 'video_url']);
+        if (empty($data['video_url']) && ! empty($data['content'])) {
+            $data['video_url'] = Lesson::extractYouTubeUrl($data['content']);
+        }
+        if (empty($data['video_url']) && ! empty($data['content'])) {
+            $data['video_url'] = Lesson::extractYouTubeUrl($data['content']);
+        }
         $data['order'] = (int) $chapter->lessons()->max('order') + 1;
 
         if ($request->hasFile('attachment')) {
@@ -66,6 +72,9 @@ class LessonController extends Controller
         Gate::authorize('update', $course);
 
         $data = $request->safe()->only(['title', 'content', 'video_url']);
+        if (empty($data['video_url']) && ! empty($data['content'])) {
+            $data['video_url'] = Lesson::extractYouTubeUrl($data['content']);
+        }
 
         // Cho phép chuyển bài học sang chương khác của cùng khóa học, đặt ở cuối chương mới.
         $targetChapterId = (int) $request->input('chapter_id', $lesson->chapter_id);

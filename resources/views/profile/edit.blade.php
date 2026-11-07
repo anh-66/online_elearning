@@ -169,10 +169,10 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Nhận email khi có hoạt động đăng nhập từ thiết bị mới hoặc đổi mật khẩu.</p>
                             </div>
                             <button type="button" @click="emailActivity = !emailActivity"
-                                    :class="emailActivity ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
-                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
-                                <div :class="emailActivity ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
-                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                                    :class="emailActivity ? 'bg-[#0071e3] dark:bg-[#0071e3]' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <div :class="emailActivity ? 'translate-x-5' : 'translate-x-0'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></div>
                             </button>
                         </div>
 
@@ -182,10 +182,10 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Cập nhật các tính năng, công nghệ mới và khóa học được đề xuất.</p>
                             </div>
                             <button type="button" @click="emailNewsletter = !emailNewsletter"
-                                    :class="emailNewsletter ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
-                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
-                                <div :class="emailNewsletter ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
-                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                                    :class="emailNewsletter ? 'bg-[#0071e3] dark:bg-[#0071e3]' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <div :class="emailNewsletter ? 'translate-x-5' : 'translate-x-0'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></div>
                             </button>
                         </div>
                     </div>
@@ -200,10 +200,10 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Nhận thông báo khi có người trả lời câu hỏi hoặc phản hồi bình luận của bạn.</p>
                             </div>
                             <button type="button" @click="pushDiscussion = !pushDiscussion"
-                                    :class="pushDiscussion ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
-                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
-                                <div :class="pushDiscussion ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
-                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                                    :class="pushDiscussion ? 'bg-[#0071e3] dark:bg-[#0071e3]' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <div :class="pushDiscussion ? 'translate-x-5' : 'translate-x-0'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></div>
                             </button>
                         </div>
 
@@ -213,10 +213,10 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Nhắc nhở tiếp tục tiến độ bài học dang dở vào các ngày cuối tuần.</p>
                             </div>
                             <button type="button" @click="pushReminder = !pushReminder"
-                                    :class="pushReminder ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-neutral-700'"
-                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none">
-                                <div :class="pushReminder ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-0 bg-white dark:bg-neutral-300'"
-                                     class="absolute left-1 top-1 w-4 h-4 rounded-full shadow-sm transition-transform"></div>
+                                    :class="pushReminder ? 'bg-[#0071e3] dark:bg-[#0071e3]' : 'bg-gray-200 dark:bg-neutral-700'"
+                                    class="w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <div :class="pushReminder ? 'translate-x-5' : 'translate-x-0'"
+                                     class="absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></div>
                             </button>
                         </div>
                     </div>
@@ -328,21 +328,36 @@
 
                 <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-neutral-800">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Phương thức thanh toán</h2>
-                    <div class="border border-gray-100 dark:border-neutral-800 rounded-xl p-4 flex items-center gap-4 bg-white dark:bg-[#161b22]">
-                        <div class="w-12 h-8 bg-gray-100 dark:bg-neutral-800 rounded flex items-center justify-center shrink-0">
-                            <iconify-icon icon="logos:visa" class="text-2xl"></iconify-icon>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">Visa kết thúc bằng •••• 4242</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Hết hạn 04/28</p>
-                        </div>
-                        <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">Mặc định</span>
-                    </div>
+                    
+                    @php
+                        $userPaymentMethods = $user->paymentMethods()->orderByDesc('is_default')->latest()->get();
+                    @endphp
 
-                    <button type="button" class="w-full py-3 border border-dashed border-gray-300 dark:border-neutral-700 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center justify-center gap-2 transition">
+                    @forelse($userPaymentMethods as $pm)
+                        <div class="border border-gray-100 dark:border-neutral-800 rounded-xl p-4 flex items-center gap-4 bg-white dark:bg-[#161b22]">
+                            <div class="w-12 h-8 bg-gray-100 dark:bg-neutral-800 rounded flex items-center justify-center shrink-0">
+                                <iconify-icon icon="{{ $pm->icon }}" class="text-2xl {{ $pm->type === 'momo' ? 'text-[#A50064]' : '' }}"></iconify-icon>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $pm->title }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $pm->subtitle }}</p>
+                            </div>
+                            @if($pm->is_default)
+                                <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">Mặc định</span>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="border border-dashed border-gray-200 dark:border-neutral-800 rounded-xl p-6 text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-neutral-900/30">
+                            <iconify-icon icon="lucide:credit-card" class="text-2xl text-gray-400 mb-1.5"></iconify-icon>
+                            <p class="font-medium text-gray-700 dark:text-gray-300">Chưa lưu phương thức thanh toán</p>
+                            <p class="text-xs text-gray-400 mt-0.5">Phương thức thanh toán (Visa, MoMo...) sẽ tự động được lưu và hiển thị tại đây khi bạn đăng ký/mua khóa học.</p>
+                        </div>
+                    @endforelse
+
+                    <a href="{{ route('courses.index') }}" class="w-full py-3 border border-dashed border-gray-300 dark:border-neutral-700 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center justify-center gap-2 transition">
                         <iconify-icon icon="lucide:plus" class="text-lg"></iconify-icon>
-                        Thêm phương thức mới
-                    </button>
+                        Khám phá khóa học để thêm phương thức thanh toán
+                    </a>
                 </div>
 
                 <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-neutral-800">

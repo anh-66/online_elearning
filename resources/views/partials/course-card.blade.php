@@ -40,12 +40,29 @@
         <div>
             {{-- Title, Subtitle and Top Badges --}}
             <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                    <a href="{{ route('courses.show', $course->slug) }}"
-                       class="text-sm font-semibold text-gray-900 dark:text-[#f0f6fc] truncate block hover:text-[#019D91] dark:hover:text-[#02b3a5] transition"
-                       title="{{ $course->title }}">
-                        {{ $course->title }}
-                    </a>
+                <div class="flex-1 min-w-0"
+                     x-data="{ overflowing: false, updateOverflow() { this.overflowing = this.$refs.title.scrollWidth > this.$refs.container.clientWidth } }"
+                     x-init="$nextTick(() => updateOverflow())"
+                     @resize.window="updateOverflow()">
+                    <div x-ref="container" class="overflow-hidden whitespace-nowrap">
+                        <div class="inline-flex min-w-full"
+                             :class="{ 'course-title-marquee': overflowing }">
+                            <a x-ref="title"
+                               href="{{ route('courses.show', $course->slug) }}"
+                               class="shrink-0 text-sm font-semibold text-gray-900 dark:text-[#f0f6fc] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition"
+                               title="{{ $course->title }}">
+                                {{ $course->title }}
+                            </a>
+                            <a x-show="overflowing"
+                               x-cloak
+                               aria-hidden="true"
+                               tabindex="-1"
+                               href="{{ route('courses.show', $course->slug) }}"
+                               class="shrink-0 text-sm font-semibold text-gray-900 dark:text-[#f0f6fc] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition">
+                                {{ $course->title }}
+                            </a>
+                        </div>
+                    </div>
                     <p class="mt-1 text-xs text-gray-500 dark:text-[#8b949e] truncate">
                         {{ $course->instructor->name ?? 'Giảng viên EduLearn' }}
                     </p>

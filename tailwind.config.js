@@ -16,6 +16,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: [
+                    '"Be Vietnam Pro"',
                     "-apple-system",
                     "BlinkMacSystemFont",
                     '"SF Pro Display"',
@@ -24,7 +25,6 @@ export default {
                     "Roboto",
                     "Helvetica",
                     "Arial",
-                    "Be Vietnam Pro",
                     ...defaultTheme.fontFamily.sans,
                 ],
             },

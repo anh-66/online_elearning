@@ -1,16 +1,22 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseCatalogController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
+use App\Http\Controllers\LearningController;
 use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// use App\Http\Controllers\WishlistController;
 /*
 |--------------------------------------------------------------------------
 | Public Routes (Thành viên 2: HomeController, CourseCatalogController, InstructorProfileController)
@@ -37,16 +43,28 @@ Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support
 Route::middleware(['auth'])->group(function () {
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
     Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
-    // Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
-    // Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
-    // Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
+    Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
+    Route::get('/courses/{slug}/checkout', [EnrollmentController::class, 'checkout'])->name('courses.checkout');
+    Route::post('/courses/{slug}/checkout', [EnrollmentController::class, 'processCheckout'])->name('courses.checkout.process');
+    Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
+    Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
     // Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
-    // Route::get('/quizzes/{id}', [QuizController::class, 'show'])->name('quizzes.show');
-    // Route::post('/quizzes/{id}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
-    // Route::post('/courses/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-    // Route::post('/lessons/{id}/comments', [LessonCommentController::class, 'store'])->name('comments.store');
+    Route::get('/quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
+    Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
+    Route::get('/quiz/{quiz}/history', [QuizController::class, 'history'])->name('quiz.history');
+    Route::get('/quiz/{quiz}/attempts/{attempt}', [QuizController::class, 'result'])->name('quiz.result');
+
+    Route::post('/courses/{course}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])->name('reviews.reply');
+    Route::delete('/reviews/{review}/reply', [ReviewController::class, 'destroyReply'])->name('reviews.destroy-reply');
+
+    Route::post('/lessons/{lesson}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
 /*
@@ -94,5 +112,5 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
 });
-
+Route::get('/courses/{id}/learn', [LearningController::class, 'index'])->name('learning.index');
 require __DIR__.'/auth.php';
