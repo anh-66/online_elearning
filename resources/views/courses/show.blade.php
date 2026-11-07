@@ -559,6 +559,17 @@
                     @endauth
                     </div>
 
+                    @auth
+                        @if(! $isCourseOwner && ! $isAdmin)
+                            <form method="POST" action="{{ route('wishlist.toggle', $course->id) }}" class="mt-3">
+                                @csrf
+                                <button type="submit" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-neutral-700 dark:text-gray-200 dark:hover:bg-neutral-800">
+                                    {{ $isWishlisted ? '♥ Xóa khỏi danh sách yêu thích' : '♡ Thêm vào danh sách yêu thích' }}
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
+
                     {{-- Summary Properties --}}
                     <dl class="mt-6 text-sm divide-y divide-gray-100 dark:divide-neutral-800">
                         <div class="flex justify-between items-center py-3">

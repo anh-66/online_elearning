@@ -3,109 +3,92 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-/**
- * Phòng học trực tuyến (Learning Player) - TV3 tích hợp với Module Quiz & Hỏi đáp của TV4.
- */
 class LearningController extends Controller
 {
-    /**
-     * Giao diện phòng học: video, nội dung, điều hướng bài học, hỏi đáp và quiz cuối chương.
-     */
-    public function player(Request $request, string $course_slug, ?int $lesson_id = null): View|RedirectResponse
+    private function canAccess(Course $course): bool
     {
-        $course = Course::with([
-            'chapters' => fn ($q) => $q->orderBy('order'),
-            'chapters.lessons' => fn ($q) => $q->orderBy('order'),
-            'chapters.quizzes',
-        ])
-            ->where('slug', $course_slug)
-            ->firstOrFail();
+        $user = Auth::user();
 
-        // Kiểm tra quyền truy cập: Học viên phải ghi danh (hoặc là giảng viên của khóa/admin)
-        $user = $request->user();
-        $isInstructorOrAdmin = $user->isAdmin() || $course->instructor_id === $user->id;
+        return $user->isAdmin()
+            || $user->id === $course->instructor_id
+            || $user->isEnrolledIn($course);
+    }
 
-        if (! $isInstructorOrAdmin && ! $user->isEnrolledIn($course)) {
+    public function player(Course $course, ?int $lesson_id = null): View|RedirectResponse
+    {
+        if (! $this->canAccess($course)) {
             return redirect()->route('courses.show', $course->slug)
-                ->with('error', 'Bạn cần ghi danh khóa học để vào phòng học.');
+                ->with('error', 'Bạn chưa đăng ký khóa học này.');
         }
 
-        // Lấy danh sách tất cả các bài học theo thứ tự chương và bài
-        $allLessons = $course->chapters->flatMap->lessons->values();
-
-        if ($allLessons->isEmpty()) {
-            return redirect()->route('courses.show', $course->slug)
-                ->with('error', 'Khóa học này hiện chưa có bài học nào.');
-        }
-
-        // Xác định bài học hiện tại
+        $course->load(['chapters.lessons', 'chapters.quizzes']);
         $currentLesson = $lesson_id
-            ? $allLessons->firstWhere('id', $lesson_id)
-            : $allLessons->first();
+            ? $course->lessons()->whereKey($lesson_id)->firstOrFail()
+            : $course->lessons()->orderBy('order')->first();
 
         if (! $currentLesson) {
-            $currentLesson = $allLessons->first();
+            return redirect()->route('my-courses')->with('error', 'Khóa học chưa có bài học.');
         }
 
-        // Lấy danh sách bài học đã hoàn thành của học viên
-        $completedLessonIds = $user->lessonProgress()
-            ->whereIn('lesson_id', $allLessons->pluck('id'))
+        $completedLessonIds = LessonProgress::where('user_id', Auth::id())
             ->where('is_completed', true)
-            ->pluck('lesson_id')
-            ->all();
+            ->whereIn('lesson_id', $course->lessons->pluck('id'))
+            ->pluck('lesson_id')->toArray();
 
-        // Tính tiến độ phần trăm
-        $totalLessons = $allLessons->count();
-        $progressPercent = $totalLessons > 0
-            ? (int) round((count($completedLessonIds) / $totalLessons) * 100)
-            : 0;
-
-        // Tìm bài học trước và bài học sau
-        $currentIndex = $allLessons->search(fn ($item) => $item->id === $currentLesson->id);
-        $prevLesson = $currentIndex > 0 ? $allLessons->get($currentIndex - 1) : null;
-        $nextLesson = $currentIndex < $totalLessons - 1 ? $allLessons->get($currentIndex + 1) : null;
+        $lessons = $course->lessons->sortBy('order')->values();
+        $currentIndex = $lessons->search(fn (Lesson $lesson): bool => $lesson->id === $currentLesson->id);
+        $prevLesson = $currentIndex > 0 ? $lessons[$currentIndex - 1] : null;
+        $nextLesson = $currentIndex < $lessons->count() - 1 ? $lessons[$currentIndex + 1] : null;
+        $enrollment = Enrollment::where('user_id', Auth::id())->where('course_id', $course->id)->first();
+        $progressPercent = (int) ($enrollment?->progress_percent ?? 0);
 
         return view('learning.player', compact(
             'course',
             'currentLesson',
             'completedLessonIds',
-            'progressPercent',
             'prevLesson',
-            'nextLesson'
+            'nextLesson',
+            'progressPercent'
         ));
     }
 
-    /**
-     * Đánh dấu hoặc hủy đánh dấu hoàn thành bài học.
-     */
-    public function markComplete(Request $request, int $id): RedirectResponse
+    public function markComplete(Request $request, Lesson $lesson): RedirectResponse|JsonResponse
     {
-        $lesson = Lesson::with('chapter.course')->findOrFail($id);
-        $course = $lesson->chapter->course;
-        $user = $request->user();
+        $user = Auth::user();
+        $course = $lesson->chapter()->with('course')->firstOrFail()->course;
+        abort_unless($this->canAccess($course), 403, 'Bạn chưa đăng ký khóa học này.');
 
-        $isInstructorOrAdmin = $user->isAdmin() || $course->instructor_id === $user->id;
-        if (! $isInstructorOrAdmin && ! $user->isEnrolledIn($course)) {
-            abort(403);
+        LessonProgress::updateOrCreate(
+            ['user_id' => $user->id, 'lesson_id' => $lesson->id],
+            ['is_completed' => true, 'completed_at' => now()]
+        );
+
+        $lessonIds = $course->lessons()->pluck('lessons.id');
+        $totalLessons = $lessonIds->count();
+        $completedCount = LessonProgress::where('user_id', $user->id)
+            ->whereIn('lesson_id', $lessonIds)
+            ->where('is_completed', true)
+            ->count();
+
+        $percent = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+
+        Enrollment::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->update(['progress_percent' => $percent]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'progress_percent' => $percent]);
         }
 
-        $progress = LessonProgress::firstOrNew([
-            'user_id' => $user->id,
-            'lesson_id' => $lesson->id,
-        ]);
-
-        $progress->is_completed = ! (bool) $progress->is_completed;
-        $progress->completed_at = $progress->is_completed ? now() : null;
-        $progress->save();
-
-        $statusMsg = $progress->is_completed ? 'Đã hoàn thành bài học!' : 'Đã bỏ đánh dấu hoàn thành bài học.';
-
-        return back()->with('success', $statusMsg);
+        return back()->with('success', 'Đã đánh dấu hoàn thành bài học.');
     }
 }
