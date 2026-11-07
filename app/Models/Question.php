@@ -2,25 +2,30 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+#[Fillable(['quiz_id', 'question_text', 'explanation'])]
 class Question extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'quiz_id',
-        'content',
-    ];
-
-    public function quiz()
+    public function quiz(): BelongsTo
     {
         return $this->belongsTo(Quiz::class);
     }
 
-    public function options()
+    public function answers(): HasMany
     {
-        return $this->hasMany(Option::class);
+        return $this->hasMany(Answer::class);
+    }
+
+    public function correctAnswer(): HasOne
+    {
+        return $this->hasOne(Answer::class)->where('is_correct', true);
     }
 }

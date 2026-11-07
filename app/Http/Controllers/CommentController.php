@@ -2,30 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\LessonCommentRequest;
+use App\Models\Lesson;
+use App\Models\LessonComment;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 
+/**
+ * Hỏi đáp/bình luận dưới mỗi bài học (bảng lesson_comments) - TV4.
+ * Người dùng chỉ được sửa/xóa bình luận của chính mình.
+ */
 class CommentController extends Controller
 {
-    // Lưu bình luận mới
-    public function store(Request $request, $lessonId)
+    public function store(LessonCommentRequest $request, Lesson $lesson): RedirectResponse
     {
-        // 1. Kiểm tra nội dung bình luận (không được để trống)
-        $request->validate([
-            'content' => 'required|string|max:2000',
+        Gate::authorize('create', [LessonComment::class, $lesson]);
+
+        $parentId = $request->validated('parent_id');
+
+        if ($parentId !== null) {
+            $parent = $lesson->comments()->find($parentId);
+
+            if ($parent === null) {
+                return back()->with('error', 'Bình luận bạn muốn trả lời không tồn tại.');
+            }
+
+            // Chỉ hỗ trợ một cấp trả lời: trả lời một phản hồi sẽ được gắn vào bình luận gốc.
+            $parentId = $parent->parent_id ?? $parent->id;
+        }
+
+        $comment = $lesson->comments()->create([
+            'user_id' => $request->user()->id,
+            'parent_id' => $parentId,
+            'content' => $request->validated('content'),
         ]);
 
-        // 2. Thêm vào Database (Bảng comments)
-        DB::table('comments')->insert([
-            'user_id' => Auth::id(),
-            'lesson_id' => $lessonId, 
-            'content' => $request->content,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // 3. Tải lại trang và báo thành công
         return back()->with('success', 'Bình luận của bạn đã được gửi!');
+    }
+
+    public function update(LessonCommentRequest $request, LessonComment $comment): RedirectResponse
+    {
+        Gate::authorize('update', $comment);
+
+        $comment->update(['content' => $request->validated('content')]);
+
+        return back()->with('success', 'Đã cập nhật bình luận.');
+    }
+
+    public function destroy(LessonComment $comment): RedirectResponse
+    {
+        Gate::authorize('delete', $comment);
+
+        $comment->delete();
+
+        return back()->with('success', 'Đã xóa bình luận.');
     }
 }

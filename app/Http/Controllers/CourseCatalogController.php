@@ -78,9 +78,9 @@ class CourseCatalogController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        // Đánh giá với phân trang
+        // Đánh giá với phân trang (eager-load học viên và giảng viên phản hồi)
         $reviews = $course->reviews()
-            ->with('user')
+            ->with(['user', 'instructor'])
             ->orderByDesc('created_at')
             ->paginate(5, ['*'], 'review_page');
 
@@ -95,14 +95,19 @@ class CourseCatalogController extends Controller
         $ratingBreakdown = collect([5, 4, 3, 2, 1])
             ->mapWithKeys(fn (int $star) => [$star => (int) ($ratingCounts[$star] ?? 0)]);
 
-        // Kiểm tra xem user đã ghi danh chưa (nếu đã đăng nhập)
+        // Kiểm tra xem user đã ghi danh và đã đánh giá chưa (nếu đã đăng nhập)
         $isEnrolled = false;
+        $userReview = null;
         if (auth()->check()) {
             $isEnrolled = $course->enrollments()
                 ->where('user_id', auth()->id())
                 ->exists();
+
+            $userReview = $course->reviews()
+                ->where('user_id', auth()->id())
+                ->first();
         }
 
-        return view('courses.show', compact('course', 'reviews', 'averageRating', 'totalReviews', 'ratingBreakdown', 'isEnrolled'));
+        return view('courses.show', compact('course', 'reviews', 'averageRating', 'totalReviews', 'ratingBreakdown', 'isEnrolled', 'userReview'));
     }
 }

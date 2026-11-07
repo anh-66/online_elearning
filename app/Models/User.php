@@ -137,6 +137,14 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    /**
+     * Học viên đã ghi danh vào khóa học hay chưa.
+     */
+    public function isEnrolledIn(Course $course): bool
+    {
+        return $this->enrollments()->where('course_id', $course->id)->exists();
+    }
+
     public function lessonProgress(): HasMany
     {
         return $this->hasMany(LessonProgress::class);
@@ -170,5 +178,16 @@ class User extends Authenticatable
     public function wishlistCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'wishlists')->withTimestamps();
+    }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
+    public function defaultPaymentMethod(): ?PaymentMethod
+    {
+        return $this->paymentMethods()->where('is_default', true)->latest()->first()
+            ?? $this->paymentMethods()->latest()->first();
     }
 }

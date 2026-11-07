@@ -20,49 +20,49 @@
 <body class="flex min-h-screen flex-col bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased selection:bg-[#019D91] selection:text-white"
       data-back-to-top-scroll
       x-data="{ mobileMenuOpen: false, supportFlyoutOpen: false, supportCloseTimer: null, openSupportFlyout() { clearTimeout(this.supportCloseTimer); this.supportFlyoutOpen = true; }, scheduleSupportClose() { this.supportCloseTimer = setTimeout(() => { this.supportFlyoutOpen = false; }, 220); } }">
-    <!-- Header / Navbar (Apple Glass Strip - Expanded & Proportioned) -->
+    <!-- Header / Navbar (LottieFiles Modern Scale - Rộng rãi, thoáng đạt, chữ to rõ nét) -->
     <header class="sticky top-0 z-50 apple-glass-nav border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors"
             @keydown.escape="supportFlyoutOpen = false; clearTimeout(supportCloseTimer)">
-        <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
-            <div class="flex items-center justify-between h-16 sm:h-18">
+        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14">
+            <div class="flex items-center justify-between h-18 sm:h-20">
                 <!-- Left: Logo & Nav Links -->
-                <div class="flex items-center space-x-10">
-                    <a href="{{ url('/') }}" class="flex items-center space-x-2.5 text-[#1D1D1F] dark:text-white group">
-                        <svg class="w-7 h-7 text-[#1D1D1F] dark:text-white group-hover:text-[#019D91] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                <div class="flex items-center space-x-10 lg:space-x-12">
+                    <a href="{{ url('/') }}" class="flex items-center space-x-3 text-[#1D1D1F] dark:text-white group">
+                        <svg class="w-8 h-8 text-[#019D91] dark:text-[#00ddb3] group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
                         </svg>
-                        <span class="text-lg sm:text-xl font-bold tracking-tight">EduLearn</span>
+                        <span class="text-xl sm:text-2xl font-bold tracking-tight">EduLearn</span>
                     </a>
 
-                    <!-- Desktop Nav Links (Bigger Font Size & Spacing) -->
-                    <nav class="hidden md:flex items-center space-x-8 text-sm sm:text-[15px] font-medium text-[#1D1D1F]/80 dark:text-[#e6edf3]">
-                        <a href="{{ url('/') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('home') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                    <!-- Desktop Nav Links (Font to rõ ràng chuẩn LottieFiles 15px-16px, khoảng cách thoáng đãng) -->
+                    <nav class="hidden md:flex items-center space-x-8 lg:space-x-10 text-[15px] lg:text-base font-semibold text-[#1D1D1F]/80 dark:text-[#e6edf3]">
+                        <a href="{{ url('/') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('home') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
                             Trang chủ
                         </a>
-                        <a href="{{ url('/courses') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                        <a href="{{ url('/courses') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
                             Khóa học
                         </a>
-                        <!-- Apple-style Support Nav with Flyout Trigger -->
+                        <!-- Support Nav with Flyout Trigger -->
                         <div class="relative py-2"
                              @mouseenter="openSupportFlyout()"
                              @mouseleave="scheduleSupportClose()">
                             <a href="{{ route('support.index') }}"
-                               class="inline-flex items-center gap-1.5 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-semibold text-[#1D1D1F] dark:text-white' : '' }}">
+                               class="inline-flex items-center gap-2 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
                                 <span>Hỗ Trợ</span>
-                                <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </a>
                         </div>
                     </nav>
                 </div>
 
-                <!-- Center: Expanded Search Form -->
-                <div class="hidden lg:flex items-center flex-1 max-w-lg mx-10">
+                <!-- Center: Expanded Search Form (Khung thoáng, chữ to dễ đọc) -->
+                <div class="hidden lg:flex items-center flex-1 max-w-xl mx-8 lg:mx-12">
                     <form action="{{ url('/courses') }}" method="GET" class="w-full relative">
                         <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm các khóa học..."
-                                class="w-full h-10 pl-10 pr-4 text-sm bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] focus:border-[#019D91]/40 dark:focus:border-[#02b3a5] rounded-full focus:ring-2 focus:ring-[#019D91]/20 transition">
-                        <span class="absolute left-3.5 top-2.5 text-[#86868B] dark:text-[#7d8590]">
+                               class="w-full h-11 sm:h-12 pl-12 pr-5 text-[15px] bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] focus:border-[#019D91]/40 dark:focus:border-[#02b3a5] rounded-full focus:ring-2 focus:ring-[#019D91]/20 transition">
+                        <span class="absolute left-4 top-3 sm:top-3.5 text-[#86868B] dark:text-[#7d8590]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -71,24 +71,24 @@
                 </div>
 
                 <!-- Right: Actions (Notification Bell + Theme Toggle + User Dropdown / Auth Buttons) -->
-                <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="flex items-center space-x-4 sm:space-x-5">
                     @include('partials.notification-bell')
 
-                    <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2 transition" />
+                    <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2.5 transition" />
 
                     @auth
                         @if (Route::has('my-courses'))
-                            <a href="{{ route('my-courses') }}" class="hidden sm:inline-block text-sm font-medium text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-2 py-1">
+                            <a href="{{ route('my-courses') }}" class="hidden sm:inline-block text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Khóa học của tôi
                             </a>
                         @endif
 
-                        <!-- User Profile Dropdown (Chỉ hiện avatar tròn có chữ bên trong, click vào là sổ menu) -->
+                        <!-- User Profile Dropdown -->
                         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
                             <button @click="open = !open"
                                     class="flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-[#019D91] transition hover:opacity-90 active:scale-95"
                                     aria-label="Tài khoản cá nhân">
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black text-white dark:bg-black dark:text-white font-semibold text-sm sm:text-base flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
+                                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-base sm:text-lg flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
                                     @if(Auth::user()->avatar_url)
                                         <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                         <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
@@ -106,42 +106,42 @@
                                  x-transition:leave="transition ease-in duration-100"
                                  x-transition:leave-start="transform opacity-100 scale-100"
                                  x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] rounded-2xl shadow-xl border border-[#E5E5EA] dark:border-[#30363d] py-2 z-50 text-sm">
+                                 class="absolute right-0 mt-3 w-64 bg-white dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] rounded-2xl shadow-xl border border-[#E5E5EA] dark:border-[#30363d] py-2 z-50 text-[15px]">
 
                                 <div class="px-4 py-3 border-b border-[#E5E5EA] dark:border-[#30363d]">
-                                    <p class="font-semibold truncate">{{ Auth::user()->name }}</p>
+                                    <p class="font-bold truncate">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-[#86868B] dark:text-[#7d8590] truncate mt-0.5">{{ Auth::user()->email }}</p>
-                                    <span class="inline-block mt-2 px-2.5 py-0.5 text-[11px] font-medium rounded-full
+                                    <span class="inline-block mt-2 px-2.5 py-0.5 text-xs font-semibold rounded-full
                                         {{ Auth::user()->isAdmin() ? 'bg-neutral-900 text-white dark:bg-[#30363d] dark:text-white' : (Auth::user()->isInstructor() ? 'bg-[#019D91]/15 text-[#018076] dark:bg-[#019D91]/20 dark:text-[#02b3a5]' : 'bg-neutral-100 text-neutral-800 dark:bg-[#21262d] dark:text-[#c9d1d9]') }}">
                                         {{ Auth::user()->isAdmin() ? 'Quản trị viên' : (Auth::user()->isInstructor() ? 'Giảng viên' : 'Học viên') }}
                                     </span>
                                 </div>
 
                                 @unless(Auth::user()->isAdmin() || Auth::user()->isInstructor())
-                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition">
+                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
                                         Bảng điều khiển
                                     </a>
                                 @endunless
 
                                 @if(Auth::user()->isAdmin())
-                                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium text-[#019D91] dark:text-[#02b3a5]">
+                                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-semibold text-[#019D91] dark:text-[#02b3a5]">
                                         Trang Quản trị Admin
                                     </a>
                                 @endif
 
                                 @if(Auth::user()->isInstructor())
-                                    <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium text-[#019D91] dark:text-[#02b3a5]">
+                                    <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-semibold text-[#019D91] dark:text-[#02b3a5]">
                                         Studio Giảng viên
                                     </a>
                                 @endif
 
-                                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition">
+                                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
                                     Hồ sơ cá nhân
                                 </a>
 
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 text-rose-600 dark:text-rose-400 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition border-t border-[#E5E5EA] dark:border-[#30363d]">
+                                    <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 text-rose-600 dark:text-rose-400 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition border-t border-[#E5E5EA] dark:border-[#30363d] font-medium">
                                         Đăng xuất
                                     </button>
                                 </form>
@@ -150,7 +150,7 @@
                     @else
                         <!-- Single Uiverse Interactive 'Đăng nhập' Button (with embedded sign up) -->
                         <a href="{{ route('login') }}"
-                           class="relative inline-flex items-center justify-center h-11 w-36 rounded-2xl bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] text-sm font-semibold text-[#1D1D1F] dark:text-[#f0f6fc] overflow-hidden group shadow-sm transition-all hover:shadow hover:border-[#019D91]/40 active:scale-[0.98]">
+                           class="relative inline-flex items-center justify-center h-11 sm:h-12 w-36 sm:w-40 rounded-2xl bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] text-[15px] font-bold text-[#1D1D1F] dark:text-[#f0f6fc] overflow-hidden group shadow-sm transition-all hover:shadow hover:border-[#019D91]/40 active:scale-[0.98]">
                             <!-- Expanding Teal Box with Arrow (centers when expanded) -->
                             <div class="absolute left-1 top-[3px] bottom-[3px] w-9 rounded-xl bg-[#019D91] flex items-center justify-center text-white transition-all duration-300 ease-out group-hover:w-[calc(100%-8px)] z-10 shadow-sm">
                                 <svg class="w-4 h-4 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@
                     @endauth
 
                     <!-- Mobile Menu Hamburger -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-[#1D1D1F] dark:text-white p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-[#21262d]" aria-label="Mở menu">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-[#1D1D1F] dark:text-white p-2 rounded-lg hover:bg-black/5 dark:hover:bg-[#21262d]" aria-label="Mở menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -175,7 +175,7 @@
             <div x-show="mobileMenuOpen" x-cloak class="md:hidden border-t border-[#E5E5EA] dark:border-[#30363d] py-4 space-y-3">
                 <form action="{{ url('/courses') }}" method="GET" class="mb-3">
                     <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm khóa học..."
-                           class="w-full h-10 text-sm bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] rounded-2xl px-4 focus:ring-1 focus:ring-[#019D91]">
+                           class="w-full h-11 text-[15px] bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] rounded-2xl px-4 focus:ring-1 focus:ring-[#019D91]">
                 </form>
                 <a href="{{ url('/') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Trang chủ</a>
                 <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Khóa học</a>
@@ -198,8 +198,8 @@
          class="pointer-events-none fixed inset-0 z-30 bg-black/35 backdrop-blur-md backdrop-saturate-150 transition-opacity duration-300 dark:bg-black/50"
          aria-hidden="true"></div>
 
-    <!-- Flash Messages -->
-    @if(session('success') || session('error'))
+    <!-- Flash Messages (Ẩn trên trang phòng học để không gián đoạn trải nghiệm học tập) -->
+    @if((session('success') || session('error')) && !request()->routeIs('learning.player'))
     <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 mt-4">
         @if(session('success'))
             <div class="px-5 py-3 rounded-full bg-white dark:bg-neutral-900 border border-[#D2D2D7]/60 dark:border-neutral-800 text-sm flex items-center justify-between shadow-sm">
@@ -229,63 +229,101 @@
 
     @include('partials.back-to-top')
 
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-[#0d1117] text-[#86868B] dark:text-[#7d8590] border-t border-[#E5E5EA] dark:border-[#30363d] text-xs sm:text-[13px] mt-16">
-        <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 py-10">
-            <!-- Multi-Column Navigation -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 pb-10">
+    <!-- Footer (Theme tối chuẩn LottieFiles - Rộng rãi, chữ to rõ ràng, không ôm sát khung) -->
+    <footer class="bg-[#0b0c0e] text-[#8e8e93] mt-16 select-none">
+        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16 py-16 lg:py-20">
+            <!-- Multi-Column Navigation (4 Cột thoáng đãng, tiêu đề & liên kết chữ to chuẩn LottieFiles) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 lg:gap-x-16 gap-y-12 pb-16">
                 <div>
-                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Khám phá khóa học</h3>
-                    <ul class="space-y-2.5">
-                        <li><a href="{{ route('courses.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Tất cả khóa học</a></li>
-                        <li><a href="{{ route('courses.index', ['price' => 'free']) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Khóa học miễn phí</a></li>
-                        <li><a href="{{ route('courses.index', ['sort' => 'popular']) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Khóa học phổ biến</a></li>
-                        <li><a href="{{ route('courses.index', ['sort' => 'rating']) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Đánh giá cao nhất</a></li>
+                    <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Khám phá khóa học</h3>
+                    <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
+                        <li><a href="{{ route('courses.index') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Tất cả khóa học</a></li>
+                        <li><a href="{{ route('courses.index', ['price' => 'free']) }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Khóa học miễn phí</a></li>
+                        <li><a href="{{ route('courses.index', ['sort' => 'popular']) }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Khóa học phổ biến</a></li>
+                        <li><a href="{{ route('courses.index', ['sort' => 'rating']) }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Đánh giá cao nhất</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Tài khoản & Học tập</h3>
-                    <ul class="space-y-2.5">
-                        <li><a href="{{ route('login') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Đăng nhập tài khoản</a></li>
-                        <li><a href="{{ route('register') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Đăng ký thành viên</a></li>
+                    <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Tài khoản & Học tập</h3>
+                    <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
+                        <li><a href="{{ route('login') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Đăng nhập tài khoản</a></li>
+                        <li><a href="{{ route('register') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Đăng ký thành viên</a></li>
                         @if (Route::has('my-courses'))
-                            <li><a href="{{ route('my-courses') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Khóa học của tôi</a></li>
+                            <li><a href="{{ route('my-courses') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Khóa học của tôi</a></li>
                         @endif
-                        <li><a href="{{ route('profile.edit') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Quản lý hồ sơ</a></li>
+                        <li><a href="{{ route('profile.edit') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Quản lý hồ sơ</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Dành cho Giảng viên</h3>
-                    <ul class="space-y-2.5">
-                        <li><a href="{{ route('instructor.dashboard') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Studio giảng dạy</a></li>
-                        <li><a href="{{ route('instructor.courses.create') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Tạo khóa học mới</a></li>
-                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Quy chuẩn giảng dạy</a></li>
+                    <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Dành cho Giảng viên</h3>
+                    <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
+                        <li><a href="{{ route('instructor.dashboard') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Studio giảng dạy</a></li>
+                        <li><a href="{{ route('instructor.courses.create') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Tạo khóa học mới</a></li>
+                        <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-150">Quy chuẩn giảng dạy</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="font-semibold text-[#1D1D1F] dark:text-[#e6edf3] text-sm mb-3.5">Về EduLearn</h3>
-                    <ul class="space-y-2.5">
-                        <li><a href="{{ route('support.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition font-medium text-[#019D91] dark:text-[#02b3a5]">Trung tâm hỗ trợ</a></li>
-                        <li><a href="{{ route('support.feedback') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Báo cáo sự cố & góp ý</a></li>
-                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Giới thiệu nền tảng</a></li>
-                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Điều khoản dịch vụ</a></li>
-                        <li><a href="#" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Chính sách bảo mật</a></li>
-                        <li><a href="mailto:support@edulearn.vn" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Liên hệ hỗ trợ</a></li>
+                    <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Về EduLearn</h3>
+                    <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
+                        <li><a href="{{ route('support.index') }}" class="text-[#00ddb3] hover:text-white transition-colors duration-150 font-semibold">Trung tâm hỗ trợ</a></li>
+                        <li><a href="{{ route('support.feedback') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Báo cáo sự cố & góp ý</a></li>
+                        <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-150">Giới thiệu nền tảng</a></li>
+                        <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-150">Điều khoản dịch vụ</a></li>
+                        <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-150">Chính sách bảo mật</a></li>
+                        <li><a href="mailto:support@edulearn.vn" class="text-neutral-400 hover:text-white transition-colors duration-150">Liên hệ hỗ trợ</a></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Copyright and Region Line -->
-            <div class="pt-8 border-t border-[#E5E5EA] dark:border-[#30363d] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-                <p>&copy; {{ date('Y') }} EduLearn Inc. Bản quyền thuộc về dự án e-learning.</p>
-                <div class="flex items-center space-x-6">
-                    <a href="#" class="hover:underline">Bảo mật</a>
-                    <a href="#" class="hover:underline">Điều khoản</a>
-                    <a href="#" class="hover:underline">Sơ đồ trang</a>
-                    <span class="text-[#1D1D1F] dark:text-white font-medium">Việt Nam</span>
+            <!-- Bottom Line (Khớp 100% LottieFiles: Thoáng đãng, chữ to rõ ràng, không có đường kẻ cắt ngang) -->
+            <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-[14px] sm:text-[15px]">
+                <!-- Left: Logo & Copyright & Links -->
+                <div class="flex flex-col sm:flex-row items-center gap-5 text-sm sm:text-[15px]">
+                    <a href="{{ url('/') }}" class="flex items-center space-x-2.5 text-white font-bold text-base sm:text-lg tracking-tight">
+                        <svg class="w-6 h-6 text-[#00ddb3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                        <span>EduLearn</span>
+                    </a>
+                    <span class="hidden sm:inline text-neutral-600 font-normal">|</span>
+                    <p class="text-neutral-400">&copy; {{ date('Y') }} EduLearn Inc. Bản quyền thuộc về dự án e-learning.</p>
+                    <div class="flex items-center space-x-5 text-neutral-400">
+                        <a href="#" class="hover:text-white transition-colors">Bảo mật</a>
+                        <a href="#" class="hover:text-white transition-colors">Điều khoản</a>
+                        <a href="#" class="hover:text-white transition-colors">Sơ đồ trang</a>
+                    </div>
+                </div>
+
+                <!-- Right: Social Media Icons & Made with ❤️ from Vietnam -->
+                <div class="flex flex-col items-center md:items-end gap-2.5 shrink-0">
+                    <div class="flex items-center space-x-6 text-white">
+                        <!-- Facebook -->
+                        <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="Facebook">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="Instagram">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <!-- X (Twitter) -->
+                        <a href="https://x.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="X (Twitter)">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <!-- YouTube -->
+                        <a href="https://youtube.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="YouTube">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        <!-- Dribbble / Web -->
+                        <a href="#" class="hover:text-[#00ddb3] transition-colors" title="Global Website">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm9.849 10.995c-.328-.016-2.585-.102-5.011.604-.377-.852-.785-1.705-1.229-2.537 2.684-1.127 4.984-1.023 5.315-.997.587.893.925 1.954.925 3.09v-.16zm-1.89-5.18c-.469-.026-2.454-.08-4.908.974-1.258-2.222-2.623-4.143-2.822-4.421 3.256.49 5.992 2.052 7.73 4.447zM12 2.058c.241.332 1.583 2.213 2.827 4.398-3.418 1.054-6.536 1.134-7.066 1.141 1.01-2.42 2.723-4.42 4.239-5.539zM4.095 8.924c.535-.008 3.328-.088 6.577-1.111.424.8.816 1.621 1.176 2.441-4.225 1.349-8.156 4.364-8.497 4.631-.568-1.478-.851-3.085-.851-4.757 0-.411.026-.818.077-1.218.496-.005 1.05-.008 1.518.014zm-2.037 7.025c.348-.28 3.992-3.076 8.083-4.372 1.028 2.643 1.838 5.419 2.062 6.287-3.924 1.189-7.391-.129-7.735-.27-.881-.462-1.636-1.077-2.23-1.802-.122-.164-.18-.328-.18-.443zm12.392 5.922c-.237-.905-1.033-3.64-2.05-6.241 2.285-.688 4.395-.623 4.743-.604.147 2.76-1.033 5.378-2.693 6.845zm4.013-1.658c-.378-.016-2.278-.066-4.382.571 1.545-1.42 2.624-3.791 2.756-6.301 2.072.106 3.847.785 4.195.94-.469 1.859-1.442 3.493-2.569 4.79z"/></svg>
+                        </a>
+                    </div>
+                    <p class="text-sm text-neutral-400 flex items-center gap-2 font-medium">
+                        <span>Made with</span>
+                        <span class="text-red-500 text-base">❤️</span>
+                        <span>from Vietnam</span>
+                    </p>
                 </div>
             </div>
         </div>

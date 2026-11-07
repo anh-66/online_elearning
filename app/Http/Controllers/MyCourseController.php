@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class MyCourseController extends Controller
 {
-    public function index()
+    public function index(Request $request): View
     {
-        // Lấy danh sách khóa học user đã ghi danh (tùy cấu trúc model của bạn)
-        // Tạm thời trả về thông báo hoặc view để test luồng
-        // Hoặc nếu bạn đã có file giao diện: return view('my-courses');
-        return view('dashboard');
+        $courses = $request->user()
+            ->enrolledCourses()
+            ->with(['instructor', 'category', 'reviews'])
+            ->withCount('enrollments')
+            ->latest('enrollments.enrolled_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('my-courses.index', compact('courses'));
     }
 }

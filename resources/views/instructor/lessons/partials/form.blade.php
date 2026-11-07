@@ -37,10 +37,16 @@
             @endisset
 
             <div x-data="{ url: @js(old('video_url', $lesson->video_url ?? '')) }">
-                <label for="video_url" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-1">Link video YouTube</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label for="video_url" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Link video YouTube</label>
+                    <span class="text-[11px] text-[#019D91] dark:text-[#00ddb3] font-medium">Video bài giảng chính</span>
+                </div>
                 <input type="url" id="video_url" name="video_url" x-model="url"
                        placeholder="https://www.youtube.com/watch?v=..."
                        class="w-full rounded-xl border-gray-300 dark:border-neutral-700 focus:border-brand-600 focus:ring-brand-600">
+                <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-1">
+                    Video sẽ phát tại khung video trên cùng cho học viên. (Nếu bạn chèn video vào khung soạn thảo CKEditor, hệ thống cũng sẽ tự động nhận diện đưa lên khung video chính).
+                </p>
                 @error('video_url') <p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ $message }}</p> @enderror
 
                 <template x-if="url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/)">
