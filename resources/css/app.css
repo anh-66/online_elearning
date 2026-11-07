@@ -98,6 +98,35 @@
         animation: refresh-button-spin 0.5s linear;
     }
 
+    .course-title-marquee {
+        animation: course-title-marquee 18s ease-in-out infinite;
+    }
+
+    .course-title-marquee:hover,
+    .course-title-marquee:has(a:focus-visible) {
+        animation-play-state: paused;
+    }
+
+    @keyframes course-title-marquee {
+        0%, 12% {
+            transform: translateX(0);
+        }
+
+        45%, 55% {
+            transform: translateX(-50%);
+        }
+
+        88%, 100% {
+            transform: translateX(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .course-title-marquee {
+            animation: none;
+        }
+    }
+
     .cookie-card {
         width: min(440px, calc(100vw - 32px));
         min-height: 0;
