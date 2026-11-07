@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseCatalogController;
+use App\Http\Controllers\CourseCheckoutController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
@@ -13,12 +14,9 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MyCourseController;
-use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\LearningController;
-use App\Http\Controllers\WishlistController;
 
 // use App\Http\Controllers\WishlistController;
 /*
@@ -47,14 +45,12 @@ Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support
 Route::middleware(['auth'])->group(function () {
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
     Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
-    Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
-    Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
-    Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
+    Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
+    Route::get('/courses/{course:slug}/checkout', [CourseCheckoutController::class, 'show'])->name('courses.checkout');
+    Route::post('/courses/{course:slug}/checkout', [CourseCheckoutController::class, 'process'])->name('courses.checkout.process');
+    Route::get('/learning/{course:slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
+    Route::post('/learning/lessons/{lesson}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
     Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-    Route::get('/courses/{slug}', function ($slug) {
-    $course = \App\Models\Course::where('slug', $slug)->firstOrFail();
-    return view('courses.show', compact('course'));
-})->name('courses.show');
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
     Route::get('/quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
@@ -117,5 +113,5 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
 });
-Route::get('/courses/{id}/learn', [LearningController::class, 'index'])->name('learning.index');
+Route::get('/courses/{course:slug}/learn', [LearningController::class, 'player'])->middleware('auth')->name('learning.index');
 require __DIR__.'/auth.php';
