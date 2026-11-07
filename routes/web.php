@@ -36,7 +36,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
     Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
     Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
+    Route::get('/courses/{slug}', function ($slug) {
+    $course = \App\Models\Course::where('slug', $slug)->firstOrFail();
+    return view('courses.show', compact('course'));
+})->name('courses.show');
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
     // Route::get('/quizzes/{id}', [QuizController::class, 'show'])->name('quizzes.show');
     // Route::post('/quizzes/{id}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
