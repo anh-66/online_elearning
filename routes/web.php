@@ -15,6 +15,10 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MyCourseController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\WishlistController;
 
 // use App\Http\Controllers\WishlistController;
 /*
@@ -44,12 +48,13 @@ Route::middleware(['auth'])->group(function () {
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
     Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
     Route::post('/courses/{id}/enroll', [EnrollmentController::class, 'enroll'])->name('courses.enroll');
-    Route::get('/courses/{slug}/checkout', [EnrollmentController::class, 'checkout'])->name('courses.checkout');
-    Route::post('/courses/{slug}/checkout', [EnrollmentController::class, 'processCheckout'])->name('courses.checkout.process');
     Route::get('/learning/{course_slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
     Route::post('/learning/lessons/{id}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
-    // Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
+    Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/courses/{slug}', function ($slug) {
+    $course = \App\Models\Course::where('slug', $slug)->firstOrFail();
+    return view('courses.show', compact('course'));
+})->name('courses.show');
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
     Route::get('/quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');

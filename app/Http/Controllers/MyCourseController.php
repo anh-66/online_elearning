@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class MyCourseController extends Controller
 {
-    public function index(Request $request): View
+    public function index()
     {
-        $courses = $request->user()
-            ->enrolledCourses()
-            ->with(['instructor', 'category', 'reviews'])
-            ->withCount('enrollments')
-            ->latest('enrollments.enrolled_at')
-            ->paginate(12)
-            ->withQueryString();
+        $user = Auth::user();
+        $enrolledCourses = $user->enrolledCourses;
+        $wishlistCourses = $user->wishlistCourses;
 
-        return view('my-courses.index', compact('courses'));
+        return view('my-courses', compact('enrolledCourses', 'wishlistCourses'));
     }
 }
