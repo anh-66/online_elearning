@@ -41,7 +41,7 @@
     </section>
 
     <!-- Search Section (Designed exactly like User's Image 2) -->
-    <section class="max-w-3xl mx-auto px-4 sm:px-6 mb-16">
+    <section class="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 mb-16">
         <h2 class="text-2xl sm:text-3xl font-bold text-[#1D1D1F] dark:text-white text-center mb-6 tracking-tight">
             Tìm kiếm các chủ đề khác
         </h2>
@@ -139,8 +139,8 @@
         </div>
     </section>
 
-    <!-- Support Categories Section -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 mb-16">
+    <!-- Support Categories Section (Expanded to max-w-screen-2xl) -->
+    <section class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 mb-20">
         <div class="text-center mb-8">
             <h2 class="text-2xl sm:text-3xl font-bold text-[#1D1D1F] dark:text-white tracking-tight">
                 Khám phá theo danh mục
@@ -164,8 +164,8 @@
             @endforeach
         </div>
 
-        <!-- Articles Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Articles Grid (Wide 3-4 columns) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <template x-for="article in filteredList" :key="article.slug">
                 <div class="bg-white dark:bg-[#161b22] rounded-3xl p-6 border border-[#E5E5EA] dark:border-[#30363d] shadow-sm hover:shadow-md hover:border-[#019D91]/40 transition duration-300 flex flex-col justify-between group">
                     <div>
@@ -205,117 +205,56 @@
         </div>
     </section>
 
-    <!-- Prominent Guides Preview with Laptop Mockup (Image 3 Showcase) -->
-    <section class="max-w-5xl mx-auto px-4 sm:px-6 mb-20">
-        <div class="bg-[#F5F5F7] dark:bg-[#161b22] rounded-3xl p-6 sm:p-10 border border-[#E5E5EA] dark:border-[#30363d] shadow-lg">
-            <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="text-xs font-semibold uppercase tracking-wider text-[#019D91] dark:text-[#02b3a5]">
-                    Hướng dẫn thao tác trực quan
-                </span>
-                <h2 class="text-2xl sm:text-4xl font-bold text-[#1D1D1F] dark:text-white mt-1 tracking-tight">
-                    Minh họa các bước thực hiện
+    <!-- Frequently Asked Questions (FAQ Section) -->
+    <section id="faq" class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 mb-20">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl sm:text-3xl font-bold text-[#1D1D1F] dark:text-white tracking-tight">
+                    Câu hỏi thường gặp
                 </h2>
-                <p class="text-sm sm:text-base text-[#86868B] dark:text-[#7d8590] mt-2">
-                    Mỗi hướng dẫn đều đi kèm đường dẫn thực hiện trực tiếp trong hệ thống và giao diện mô phỏng trên máy tính.
+                <p class="text-sm sm:text-base text-[#86868B] dark:text-[#7d8590] mt-1">
+                    Giải đáp nhanh những câu hỏi hay gặp nhất từ học viên và giảng viên
                 </p>
             </div>
 
-            <!-- Carousel / Featured Guide: Password Change -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <div class="lg:col-span-5 space-y-4">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#019D91]/15 text-[#018076] dark:bg-[#019D91]/25 dark:text-[#02b3a5]">
-                        Chủ đề phổ biến nhất
-                    </span>
-                    <h3 class="text-xl sm:text-2xl font-bold text-[#1D1D1F] dark:text-white leading-snug">
-                        Đổi mật khẩu tài khoản của bạn
-                    </h3>
-                    <p class="text-sm text-[#86868B] dark:text-[#7d8590] leading-relaxed">
-                        Bạn có thể cập nhật mật khẩu mới bất cứ lúc nào trong mục Hồ sơ cá nhân. Chỉ với 3 bước đơn giản: nhập mật khẩu cũ, đặt mật khẩu mới và bấm Lưu.
-                    </p>
-
-                    <div class="space-y-2 pt-2">
-                        <div class="flex items-start space-x-3 text-xs sm:text-sm">
-                            <span class="w-5 h-5 rounded-full bg-[#019D91] text-white flex items-center justify-center font-bold shrink-0 text-xs">1</span>
-                            <span>Mở <a href="{{ route('profile.edit') }}" class="font-semibold text-[#019D91] hover:underline">Hồ sơ cá nhân</a> từ menu người dùng.</span>
-                        </div>
-                        <div class="flex items-start space-x-3 text-xs sm:text-sm">
-                            <span class="w-5 h-5 rounded-full bg-[#019D91] text-white flex items-center justify-center font-bold shrink-0 text-xs">2</span>
-                            <span>Chọn mục "Quyền riêng tư" và điền mật khẩu mới.</span>
-                        </div>
-                        <div class="flex items-start space-x-3 text-xs sm:text-sm">
-                            <span class="w-5 h-5 rounded-full bg-[#019D91] text-white flex items-center justify-center font-bold shrink-0 text-xs">3</span>
-                            <span>Nhấn "Lưu thay đổi" để hệ thống cập nhật tức thì.</span>
+            <div class="space-y-3">
+                @foreach($faqs as $index => $faq)
+                    <div class="bg-white dark:bg-[#161b22] rounded-2xl border border-[#E5E5EA] dark:border-[#30363d] overflow-hidden transition-all shadow-sm">
+                        <button type="button"
+                                @click="activeFaq = (activeFaq === {{ $index }} ? null : {{ $index }})"
+                                class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-[#1D1D1F] dark:text-white hover:text-[#019D91] dark:hover:text-[#02b3a5] transition">
+                            <span>{{ $faq['question'] }}</span>
+                            <svg class="w-5 h-5 text-[#86868B] dark:text-[#7d8590] transition-transform duration-200 shrink-0"
+                                 :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': activeFaq === {{ $index }} }"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="activeFaq === {{ $index }}"
+                             x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 -translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="px-5 pb-5 pt-1 text-sm text-[#86868B] dark:text-[#7d8590] border-t border-[#E5E5EA]/60 dark:border-[#30363d]/60 leading-relaxed">
+                            <p>{{ $faq['answer'] }}</p>
+                            @if(!empty($faq['article_slug']))
+                                <div class="mt-3">
+                                    <a href="{{ route('support.show', $faq['article_slug']) }}" class="inline-flex items-center gap-1 font-semibold text-xs text-[#019D91] dark:text-[#02b3a5] hover:underline">
+                                        <span>Xem bài hướng dẫn chi tiết</span>
+                                        <span>→</span>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
-
-                    <div class="pt-4 flex flex-wrap gap-3">
-                        <a href="{{ route('profile.edit') }}#password"
-                           class="btn-apple-primary text-xs sm:text-sm px-5 py-2.5">
-                            Đi đến Đổi mật khẩu ngay →
-                        </a>
-                        <a href="{{ route('support.show', 'doi-mat-khau') }}"
-                           class="btn-apple-secondary text-xs sm:text-sm px-5 py-2.5">
-                            Xem toàn bộ bài viết
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Laptop Mockup Showcase Component -->
-                <div class="lg:col-span-7">
-                    @include('support.partials.laptop-mockup', ['type' => 'password_change'])
-                </div>
+                @endforeach
             </div>
-        </div>
-    </section>
-
-    <!-- Frequently Asked Questions (FAQ Section) -->
-    <section id="faq" class="max-w-4xl mx-auto px-4 sm:px-6 mb-20">
-        <div class="text-center mb-10">
-            <h2 class="text-2xl sm:text-3xl font-bold text-[#1D1D1F] dark:text-white tracking-tight">
-                Câu hỏi thường gặp
-            </h2>
-            <p class="text-sm sm:text-base text-[#86868B] dark:text-[#7d8590] mt-1">
-                Giải đáp nhanh những câu hỏi hay gặp nhất từ học viên và giảng viên
-            </p>
-        </div>
-
-        <div class="space-y-3">
-            @foreach($faqs as $index => $faq)
-                <div class="bg-white dark:bg-[#161b22] rounded-2xl border border-[#E5E5EA] dark:border-[#30363d] overflow-hidden transition-all shadow-sm">
-                    <button type="button"
-                            @click="activeFaq = (activeFaq === {{ $index }} ? null : {{ $index }})"
-                            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-[#1D1D1F] dark:text-white hover:text-[#019D91] dark:hover:text-[#02b3a5] transition">
-                        <span>{{ $faq['question'] }}</span>
-                        <svg class="w-5 h-5 text-[#86868B] dark:text-[#7d8590] transition-transform duration-200 shrink-0"
-                             :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': activeFaq === {{ $index }} }"
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="activeFaq === {{ $index }}"
-                         x-cloak
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 -translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         class="px-5 pb-5 pt-1 text-sm text-[#86868B] dark:text-[#7d8590] border-t border-[#E5E5EA]/60 dark:border-[#30363d]/60 leading-relaxed">
-                        <p>{{ $faq['answer'] }}</p>
-                        @if(!empty($faq['article_slug']))
-                            <div class="mt-3">
-                                <a href="{{ route('support.show', $faq['article_slug']) }}" class="inline-flex items-center gap-1 font-semibold text-xs text-[#019D91] dark:text-[#02b3a5] hover:underline">
-                                    <span>Xem bài hướng dẫn chi tiết</span>
-                                    <span>→</span>
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            @endforeach
         </div>
     </section>
 
     <!-- Support Assistance Contact Card -->
-    <section class="max-w-4xl mx-auto px-4 sm:px-6">
-        <div class="bg-white dark:bg-[#161b22] rounded-3xl p-8 sm:p-10 border border-[#E5E5EA] dark:border-[#30363d] shadow-sm text-center">
+    <section class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14">
+        <div class="max-w-5xl mx-auto bg-white dark:bg-[#161b22] rounded-3xl p-8 sm:p-10 border border-[#E5E5EA] dark:border-[#30363d] shadow-sm text-center">
             <h3 class="text-xl sm:text-2xl font-bold text-[#1D1D1F] dark:text-white">
                 Vẫn cần thêm sự trợ giúp?
             </h3>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\PaymentMethod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -99,6 +100,28 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Delete a saved payment method.
+     */
+    public function destroyPaymentMethod(Request $request, PaymentMethod $paymentMethod): RedirectResponse
+    {
+        if ($paymentMethod->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $wasDefault = (bool) $paymentMethod->is_default;
+        $paymentMethod->delete();
+
+        if ($wasDefault) {
+            $next = $request->user()->paymentMethods()->latest()->first();
+            if ($next) {
+                $next->update(['is_default' => true]);
+            }
+        }
+
+        return redirect()->to(route('profile.edit').'#billing')->with('status', 'payment-method-deleted');
     }
 
     /**

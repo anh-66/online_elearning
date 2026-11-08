@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\InstructorController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -68,3 +69,8 @@ Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.
 Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('feedbacks.show');
 Route::patch('/feedbacks/{feedback}', [FeedbackController::class, 'update'])->name('feedbacks.update');
 Route::delete('/feedbacks/{feedback}', [FeedbackController::class, 'destroy'])->name('feedbacks.destroy');
+
+// Quản lý Chi trả (Payouts) cho Giảng viên (Tỉ lệ 70% Giảng viên - 30% Sàn)
+Route::get('/payouts', [PayoutController::class, 'index'])->name('payouts.index');
+Route::patch('/payouts/{payout}/approve', [PayoutController::class, 'approve'])->name('payouts.approve');
+Route::patch('/payouts/{payout}/reject', [PayoutController::class, 'reject'])->name('payouts.reject');

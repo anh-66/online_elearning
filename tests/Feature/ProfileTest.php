@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -261,5 +262,55 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_user_can_delete_payment_method(): void
+    {
+        $user = User::factory()->create();
+        $paymentMethod = PaymentMethod::create([
+            'user_id' => $user->id,
+            'type' => 'card',
+            'title' => 'Visa **** 4242',
+            'subtitle' => 'Hết hạn 12/28',
+            'icon' => 'logos:visa',
+            'is_default' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->delete("/profile/payment-methods/{$paymentMethod->id}");
+
+        $response
+            ->assertRedirect(route('profile.edit').'#billing')
+            ->assertSessionHas('status', 'payment-method-deleted');
+
+        $this->assertDatabaseMissing('payment_methods', [
+            'id' => $paymentMethod->id,
+        ]);
+    }
+
+    public function test_user_cannot_delete_other_user_payment_method(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $paymentMethod = PaymentMethod::create([
+            'user_id' => $user1->id,
+            'type' => 'card',
+            'title' => 'Visa **** 4242',
+            'subtitle' => 'Hết hạn 12/28',
+            'icon' => 'logos:visa',
+            'is_default' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($user2)
+            ->delete("/profile/payment-methods/{$paymentMethod->id}");
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('payment_methods', [
+            'id' => $paymentMethod->id,
+        ]);
     }
 }

@@ -19,50 +19,88 @@
 </head>
 <body class="flex min-h-screen flex-col bg-white text-[#1D1D1F] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased selection:bg-[#019D91] selection:text-white"
       data-back-to-top-scroll
-      x-data="{ mobileMenuOpen: false, supportFlyoutOpen: false, supportCloseTimer: null, openSupportFlyout() { clearTimeout(this.supportCloseTimer); this.supportFlyoutOpen = true; }, scheduleSupportClose() { this.supportCloseTimer = setTimeout(() => { this.supportFlyoutOpen = false; }, 220); } }">
+      x-data="{ 
+          mobileMenuOpen: false, 
+          supportFlyoutOpen: false, 
+          supportCloseTimer: null, 
+          openSupportFlyout() { 
+              clearTimeout(this.supportCloseTimer); 
+              clearTimeout(this.featuresCloseTimer); 
+              this.featuresFlyoutOpen = false; 
+              this.supportFlyoutOpen = true; 
+          }, 
+          scheduleSupportClose() { 
+              this.supportCloseTimer = setTimeout(() => { this.supportFlyoutOpen = false; }, 220); 
+          },
+          featuresFlyoutOpen: false,
+          featuresCloseTimer: null,
+          openFeaturesFlyout() {
+              clearTimeout(this.featuresCloseTimer);
+              clearTimeout(this.supportCloseTimer);
+              this.supportFlyoutOpen = false;
+              this.featuresFlyoutOpen = true;
+          },
+          scheduleFeaturesClose() {
+              this.featuresCloseTimer = setTimeout(() => { this.featuresFlyoutOpen = false; }, 220);
+          }
+      }">
     <!-- Header / Navbar (LottieFiles Modern Scale - Rộng rãi, thoáng đạt, chữ to rõ nét) -->
     <header class="sticky top-0 z-50 apple-glass-nav border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors"
-            @keydown.escape="supportFlyoutOpen = false; clearTimeout(supportCloseTimer)">
+            @keydown.escape="supportFlyoutOpen = false; featuresFlyoutOpen = false; clearTimeout(supportCloseTimer); clearTimeout(featuresCloseTimer)">
         <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14">
             <div class="flex items-center justify-between h-18 sm:h-20">
                 <!-- Left: Logo & Nav Links -->
-                <div class="flex items-center space-x-10 lg:space-x-12">
-                    <a href="{{ url('/') }}" class="flex items-center space-x-3 text-[#1D1D1F] dark:text-white group">
+                <div class="flex items-center space-x-6 lg:space-x-8 xl:space-x-10 shrink-0">
+                    <a href="{{ url('/') }}" class="flex items-center space-x-3 text-[#1D1D1F] dark:text-white group shrink-0">
                         <svg class="w-8 h-8 text-[#019D91] dark:text-[#00ddb3] group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
                         </svg>
-                        <span class="text-xl sm:text-2xl font-bold tracking-tight">EduLearn</span>
+                        <span class="text-xl sm:text-2xl font-bold tracking-tight whitespace-nowrap">EduLearn</span>
                     </a>
 
-                    <!-- Desktop Nav Links (Font to rõ ràng chuẩn LottieFiles 15px-16px, khoảng cách thoáng đãng) -->
-                    <nav class="hidden md:flex items-center space-x-8 lg:space-x-10 text-[15px] lg:text-base font-semibold text-[#1D1D1F]/80 dark:text-[#e6edf3]">
-                        <a href="{{ url('/') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('home') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
+                    <!-- Desktop Nav Links (Font to rõ ràng chuẩn LottieFiles 15px-16px, khoảng cách dãn đều thoáng đãng) -->
+                    <nav class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8 text-[15px] lg:text-base font-semibold text-[#1D1D1F]/80 dark:text-[#e6edf3] shrink-0">
+                        <a href="{{ url('/') }}" class="whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('home') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
                             Trang chủ
                         </a>
-                        <a href="{{ url('/courses') }}" class="transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
+                        <a href="{{ url('/courses') }}" class="whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
                             Khóa học
                         </a>
                         <!-- Support Nav with Flyout Trigger -->
-                        <div class="relative py-2"
+                        <div class="relative py-2 shrink-0"
                              @mouseenter="openSupportFlyout()"
                              @mouseleave="scheduleSupportClose()">
                             <a href="{{ route('support.index') }}"
-                               class="inline-flex items-center gap-2 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
-                                <span>Hỗ Trợ</span>
-                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
+                                <span class="whitespace-nowrap">Hỗ Trợ</span>
+                                <svg class="w-4 h-4 shrink-0 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </a>
                         </div>
+
+                        <!-- Features Nav with Mega Menu Trigger (Tiện ích) -->
+                        <div class="relative py-2 shrink-0"
+                             @mouseenter="openFeaturesFlyout()"
+                             @mouseleave="scheduleFeaturesClose()">
+                            <button type="button"
+                                    class="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 focus:outline-none"
+                                    :class="{ 'text-[#019D91] dark:text-[#02b3a5]': featuresFlyoutOpen }">
+                                <span class="whitespace-nowrap">Tiện ích</span>
+                                <svg class="w-4 h-4 shrink-0 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': featuresFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
                     </nav>
                 </div>
 
-                <!-- Center: Expanded Search Form (Khung thoáng, chữ to dễ đọc) -->
-                <div class="hidden lg:flex items-center flex-1 max-w-xl mx-8 lg:mx-12">
+                <!-- Center: Compact Search Form (Thu nhỏ gọn gàng, dãn đều navbar) -->
+                <div class="hidden lg:flex items-center w-36 lg:w-44 xl:w-56 shrink mx-3 lg:mx-5">
                     <form action="{{ url('/courses') }}" method="GET" class="w-full relative">
-                        <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm các khóa học..."
-                               class="w-full h-11 sm:h-12 pl-12 pr-5 text-[15px] bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] focus:border-[#019D91]/40 dark:focus:border-[#02b3a5] rounded-full focus:ring-2 focus:ring-[#019D91]/20 transition">
-                        <span class="absolute left-4 top-3 sm:top-3.5 text-[#86868B] dark:text-[#7d8590]">
+                        <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm..."
+                               class="w-full h-10 pl-10 pr-4 text-[13px] lg:text-[14px] bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] focus:border-[#019D91]/40 dark:focus:border-[#02b3a5] rounded-full focus:ring-2 focus:ring-[#019D91]/20 transition">
+                        <span class="absolute left-3.5 top-3 text-[#86868B] dark:text-[#7d8590]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -71,14 +109,14 @@
                 </div>
 
                 <!-- Right: Actions (Notification Bell + Theme Toggle + User Dropdown / Auth Buttons) -->
-                <div class="flex items-center space-x-4 sm:space-x-5">
+                <div class="flex items-center space-x-3 sm:space-x-4 shrink-0">
                     @include('partials.notification-bell')
 
                     <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2.5 transition" />
 
                     @auth
                         @if (Route::has('my-courses'))
-                            <a href="{{ route('my-courses') }}" class="hidden sm:inline-block text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                            <a href="{{ route('my-courses') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Khóa học của tôi
                             </a>
                         @endif
@@ -180,6 +218,17 @@
                 <a href="{{ url('/') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Trang chủ</a>
                 <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">Khóa học</a>
                 <a href="{{ route('support.index') }}" class="block px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d] {{ request()->routeIs('support.*') ? 'text-[#019D91] font-semibold' : '' }}">Hỗ Trợ</a>
+                <div x-data="{ mobileFeaturesOpen: false }">
+                    <button @click="mobileFeaturesOpen = !mobileFeaturesOpen" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-base font-medium hover:bg-black/5 dark:hover:bg-[#21262d]">
+                        <span>Tiện ích</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': mobileFeaturesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <div x-show="mobileFeaturesOpen" x-cloak class="pl-3 pr-2 py-1 space-y-1">
+                        <a href="{{ auth()->check() ? route('my-courses') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Khóa học của tôi</a>
+                        <a href="{{ auth()->check() ? route('my-courses') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Danh sách yêu thích</a>
+                        <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Bài thi & Đánh giá</a>
+                    </div>
+                </div>
                 @guest
                     <div class="pt-3">
                         <a href="{{ route('login') }}" class="block w-full text-center py-2.5 text-sm font-semibold rounded-2xl bg-[#019D91] text-white shadow-sm">
@@ -191,9 +240,10 @@
         </div>
 
         @include('partials.support-mega-menu')
+        @include('partials.features-mega-menu')
     </header>
 
-    <div x-show="supportFlyoutOpen"
+    <div x-show="supportFlyoutOpen || featuresFlyoutOpen"
          x-cloak
          class="pointer-events-none fixed inset-0 z-30 bg-black/35 backdrop-blur-md backdrop-saturate-150 transition-opacity duration-300 dark:bg-black/50"
          aria-hidden="true"></div>
@@ -230,10 +280,10 @@
     @include('partials.back-to-top')
 
     <!-- Footer (Theme tối chuẩn LottieFiles - Rộng rãi, chữ to rõ ràng, không ôm sát khung) -->
-    <footer class="bg-[#0b0c0e] text-[#8e8e93] mt-16 select-none">
-        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16 py-16 lg:py-20">
-            <!-- Multi-Column Navigation (4 Cột thoáng đãng, tiêu đề & liên kết chữ to chuẩn LottieFiles) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 lg:gap-x-16 gap-y-12 pb-16">
+    <footer class="bg-[#0b0c0e] text-[#8e8e93] mt-12 select-none">
+        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 pt-8 pb-4">
+            <!-- Multi-Column Navigation (Dàn rộng sang 2 bên, thoáng đãng ở giữa) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 lg:gap-16 xl:gap-24 pb-8 border-b border-[#1f2228]/80">
                 <div>
                     <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Khám phá khóa học</h3>
                     <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
@@ -278,29 +328,28 @@
                 </div>
             </div>
 
-            <!-- Bottom Line (Khớp 100% LottieFiles: Thoáng đãng, chữ to rõ ràng, không có đường kẻ cắt ngang) -->
-            <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-[14px] sm:text-[15px]">
-                <!-- Left: Logo & Copyright & Links -->
-                <div class="flex flex-col sm:flex-row items-center gap-5 text-sm sm:text-[15px]">
-                    <a href="{{ url('/') }}" class="flex items-center space-x-2.5 text-white font-bold text-base sm:text-lg tracking-tight">
+            <!-- Bottom Line (Khớp 100% mẫu LottieFiles: Cân đối 2 bên, icon trên - chữ dưới) -->
+            <div class="pt-8 pb-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 text-[14px]">
+                <!-- Left: Logo (trên) & Bản quyền (dưới) -->
+                <div class="flex flex-col items-center sm:items-start gap-2.5">
+                    <a href="{{ url('/') }}" class="flex items-center space-x-2.5 text-white font-bold text-lg sm:text-xl tracking-tight">
                         <svg class="w-6 h-6 text-[#00ddb3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                         <span>EduLearn</span>
                     </a>
-                    <span class="hidden sm:inline text-neutral-600 font-normal">|</span>
-                    <p class="text-neutral-400">&copy; {{ date('Y') }} EduLearn Inc. Bản quyền thuộc về dự án e-learning.</p>
-                    <div class="flex items-center space-x-5 text-neutral-400">
+                    <div class="flex items-center space-x-3 text-xs sm:text-sm text-neutral-400">
+                        <span>&copy; {{ date('Y') }} EduLearn Inc.</span>
+                        <span class="text-neutral-600">•</span>
                         <a href="#" class="hover:text-white transition-colors">Bảo mật</a>
                         <a href="#" class="hover:text-white transition-colors">Điều khoản</a>
-                        <a href="#" class="hover:text-white transition-colors">Sơ đồ trang</a>
                     </div>
                 </div>
 
-                <!-- Right: Social Media Icons & Made with ❤️ from Vietnam -->
-                <div class="flex flex-col items-center md:items-end gap-2.5 shrink-0">
+                <!-- Right: Social Media Icons (trên) & Made with ❤️ from Vietnam (dưới) -->
+                <div class="flex flex-col items-center sm:items-end gap-2.5">
                     <div class="flex items-center space-x-6 text-white">
                         <!-- Facebook -->
                         <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="Facebook">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
                         <!-- Instagram -->
                         <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="Instagram">
@@ -308,7 +357,7 @@
                         </a>
                         <!-- X (Twitter) -->
                         <a href="https://x.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="X (Twitter)">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
                         <!-- YouTube -->
                         <a href="https://youtube.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="YouTube">
@@ -319,9 +368,9 @@
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm9.849 10.995c-.328-.016-2.585-.102-5.011.604-.377-.852-.785-1.705-1.229-2.537 2.684-1.127 4.984-1.023 5.315-.997.587.893.925 1.954.925 3.09v-.16zm-1.89-5.18c-.469-.026-2.454-.08-4.908.974-1.258-2.222-2.623-4.143-2.822-4.421 3.256.49 5.992 2.052 7.73 4.447zM12 2.058c.241.332 1.583 2.213 2.827 4.398-3.418 1.054-6.536 1.134-7.066 1.141 1.01-2.42 2.723-4.42 4.239-5.539zM4.095 8.924c.535-.008 3.328-.088 6.577-1.111.424.8.816 1.621 1.176 2.441-4.225 1.349-8.156 4.364-8.497 4.631-.568-1.478-.851-3.085-.851-4.757 0-.411.026-.818.077-1.218.496-.005 1.05-.008 1.518.014zm-2.037 7.025c.348-.28 3.992-3.076 8.083-4.372 1.028 2.643 1.838 5.419 2.062 6.287-3.924 1.189-7.391-.129-7.735-.27-.881-.462-1.636-1.077-2.23-1.802-.122-.164-.18-.328-.18-.443zm12.392 5.922c-.237-.905-1.033-3.64-2.05-6.241 2.285-.688 4.395-.623 4.743-.604.147 2.76-1.033 5.378-2.693 6.845zm4.013-1.658c-.378-.016-2.278-.066-4.382.571 1.545-1.42 2.624-3.791 2.756-6.301 2.072.106 3.847.785 4.195.94-.469 1.859-1.442 3.493-2.569 4.79z"/></svg>
                         </a>
                     </div>
-                    <p class="text-sm text-neutral-400 flex items-center gap-2 font-medium">
+                    <p class="text-xs sm:text-sm text-neutral-400 flex items-center gap-1.5 font-medium whitespace-nowrap">
                         <span>Made with</span>
-                        <span class="text-red-500 text-base">❤️</span>
+                        <span class="text-red-500 text-sm">❤️</span>
                         <span>from Vietnam</span>
                     </p>
                 </div>

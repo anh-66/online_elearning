@@ -561,13 +561,128 @@
 
                     @auth
                         @if(! $isCourseOwner && ! $isAdmin)
-                            <form method="POST" action="{{ route('wishlist.toggle', $course->id) }}" class="mt-3">
-                                @csrf
-                                <button type="submit" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-neutral-700 dark:text-gray-200 dark:hover:bg-neutral-800">
-                                    {{ $isWishlisted ? '♥ Xóa khỏi danh sách yêu thích' : '♡ Thêm vào danh sách yêu thích' }}
+                            <div
+                                x-data="{
+                                    pressed: {{ $isWishlisted ? 'true' : 'false' }},
+                                    loading: false,
+                                    animateIcon(isPressed) {
+                                        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                                        const el = this.$refs.iconSpan;
+                                        if (!el) return;
+
+                                        const keyframes = isPressed ? [
+                                            { transform: 'scale(1)', offset: 0, easing: 'ease-out' },
+                                            { transform: 'scale(1.2)', offset: 0.4, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+                                            { transform: 'scale(1)', offset: 1 }
+                                        ] : [
+                                            { transform: 'scale(1)', offset: 0, easing: 'ease-out' },
+                                            { transform: 'scale(0.9)', offset: 0.4, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+                                            { transform: 'scale(1)', offset: 1 }
+                                        ];
+
+                                        el.animate(keyframes, {
+                                            duration: 350,
+                                            fill: 'none'
+                                        });
+                                    },
+                                    async toggle() {
+                                        if (this.loading) return;
+                                        this.loading = true;
+                                        const nextState = !this.pressed;
+                                        this.pressed = nextState;
+                                        this.animateIcon(nextState);
+
+                                        try {
+                                            const response = await fetch('{{ route('wishlist.toggle', $course->id) }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                    'Accept': 'application/json',
+                                                    'X-Requested-With': 'XMLHttpRequest'
+                                                }
+                                            });
+
+                                            if (!response.ok) {
+                                                throw new Error('Network error');
+                                            }
+
+                                            const data = await response.json();
+                                            if (typeof data.wishlisted !== 'undefined' && data.wishlisted !== this.pressed) {
+                                                this.pressed = data.wishlisted;
+                                                this.animateIcon(this.pressed);
+                                            }
+                                        } catch (e) {
+                                            this.pressed = !nextState;
+                                            this.animateIcon(this.pressed);
+                                            console.error('Wishlist toggle error:', e);
+                                        } finally {
+                                            this.loading = false;
+                                        }
+                                    }
+                                }"
+                                class="mt-3"
+                            >
+                                <button
+                                    type="button"
+                                    data-slot="toggle"
+                                    @click="toggle()"
+                                    :aria-pressed="pressed ? 'true' : 'false'"
+                                    :data-state="pressed ? 'on' : 'off'"
+                                    :disabled="loading"
+                                    aria-label="Thêm vào danh sách yêu thích"
+                                    class="group/toggle inline-flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all outline-none border-gray-200 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-[3px] focus-visible:ring-gray-300 dark:border-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-neutral-700 disabled:pointer-events-none disabled:opacity-50"
+                                    :class="pressed 
+                                        ? 'bg-gray-100 text-gray-900 dark:bg-neutral-800 dark:text-white' 
+                                        : 'bg-transparent text-gray-700 dark:text-gray-200'"
+                                >
+                                    <span
+                                        x-ref="iconSpan"
+                                        class="inline-flex items-center justify-center pointer-events-none"
+                                    >
+                                        <svg
+                                            class="size-4 stroke-[2] stroke-current transition-[fill,color] duration-200 ease-out pointer-events-none"
+                                            :class="pressed ? 'fill-black text-black dark:fill-white dark:text-white' : 'fill-transparent text-gray-700 dark:text-gray-200'"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                :fill="pressed ? 'currentColor' : 'none'"
+                                                d="M6 3.5h12a1.5 1.5 0 0 1 1.5 1.5v16.327a.75.75 0 0 1-1.204.6l-5.328-4.043a1.5 1.5 0 0 0-1.836 0l-5.328 4.043a.75.75 0 0 1-1.204-.6V5A1.5 1.5 0 0 1 6 3.5Z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    <span x-text="pressed ? 'Đã lưu vào danh sách yêu thích' : 'Thêm vào danh sách yêu thích'">Thêm vào danh sách yêu thích</span>
                                 </button>
-                            </form>
+                            </div>
                         @endif
+                    @else
+                        <a
+                            href="{{ route('login') }}"
+                            data-slot="toggle"
+                            aria-label="Thêm vào danh sách yêu thích"
+                            class="group/toggle mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gray-300 dark:border-neutral-700 dark:text-gray-200 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-neutral-700"
+                        >
+                            <span class="inline-flex items-center justify-center pointer-events-none">
+                                <svg
+                                    class="size-4 stroke-[2] stroke-current fill-transparent text-gray-700 transition-[fill,color] duration-200 ease-out pointer-events-none dark:text-gray-200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        fill="none"
+                                        d="M6 3.5h12a1.5 1.5 0 0 1 1.5 1.5v16.327a.75.75 0 0 1-1.204.6l-5.328-4.043a1.5 1.5 0 0 0-1.836 0l-5.328 4.043a.75.75 0 0 1-1.204-.6V5A1.5 1.5 0 0 1 6 3.5Z"
+                                    />
+                                </svg>
+                            </span>
+                            <span>Thêm vào danh sách yêu thích</span>
+                        </a>
                     @endauth
 
                     {{-- Summary Properties --}}

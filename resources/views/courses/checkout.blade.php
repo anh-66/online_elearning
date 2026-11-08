@@ -3,7 +3,20 @@
 @section('title', 'Thanh toán học phí - ' . $course->title)
 
 @push('styles')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+    /* Strict font unification */
+    .checkout-root, .checkout-root * {
+        font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    .price-num {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+        font-style: normal !important;
+        letter-spacing: 0 !important;
+    }
     /* Remove scrollbars */
     .no-scrollbar::-webkit-scrollbar {
         display: none;
@@ -34,7 +47,7 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gray-50/70 dark:bg-[#0d1117] text-gray-900 dark:text-gray-100 flex flex-col transition-colors"
+<div class="checkout-root min-h-screen bg-gray-50/70 dark:bg-[#0d1117] text-gray-900 dark:text-gray-100 flex flex-col transition-colors"
      x-data="{
          currentStep: 1,
          hasSavedMethod: @js((bool) $savedPaymentMethod),
@@ -55,7 +68,7 @@
          orderData: {
              orderCode: '#ACD-{{ strtoupper(substr(md5(auth()->id() . '-' . $course->id . '-sample'), 0, 5)) }}',
              paidAt: '{{ now()->format('H:i, d/m/Y') }}',
-             paymentTypeLabel: 'Thẻ tín dụng (Visa •••• 4242)',
+             paymentTypeLabel: 'Thẻ tín dụng (Kết thúc bằng •••• 4242)',
              playerUrl: '{{ route('learning.player', $course->slug) }}',
              courseUrl: '{{ route('courses.show', $course->slug) }}',
              courseTitle: @js($course->title),
@@ -66,7 +79,7 @@
              switch (this.selectedPayment) {
                  case 'card':
                      const last4 = this.card_number.replace(/\D/g, '').slice(-4) || '4242';
-                     return 'Thẻ tín dụng (Visa **** ' + last4 + ')';
+                     return 'Thẻ tín dụng (Kết thúc bằng **** ' + last4 + ')';
                  case 'momo':
                      const cleanPhone = this.momo_phone.replace(/\D/g, '') || '0988123456';
                      const masked = cleanPhone.length >= 7
@@ -161,9 +174,9 @@
 
     {{-- Main Checkout Content --}}
     <main class="flex-1 py-8 sm:py-12">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="max-w-7xl xl:max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="grid grid-cols-1" :class="currentStep === 3 ? 'max-w-2xl mx-auto' : 'lg:grid-cols-12 gap-8 lg:gap-12 items-start'">
+            <div class="grid grid-cols-1" :class="currentStep === 3 ? 'max-w-2xl mx-auto' : 'lg:grid-cols-12 gap-8 lg:gap-10 items-start'">
 
                 {{-- Left Side: Order Summary (5 cols - ẩn khi ở Bước 3 Hoàn tất để giao diện gọn gàng) --}}
                 <div x-show="currentStep < 3"
@@ -172,7 +185,16 @@
                      x-transition:enter-end="opacity-100 translate-x-0"
                      class="lg:col-span-5 flex flex-col gap-6 order-2 lg:order-1">
                     <section class="bg-white dark:bg-[#161b22] p-6 sm:p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-sm transition-colors">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Tóm tắt đơn hàng</h2>
+                        {{-- Top Header aligned with Stepper --}}
+                        <div class="flex items-center justify-between border-b border-gray-200 dark:border-neutral-800 mb-8 pb-3 select-none">
+                            <span class="text-xs sm:text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Thông tin đơn hàng</span>
+                            <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">1 khóa học</span>
+                        </div>
+
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Tóm tắt đơn hàng</h2>
+                            <p class="text-gray-500 dark:text-gray-400 mt-1.5 text-sm">Thông tin khóa học và chi tiết thanh toán.</p>
+                        </div>
 
                         {{-- Course Card --}}
                         <div class="flex gap-4 pb-6 border-b border-gray-100 dark:border-neutral-800">
@@ -197,8 +219,8 @@
                                         Giảng viên: <strong class="text-gray-700 dark:text-gray-300">{{ $course->instructor->name ?? 'EduLearn' }}</strong>
                                     </p>
                                 </div>
-                                <span class="text-base font-bold text-gray-900 dark:text-white mt-2">
-                                    {{ number_format($course->price, 0, ',', '.') }} ₫
+                                <span class="text-base font-bold text-gray-900 dark:text-white mt-2 price-num">
+                                    {{ number_format($course->price, 0, ',', '.') }} đ
                                 </span>
                             </div>
                         </div>
@@ -207,19 +229,19 @@
                         <div class="space-y-3 pt-6 text-sm text-gray-600 dark:text-gray-400">
                             <div class="flex justify-between">
                                 <span>Tạm tính</span>
-                                <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($course->price, 0, ',', '.') }} ₫</span>
+                                <span class="font-bold text-gray-900 dark:text-white price-num">{{ number_format($course->price, 0, ',', '.') }} đ</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Ưu đãi học viên</span>
-                                <span class="text-emerald-600 dark:text-emerald-400 font-semibold">-0 ₫</span>
+                                <span class="text-emerald-600 dark:text-emerald-400 font-bold price-num">-0 đ</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Thuế VAT (0%)</span>
-                                <span>0 ₫</span>
+                                <span class="font-bold text-gray-900 dark:text-white price-num">0 đ</span>
                             </div>
                             <div class="flex justify-between pt-4 border-t border-gray-100 dark:border-neutral-800 items-baseline">
                                 <span class="text-base font-bold text-gray-900 dark:text-white">Tổng thanh toán</span>
-                                <span class="text-2xl font-extrabold text-[#019D91] dark:text-[#02b3a5]">{{ number_format($course->price, 0, ',', '.') }} ₫</span>
+                                <span class="text-2xl font-bold text-[#019D91] dark:text-[#02b3a5] price-num tracking-normal">{{ number_format($course->price, 0, ',', '.') }} đ</span>
                             </div>
                         </div>
                     </section>
@@ -324,20 +346,25 @@
                                      @click="selectedPayment = 'saved'"
                                      :class="selectedPayment === 'saved' ? 'border-[#0071e3] bg-blue-50/40 dark:bg-blue-950/20 shadow-sm' : 'border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/20 hover:border-gray-300'">
                                     <div class="flex items-center justify-between">
-                                        <label class="flex items-center gap-3.5 cursor-pointer flex-1 min-w-0">
+                                        <label class="flex items-center gap-4 cursor-pointer flex-1 min-w-0">
                                             <input type="radio" name="payment_type_radio" value="saved"
                                                    @change="selectedPayment = 'saved'"
                                                    :checked="selectedPayment === 'saved'"
-                                                   class="w-4 h-4 text-[#0071e3] focus:ring-[#0071e3]">
-                                            <div class="w-10 h-10 rounded-xl bg-white dark:bg-[#161b22] border border-gray-200 dark:border-neutral-700 shadow-sm flex items-center justify-center shrink-0">
-                                                <iconify-icon icon="{{ $savedPaymentMethod->icon }}" class="text-2xl {{ $savedPaymentMethod->type === 'momo' ? 'text-[#A50064]' : '' }}"></iconify-icon>
+                                                   class="sr-only">
+                                            <div class="flex items-center gap-1.5 shrink-0 py-0.5">
+                                                @if($savedPaymentMethod->type === 'momo')
+                                                    <iconify-icon icon="logos:momo" class="text-2xl"></iconify-icon>
+                                                @else
+                                                    <iconify-icon icon="logos:visa" class="text-2xl"></iconify-icon>
+                                                    <iconify-icon icon="logos:mastercard" class="text-2xl"></iconify-icon>
+                                                @endif
                                             </div>
-                                            <div class="min-w-0">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white truncate">{{ $savedPaymentMethod->title }}</span>
-                                                    <span class="px-2 py-0.5 text-[10px] font-bold bg-[#0071e3] text-white rounded-full shrink-0">Đã lưu trong tài khoản</span>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white">{{ $savedPaymentMethod->title }}</span>
+                                                    <span class="px-2.5 py-0.5 text-[10px] font-bold bg-[#0071e3] text-white rounded-full shrink-0">Đã lưu</span>
                                                 </div>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{{ $savedPaymentMethod->subtitle }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $savedPaymentMethod->subtitle }}</p>
                                             </div>
                                         </label>
                                     </div>
@@ -487,7 +514,7 @@
                                 <template x-if="selectedPayment === 'saved'">
                                     <div class="flex items-center gap-2">
                                         <iconify-icon icon="lucide:check-circle" class="text-xl text-emerald-600"></iconify-icon>
-                                        <span class="text-sm font-bold text-gray-900 dark:text-white">Phương thức đã lưu trong tài khoản</span>
+                                        <span class="text-sm font-bold text-gray-900 dark:text-white">Phương thức đã lưu</span>
                                     </div>
                                 </template>
                             </div>
@@ -585,13 +612,18 @@
                             <div x-show="selectedPayment === 'saved'" class="space-y-3">
                                 @if($savedPaymentMethod)
                                     <div class="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-xl bg-white dark:bg-[#161b22] border border-gray-200 dark:border-neutral-700 shadow-sm flex items-center justify-center shrink-0">
-                                            <iconify-icon icon="{{ $savedPaymentMethod->icon }}" class="text-3xl {{ $savedPaymentMethod->type === 'momo' ? 'text-[#A50064]' : '' }}"></iconify-icon>
+                                        <div class="flex items-center gap-1.5 shrink-0 py-0.5">
+                                            @if($savedPaymentMethod->type === 'momo')
+                                                <iconify-icon icon="logos:momo" class="text-2xl"></iconify-icon>
+                                            @else
+                                                <iconify-icon icon="logos:visa" class="text-2xl"></iconify-icon>
+                                                <iconify-icon icon="logos:mastercard" class="text-2xl"></iconify-icon>
+                                            @endif
                                         </div>
-                                        <div>
-                                            <div class="flex items-center gap-2">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex flex-wrap items-center gap-2">
                                                 <h3 class="font-bold text-gray-900 dark:text-white text-base">{{ $savedPaymentMethod->title }}</h3>
-                                                <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-600 text-white rounded-full">Khuyên dùng</span>
+                                                <span class="px-2.5 py-0.5 text-[10px] font-bold bg-emerald-600 text-white rounded-full shrink-0">Khuyên dùng</span>
                                             </div>
                                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $savedPaymentMethod->subtitle }}</p>
                                         </div>
@@ -620,7 +652,7 @@
                                         </div>
                                     </template>
                                     <template x-if="!isSubmitting">
-                                        <span>Thanh toán ngay {{ number_format($course->price, 0, ',', '.') }} ₫</span>
+                                        <span class="price-num">Thanh toán ngay {{ number_format($course->price, 0, ',', '.') }} đ</span>
                                     </template>
                                 </button>
                             </div>

@@ -125,6 +125,39 @@ class User extends Authenticatable
         return $this->hasMany(Course::class, 'instructor_id');
     }
 
+    public function earnings(): HasMany
+    {
+        return $this->hasMany(InstructorEarning::class, 'instructor_id');
+    }
+
+    public function payoutRequests(): HasMany
+    {
+        return $this->hasMany(PayoutRequest::class, 'instructor_id');
+    }
+
+    public function instructorTotalEarnings(): float
+    {
+        return (float) $this->earnings()->where('status', '!=', InstructorEarning::STATUS_REFUNDED)->sum('instructor_share');
+    }
+
+    public function instructorAvailableBalance(): float
+    {
+        $totalEarnings = $this->instructorTotalEarnings();
+        $committedPayouts = (float) $this->payoutRequests()->whereIn('status', [PayoutRequest::STATUS_PENDING, PayoutRequest::STATUS_APPROVED])->sum('amount');
+
+        return max(0, round($totalEarnings - $committedPayouts, 2));
+    }
+
+    public function instructorPaidPayouts(): float
+    {
+        return (float) $this->payoutRequests()->where('status', PayoutRequest::STATUS_APPROVED)->sum('amount');
+    }
+
+    public function instructorPendingPayouts(): float
+    {
+        return (float) $this->payoutRequests()->where('status', PayoutRequest::STATUS_PENDING)->sum('amount');
+    }
+
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);

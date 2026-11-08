@@ -59,7 +59,7 @@ class CourseCheckoutController extends Controller
         if ($paymentType !== 'saved') {
             $title = $paymentType === 'momo'
                 ? 'Ví điện tử MoMo'
-                : ($paymentType === 'card' ? 'Thẻ tín dụng' : 'Thanh toán '.strtoupper($paymentType));
+                : ($paymentType === 'card' ? 'Kết thúc bằng •••• '.substr($validated['card_number'] ?? '4242', -4) : 'Thanh toán '.strtoupper($paymentType));
             $subtitle = $paymentType === 'momo'
                 ? $this->maskPhone($validated['momo_phone'] ?? '')
                 : null;
@@ -69,18 +69,37 @@ class CourseCheckoutController extends Controller
                 'type' => $paymentType,
                 'title' => $title,
                 'subtitle' => $subtitle,
-                'icon' => $paymentType === 'momo' ? 'logos:momo' : 'logos:visa',
+                'icon' => $paymentType === 'momo' ? 'logos:momo' : 'logos:mastercard',
                 'is_default' => true,
             ]);
         }
 
-        Enrollment::create([
+        $enrollment = Enrollment::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
             'status' => Enrollment::STATUS_PAID,
             'progress_percent' => 0,
             'enrolled_at' => now(),
         ]);
+
+        if ($course->price > 0 && $course->instructor_id) {
+            $orderAmount = (float) $course->price;
+            $instructorShare = round($orderAmount * 0.70, 2);
+            $adminShare = round($orderAmount * 0.30, 2);
+
+            \App\Models\InstructorEarning::create([
+                'instructor_id' => $course->instructor_id,
+                'course_id' => $course->id,
+                'enrollment_id' => $enrollment->id,
+                'order_amount' => $orderAmount,
+                'instructor_rate' => 70.00,
+                'admin_rate' => 30.00,
+                'instructor_share' => $instructorShare,
+                'admin_share' => $adminShare,
+                'status' => \App\Models\InstructorEarning::STATUS_AVAILABLE,
+                'available_at' => now(),
+            ]);
+        }
 
         $payload = [
             'order_code' => '#EDU-'.str_pad((string) $course->id, 5, '0', STR_PAD_LEFT),

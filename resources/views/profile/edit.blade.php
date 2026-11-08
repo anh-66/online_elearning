@@ -319,15 +319,30 @@
                             Đã tham gia hệ thống từ {{ $user->created_at?->format('d/m/Y') ?? '2026' }}
                         </p>
                     </div>
-                    @if (Route::has('my-courses'))
-                        <a href="{{ route('my-courses') }}" class="inline-flex items-center justify-center px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
-                            Khóa học của tôi
-                        </a>
-                    @endif
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        @if (Route::has('my-courses'))
+                            <a href="{{ route('my-courses') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-black text-white dark:bg-white dark:text-black text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
+                                Khóa học của tôi
+                            </a>
+                        @endif
+                        <button type="button"
+                                x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+                                class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-lg transition-colors">
+                            <iconify-icon icon="lucide:trash-2" class="mr-1.5 text-base"></iconify-icon>
+                            Xóa tài khoản
+                        </button>
+                    </div>
                 </div>
 
                 <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-neutral-800">
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Phương thức thanh toán</h2>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Phương thức thanh toán</h2>
+                        @if (session('status') === 'payment-method-deleted')
+                            <span x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 3000)" class="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                Đã xóa phương thức thanh toán thành công.
+                            </span>
+                        @endif
+                    </div>
                     
                     @php
                         $userPaymentMethods = $user->paymentMethods()->orderByDesc('is_default')->latest()->get();
@@ -335,16 +350,30 @@
 
                     @forelse($userPaymentMethods as $pm)
                         <div class="border border-gray-100 dark:border-neutral-800 rounded-xl p-4 flex items-center gap-4 bg-white dark:bg-[#161b22]">
-                            <div class="w-12 h-8 bg-gray-100 dark:bg-neutral-800 rounded flex items-center justify-center shrink-0">
-                                <iconify-icon icon="{{ $pm->icon }}" class="text-2xl {{ $pm->type === 'momo' ? 'text-[#A50064]' : '' }}"></iconify-icon>
+                            <div class="flex items-center gap-1.5 shrink-0 py-0.5">
+                                @if($pm->type === 'momo')
+                                    <iconify-icon icon="logos:momo" class="text-2xl"></iconify-icon>
+                                @else
+                                    <iconify-icon icon="logos:visa" class="text-2xl"></iconify-icon>
+                                    <iconify-icon icon="logos:mastercard" class="text-2xl"></iconify-icon>
+                                @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $pm->title }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $pm->subtitle }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $pm->subtitle }}</p>
                             </div>
-                            @if($pm->is_default)
-                                <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">Mặc định</span>
-                            @endif
+                            <div class="flex items-center gap-2.5">
+                                @if($pm->is_default)
+                                    <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">Mặc định</span>
+                                @endif
+                                <form method="POST" action="{{ route('profile.payment-methods.destroy', $pm->id) }}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phương thức thanh toán này?');" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition" title="Xóa phương thức thanh toán">
+                                        <iconify-icon icon="lucide:trash-2" class="text-base block"></iconify-icon>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     @empty
                         <div class="border border-dashed border-gray-200 dark:border-neutral-800 rounded-xl p-6 text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-neutral-900/30">
