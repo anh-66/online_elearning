@@ -65,6 +65,45 @@
             display: none;
         }
 
+        #admin-sidebar.collapsed .brand-container {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        #admin-sidebar.collapsed .user-block {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        #admin-sidebar.collapsed .user-trigger-card {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+            gap: 0;
+        }
+
+        /* Khi sidebar thu nhỏ: menu tài khoản bung sang phải (flyout) với chiều rộng chuẩn, không bị bóp nghẹt */
+        #admin-sidebar.collapsed .user-dropdown-menu {
+            left: calc(100% + 0.5rem) !important;
+            right: auto !important;
+            bottom: 0.5rem !important;
+            margin-bottom: 0 !important;
+            width: 240px !important;
+            min-width: 240px !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Vùng đệm vô hình để chuột rê từ avatar sang popup không bị mất focus */
+        #admin-sidebar.collapsed .user-dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -0.75rem;
+            width: 0.75rem;
+        }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -125,7 +164,7 @@
                class="fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col bg-white border-r border-gray-200 transition-transform duration-200 lg:static lg:translate-x-0">
 
             <!-- Brand -->
-            <div class="h-16 flex items-center px-5 border-b border-gray-100 shrink-0">
+            <div class="brand-container h-16 flex items-center px-5 border-b border-gray-100 shrink-0">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 min-w-0">
                     <div class="w-8 h-8 bg-[#019D91] rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                         <iconify-icon icon="lucide:graduation-cap" class="text-white text-lg"></iconify-icon>
@@ -182,6 +221,13 @@
                     <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Đánh giá</span>
                 </a>
 
+                <!-- Chi trả Giảng viên -->
+                <a href="{{ route('admin.payouts.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.payouts.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:wallet" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Chi trả</span>
+                </a>
+
                 <!-- Divider -->
                 <div class="pt-3 pb-1 px-5">
                     <div class="h-px bg-gray-100"></div>
@@ -216,7 +262,7 @@
             </nav>
 
             <!-- User Profile Footer with Hover / Click Popover -->
-            <div class="relative border-t border-gray-100 p-3 shrink-0"
+            <div class="user-block relative border-t border-gray-100 p-3 shrink-0"
                  x-data="{ userMenuOpen: false }"
                  @mouseenter="userMenuOpen = true"
                  @mouseleave="userMenuOpen = false">
@@ -225,12 +271,12 @@
                 <div x-show="userMenuOpen"
                      x-cloak
                      x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
                      x-transition:leave="transition ease-in duration-100"
-                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                     x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                     class="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="user-dropdown-menu absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
                      @click.away="userMenuOpen = false">
                     <div class="px-3 py-2">
                         <p class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
@@ -238,18 +284,18 @@
                     </div>
                     <div class="py-1">
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors">
-                            <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400"></iconify-icon>
-                            Cài đặt tài khoản admin
+                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors whitespace-nowrap">
+                            <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400 shrink-0"></iconify-icon>
+                            <span>Cài đặt tài khoản admin</span>
                         </a>
                     </div>
                     <div class="pt-1">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                    class="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon>
-                                Đăng xuất
+                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap">
+                                <iconify-icon icon="lucide:log-out" class="text-base shrink-0"></iconify-icon>
+                                <span>Đăng xuất</span>
                             </button>
                         </form>
                     </div>
@@ -257,7 +303,7 @@
 
                 <!-- Profile Trigger Card -->
                 <div @click="userMenuOpen = !userMenuOpen"
-                     class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
+                     class="user-trigger-card flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
                     <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
                         @if(Auth::user()->avatar_url)
                             <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
@@ -296,64 +342,20 @@
                     </h1>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <!-- Notification Bell -->
                     @include('partials.notification-bell')
 
-                    <div class="h-7 w-px bg-gray-200 mx-1"></div>
+                    <div class="h-6 w-px bg-gray-200"></div>
 
-                    <!-- Profile Header Button with Dropdown -->
-                    <div class="relative" x-data="{ headerMenuOpen: false }">
-                        <button @click="headerMenuOpen = !headerMenuOpen"
-                                @mouseenter="headerMenuOpen = true"
-                                type="button"
-                                class="flex items-center gap-2 py-1 pl-3 pr-2 hover:bg-gray-50 rounded-full border border-gray-200 cursor-pointer transition-colors">
-                            <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Admin' }}</span>
-                            <div class="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-black text-xs font-bold text-white">
-                                @if(Auth::user()->avatar_url)
-                                    <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="h-full w-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
-                                    <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
-                                @else
-                                    <span>{{ Auth::user()->initialLetter() }}</span>
-                                @endif
-                            </div>
-                            <iconify-icon icon="lucide:chevron-down" class="text-gray-400 text-xs"></iconify-icon>
-                        </button>
-
-                        <div x-show="headerMenuOpen"
-                             x-cloak
-                             @mouseleave="headerMenuOpen = false"
-                             @click.away="headerMenuOpen = false"
-                             x-transition:enter="transition ease-out duration-150"
-                             x-transition:enter-start="opacity-0 translate-y-1 scale-95"
-                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                             x-transition:leave="transition ease-in duration-100"
-                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                             x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                             class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
-                             style="display: none;">
-                            <div class="px-3 py-2">
-                                <p class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
-                                <p class="text-[11px] text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
-                            </div>
-                            <div class="py-1">
-                                <a href="{{ route('profile.edit') }}"
-                                   class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors">
-                                    <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400"></iconify-icon>
-                                    Cài đặt tài khoản admin
-                                </a>
-                            </div>
-                            <div class="pt-1">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                            class="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                        <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon>
-                                        Đăng xuất
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                    <!-- User Avatar Only -->
+                    <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black text-sm font-bold text-white shadow-sm ring-2 ring-gray-100 select-none" title="{{ Auth::user()->name ?? 'Admin' }}">
+                        @if(Auth::user()->avatar_url)
+                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="h-full w-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                            <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
+                        @else
+                            <span>{{ Auth::user()->initialLetter() }}</span>
+                        @endif
                     </div>
                 </div>
             </header>

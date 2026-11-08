@@ -4,6 +4,7 @@ use App\Http\Controllers\Instructor\ChapterController;
 use App\Http\Controllers\Instructor\CourseController;
 use App\Http\Controllers\Instructor\DashboardController;
 use App\Http\Controllers\Instructor\LessonController;
+use App\Http\Controllers\Instructor\PayoutController;
 use App\Http\Controllers\Instructor\QuestionController;
 use App\Http\Controllers\Instructor\QuizController;
 use App\Http\Controllers\Instructor\StudentController;
@@ -44,3 +45,7 @@ Route::resource('quizzes.questions', QuestionController::class)->shallow()->only
 
 // Học viên theo khóa
 Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+
+// Thu nhập & Rút tiền (Tỉ lệ 70% Giảng viên - 30% Nền tảng)
+Route::get('/payouts', [PayoutController::class, 'index'])->name('payouts.index');
+Route::post('/payouts', [PayoutController::class, 'store'])->name('payouts.store');

@@ -30,4 +30,15 @@ class PaymentMethod extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getTitleAttribute(?string $value): string
+    {
+        if (! $value) {
+            return '';
+        }
+
+        $cleaned = (string) preg_replace('/^(Visa|Mastercard)\s+/ui', '', $value);
+
+        return mb_strtoupper(mb_substr($cleaned, 0, 1)).mb_substr($cleaned, 1);
+    }
 }

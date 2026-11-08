@@ -5,6 +5,22 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Thu nhập & Ví banner -->
+    <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-brand-200">Ví Giảng Viên</span>
+            <div class="mt-1 flex items-baseline gap-3">
+                <span class="text-3xl font-extrabold tracking-tight">{{ number_format(auth()->user()->instructorAvailableBalance(), 0, ',', '.') }} ₫</span>
+                <span class="text-xs text-brand-200">Số dư khả dụng để rút</span>
+            </div>
+            <p class="text-xs text-brand-100/90 mt-1">Tổng thu nhập tích lũy (70%): {{ number_format(auth()->user()->instructorTotalEarnings(), 0, ',', '.') }} ₫</p>
+        </div>
+        <a href="{{ route('instructor.payouts.index') }}"
+           class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white text-brand-900 font-bold text-sm hover:bg-neutral-100 transition shadow-sm self-start sm:self-center">
+            Quản lý thu nhập & Rút tiền →
+        </a>
+    </div>
+
     <!-- Thẻ thống kê -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">

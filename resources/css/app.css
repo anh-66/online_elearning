@@ -674,4 +674,48 @@
     .dark .rich-content :is(hr, th, td) { @apply border-neutral-800; }
     .dark .rich-content th { @apply bg-neutral-900 text-white; }
     .dark .rich-content figcaption { @apply text-neutral-400; }
+
+    /* Bookmark Pop / Bounce Animation (Elastic Spring Matching Framer Motion) */
+    @keyframes bookmark-pop {
+        0% {
+            transform: scale(1);
+            animation-timing-function: ease-out;
+        }
+        40% {
+            transform: scale(1.2);
+            animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes bookmark-unpop {
+        0% {
+            transform: scale(1);
+            animation-timing-function: ease-out;
+        }
+        40% {
+            transform: scale(0.9);
+            animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .animate-bookmark-pop {
+        animation: bookmark-pop 0.35s forwards;
+    }
+
+    .animate-bookmark-unpop {
+        animation: bookmark-unpop 0.35s forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .animate-bookmark-pop,
+        .animate-bookmark-unpop {
+            animation: none !important;
+        }
+    }
 }
