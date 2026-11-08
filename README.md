@@ -1,114 +1,112 @@
 # Online E-Learning
 
-Website học trực tuyến: giảng viên đăng khóa học, học viên đăng ký và học, quản trị viên kiểm duyệt nội dung. Đây là bài tập nhóm cuối kỳ môn **Lập trình Web** (PHP + MySQL).
-
-## Mục lục
-
-- [Tính năng](#tính-năng)
-- [Công nghệ](#công-nghệ)
-- [Yêu cầu môi trường](#yêu-cầu-môi-trường)
-- [Cài đặt](#cài-đặt)
-- [Đăng nhập bằng Google](#đăng-nhập-bằng-google)
-- [Tài khoản mặc định](#tài-khoản-mặc-định)
-- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
-- [Phân quyền](#phân-quyền)
-- [Quy trình làm việc nhóm](#quy-trình-làm-việc-nhóm)
-- [Các lệnh hay dùng](#các-lệnh-hay-dùng)
-- [Xử lý lỗi thường gặp](#xử-lý-lỗi-thường-gặp)
-- [Thành viên nhóm](#thành-viên-nhóm)
+Nền tảng học trực tuyến xây dựng bằng Laravel. Hệ thống hỗ trợ học viên tìm
+kiếm và học khóa học, giảng viên xây dựng nội dung, và quản trị viên kiểm duyệt
+vận hành toàn bộ nền tảng.
 
 ## Tính năng
 
-Trạng thái: ✅ đã xong, 🚧 đang làm, ⬜ chưa làm. Cập nhật bảng này khi hoàn thành module.
+Các thành viên đã hoàn thành các module chính của dự án:
 
-| Nhóm | Tính năng | Trạng thái |
-|---|---|---|
-| Xác thực | Đăng ký, đăng nhập, đăng xuất, quên/đổi mật khẩu, hồ sơ cá nhân | ✅ (Breeze) |
-| Xác thực | Đăng nhập bằng Google OAuth | ✅ |
-| Phân quyền | Middleware theo vai trò, redirect theo vai trò, Policy quyền sở hữu | ⬜ |
-| Admin | Dashboard thống kê (Chart.js) | ⬜ |
-| Admin | CRUD người dùng (khóa/mở khóa, đổi vai trò) | ⬜ |
-| Admin | CRUD danh mục | ⬜ |
-| Admin | Duyệt/từ chối/ẩn khóa học | ⬜ |
-| Admin | Quản lý đánh giá, bình luận, đăng ký học | ⬜ |
-| Giảng viên | CRUD khóa học (editor, upload nhiều ảnh) | ⬜ |
-| Giảng viên | CRUD chương, bài học | ⬜ |
-| Giảng viên | CRUD quiz, câu hỏi, đáp án | ⬜ |
-| Giảng viên | Danh sách học viên, tiến độ, thống kê | ⬜ |
-| Học viên | Trang chủ, danh sách khóa học (tìm kiếm, lọc, phân trang) | ⬜ |
-| Học viên | Chi tiết khóa học, đăng ký học | ⬜ |
-| Học viên | Khóa học của tôi, trang học bài, theo dõi tiến độ | ⬜ |
-| Học viên | Làm quiz, chấm điểm tự động | ⬜ |
-| Học viên | Đánh giá sao, bình luận | ⬜ |
-| Mở rộng | Wishlist, chứng chỉ PDF, xuất Excel | ⬜ |
+### Người dùng và xác thực
+
+- Đăng ký, đăng nhập, đăng xuất, quên và đặt lại mật khẩu.
+- Xác minh email, đổi mật khẩu, cập nhật hồ sơ và avatar.
+- Đăng nhập bằng Google OAuth.
+- Xuất dữ liệu cá nhân và xóa tài khoản.
+- Phân quyền theo ba vai trò: `student`, `instructor`, `admin`.
+
+### Học viên và khu vực công khai
+
+- Trang chủ, banner, danh mục và danh sách khóa học.
+- Tìm kiếm, lọc, sắp xếp và phân trang khóa học.
+- Xem chi tiết khóa học và hồ sơ giảng viên.
+- Đăng ký khóa học và thanh toán qua quy trình checkout.
+- Danh sách khóa học của tôi, trình phát bài học và theo dõi tiến độ.
+- Quiz trắc nghiệm, chấm điểm, lịch sử làm bài và xem kết quả.
+- Đánh giá sao, phản hồi của giảng viên và bình luận hỏi đáp.
+- Wishlist, thông báo và gửi báo cáo sự cố.
+
+### Studio giảng viên
+
+- Tạo, sửa, xóa khóa học và quản lý thư viện ảnh.
+- Quản lý chương, bài học, video và file đính kèm.
+- Tạo quiz, câu hỏi và đáp án.
+- Gửi khóa học để duyệt, rút yêu cầu duyệt và theo dõi trạng thái.
+- Xem danh sách học viên, tiến độ và thống kê khóa học.
+- Theo dõi thu nhập và gửi yêu cầu rút tiền.
+
+### Quản trị viên
+
+- Dashboard thống kê.
+- Quản lý người dùng, trạng thái tài khoản và vai trò.
+- Tạo tài khoản giảng viên.
+- Quản lý danh mục và banner.
+- Duyệt, từ chối, ẩn và xóa khóa học.
+- Quản lý lượt ghi danh, đánh giá, bình luận và phản hồi sự cố.
+- Quản lý thông báo hệ thống.
+- Duyệt hoặc từ chối yêu cầu chi trả cho giảng viên.
 
 ## Công nghệ
 
 | Thành phần | Công nghệ |
 |---|---|
 | Backend | PHP 8.3+, Laravel 13, Eloquent ORM |
-| Cơ sở dữ liệu | MySQL |
-| Xác thực | Laravel Breeze (Blade), Laravel Socialite (Google OAuth) |
-| Frontend | Blade, Tailwind CSS 3, Alpine.js, Vite |
-| Editor | CKEditor 5 |
+| Cơ sở dữ liệu | MySQL hoặc MariaDB |
+| Xác thực | Laravel Breeze, Laravel Socialite |
+| Frontend | Blade, React, Tailwind CSS 3, Alpine.js, Vite |
+| Soạn thảo nội dung | CKEditor 5 |
 | Biểu đồ | Chart.js |
 | Xử lý ảnh | Intervention Image |
-| Xuất file | barryvdh/laravel-dompdf (PDF), maatwebsite/excel (Excel) |
-| Giao diện chọn nhiều | Tom Select |
-| Test | PHPUnit |
+| Xuất file | Dompdf, Laravel Excel |
+| Kiểm thử | PHPUnit |
 
 ## Yêu cầu môi trường
 
-Cả nhóm dùng **cùng phiên bản** để tránh lỗi "máy tôi chạy được".
+- PHP 8.3 trở lên với các extension: `mbstring`, `openssl`, `pdo_mysql`,
+  `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`, `gd`, `zip`.
+- Composer 2.x.
+- Node.js bản LTS và npm.
+- MySQL 8 hoặc MariaDB.
+- Git.
 
-- PHP **8.3 trở lên**, kèm các extension: `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`, `gd`, `zip`
-- [Composer](https://getcomposer.org/) 2.x
-- [Node.js](https://nodejs.org/) bản LTS mới (khuyến nghị 22 trở lên) và npm
-- MySQL 8 hoặc MariaDB (có thể dùng XAMPP, Laragon, hoặc Docker)
-- Git
-
-Kiểm tra nhanh:
+Kiểm tra phiên bản:
 
 ```bash
 php -v
 composer -V
 node -v
-mysql --version
+npm -v
 ```
 
 ## Cài đặt
 
-**1. Clone dự án**
+### 1. Tải mã nguồn và cài dependency
 
 ```bash
 git clone https://github.com/anh-66/online_elearning.git
 cd online_elearning
-```
-
-**2. Cài thư viện PHP và JavaScript**
-
-```bash
 composer install
 npm install
 ```
 
-**3. Tạo file môi trường**
+### 2. Cấu hình môi trường
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+php artisan key:generate
+```
+
+Linux/macOS:
 
 ```bash
-# Windows (PowerShell/CMD):  copy .env.example .env
 cp .env.example .env
 php artisan key:generate
 ```
 
-**4. Tạo database**
-
-Tạo một database rỗng tên `online_elearning` (bảng mã `utf8mb4_unicode_ci`) bằng phpMyAdmin hoặc lệnh:
-
-```sql
-CREATE DATABASE online_elearning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-Mở `.env` và chỉnh thông tin kết nối cho đúng với máy của bạn:
+Tạo database rỗng, sau đó cấu hình các biến sau trong `.env`:
 
 ```env
 DB_CONNECTION=mysql
@@ -119,17 +117,18 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-> Không commit file `.env`. File này đã nằm trong `.gitignore`.
+### 3. Tạo bảng và dữ liệu mẫu
 
-**Cấu hình đăng nhập bằng Google**
-
-Tạo OAuth 2.0 Client ID loại **Web application** trong [Google Cloud Console](https://console.cloud.google.com/), sau đó thêm URL callback của môi trường đang chạy vào **Authorized redirect URIs**:
-
-```text
-http://127.0.0.1:8000/auth/google/callback
+```bash
+php artisan migrate --seed
+php artisan storage:link
 ```
 
-Thêm thông tin client vào `.env`:
+### 4. Cấu hình Google OAuth (tùy chọn)
+
+Tạo OAuth 2.0 Client ID loại Web application trong
+[Google Cloud Console](https://console.cloud.google.com/), thêm callback URL
+`http://127.0.0.1:8000/auth/google/callback`, rồi khai báo:
 
 ```env
 GOOGLE_CLIENT_ID=your-google-client-id
@@ -137,164 +136,116 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
 ```
 
-Nếu `APP_URL` không phải `http://127.0.0.1:8000`, hãy dùng đúng URL đó trong cả `GOOGLE_REDIRECT_URI` và Google Cloud Console. Không commit `GOOGLE_CLIENT_SECRET` hoặc các giá trị bí mật khác vào Git.
-
-**5. Tạo bảng và dữ liệu mẫu**
-
-```bash
-php artisan migrate --seed
-```
-
-**6. Liên kết thư mục lưu file upload**
-
-```bash
-php artisan storage:link
-```
-
-**7. Chạy dự án** (mở hai terminal)
-
-```bash
-# Terminal 1: server Laravel
-php artisan serve
-
-# Terminal 2: Vite (biên dịch CSS/JS, tự reload khi sửa code)
-npm run dev
-```
-
-Truy cập: <http://localhost:8000>
-
-> Nếu chỉ muốn chạy thử mà không sửa giao diện, dùng `npm run build` một lần thay cho `npm run dev`.
-
-**Cài nhanh bằng một lệnh** (tùy chọn): `composer setup` sẽ cài thư viện, tạo `.env`, sinh key, chạy migrate và build frontend. Lệnh này **chưa chạy seeder**, bạn cần chạy thêm `php artisan db:seed` sau đó.
-
-## Đăng nhập bằng Google
-
-Tại trang đăng nhập, chọn **Tiếp tục với Google** để chuyển tới Google xác thực. Người dùng mới sẽ được tạo với vai trò học viên; tài khoản đã tồn tại sẽ được liên kết theo địa chỉ email. Tài khoản bị khóa hoặc không hoạt động sẽ không thể đăng nhập.
-
-Sau khi cập nhật các biến `GOOGLE_*` trong `.env`, xóa cache cấu hình để Laravel nhận giá trị mới:
+Sau khi thay đổi biến môi trường:
 
 ```bash
 php artisan optimize:clear
 ```
 
-## Tài khoản mặc định
+Không commit `.env` hoặc các secret vào Git.
+
+### 5. Chạy ứng dụng
+
+Mở hai terminal:
+
+```bash
+# Terminal 1
+php artisan serve
+
+# Terminal 2
+npm run dev
+```
+
+Truy cập `http://localhost:8000`. Khi không cần Vite ở chế độ phát triển,
+có thể build frontend bằng:
+
+```bash
+npm run build
+```
+
+Có thể dùng `composer setup` để cài dependency, tạo `.env`, sinh application
+key, migrate và build frontend. Seeder cần chạy thêm bằng
+`php artisan db:seed` nếu chưa được chạy.
+
+## Tài khoản dữ liệu mẫu
+
+Các tài khoản dưới đây được tạo bởi `php artisan migrate --seed`:
 
 | Vai trò | Email | Mật khẩu |
 |---|---|---|
-| Admin | `admin@gmail.com` | `12345678` |
+| Admin | `admin@gmail.com` | `Password123` |
+| Giảng viên | `instructor1@gmail.com` | `Password123` |
+| Giảng viên | `instructor2@gmail.com` | `Password123` |
+| Học viên | `student1@gmail.com` | `Password123` |
+| Học viên | `student2@gmail.com` | `Password123` |
+| Học viên | `student3@gmail.com` | `Password123` |
 
-Tài khoản giảng viên và học viên mẫu sẽ được bổ sung trong seeder. **Đổi mật khẩu admin trước khi deploy.**
+Tài khoản alias `instructor@gmail.com` và `student@gmail.com` cũng được seed
+để tương thích với dữ liệu hoặc test cũ. Hãy đổi mật khẩu trước khi triển khai
+thực tế.
+
+## Phân quyền và vòng đời khóa học
+
+| Vai trò | Quyền chính |
+|---|---|
+| Khách | Xem trang chủ, danh mục, khóa học và hồ sơ giảng viên |
+| Học viên (`student`) | Ghi danh, học bài, làm quiz, wishlist, đánh giá và bình luận |
+| Giảng viên (`instructor`) | Quản lý nội dung khóa học của mình, học viên và thu nhập |
+| Quản trị viên (`admin`) | Quản trị người dùng, nội dung, vận hành, kiểm duyệt và chi trả |
+
+Khóa học đi qua các trạng thái:
+
+```text
+draft -> pending -> published
+              \-> rejected -> draft
+published -> hidden
+```
+
+Các route của giảng viên dùng prefix `/instructor` và middleware
+`role:instructor,admin`. Các route quản trị dùng prefix `/admin` và middleware
+`role:admin`. Policy kiểm tra quyền sở hữu khóa học và các tài nguyên liên quan.
 
 ## Cấu trúc thư mục
 
-```
-online_elearning/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/        # Controller (Auth/, ProfileController, ...)
-│   │   └── Requests/           # Form Request: validate dữ liệu
-│   ├── Models/                 # Eloquent models
-│   ├── Providers/
-│   └── View/Components/        # Layout component (AppLayout, GuestLayout)
-├── bootstrap/app.php           # Khai báo middleware, routing
-├── config/                     # Cấu hình ứng dụng
-├── database/
-│   ├── factories/              # Sinh dữ liệu giả
-│   ├── migrations/             # Cấu trúc bảng
-│   └── seeders/                # Dữ liệu mẫu
-├── public/                     # Thư mục gốc web server trỏ vào
-├── resources/
-│   ├── css/app.css
-│   ├── js/app.js
-│   └── views/                  # Giao diện Blade
-│       ├── auth/               # Đăng nhập, đăng ký, ...
-│       ├── components/         # Blade component dùng lại
-│       ├── layouts/
-│       └── profile/
-├── routes/
-│   ├── web.php                 # Route chính
-│   └── auth.php                # Route xác thực (Breeze)
-├── storage/                    # Log, cache, file upload
-└── tests/                      # Test (Feature, Unit)
+```text
+app/
+├── Http/Controllers/
+│   ├── Admin/              # Chức năng quản trị
+│   ├── Auth/               # Xác thực
+│   └── Instructor/         # Studio giảng viên
+├── Models/                 # Eloquent models
+├── Policies/               # Phân quyền tài nguyên
+└── View/Components/        # Blade components
+bootstrap/app.php           # Đăng ký route và middleware
+config/                     # Cấu hình ứng dụng
+database/
+├── factories/              # Factory cho test
+├── migrations/             # Cấu trúc cơ sở dữ liệu
+└── seeders/                # Dữ liệu mẫu
+resources/
+├── css/                    # Tailwind và CSS ứng dụng
+├── js/                     # JavaScript, React và CKEditor
+└── views/                  # Blade views
+routes/
+├── web.php                 # Route công khai, học viên và hồ sơ
+├── auth.php                # Route xác thực
+├── instructor.php          # Route Studio giảng viên
+└── admin.php               # Route quản trị
+storage/                    # Log, cache và file upload
+tests/                      # Feature tests và unit tests
 ```
 
-Quy ước đặt tên khi thêm module mới (ví dụ quản lý khóa học của giảng viên):
-
-| Loại | Vị trí | Ví dụ |
-|---|---|---|
-| Controller admin | `app/Http/Controllers/Admin/` | `Admin\CategoryController` |
-| Controller giảng viên | `app/Http/Controllers/Instructor/` | `Instructor\CourseController` |
-| Controller học viên/public | `app/Http/Controllers/` | `CourseController` |
-| View admin | `resources/views/admin/` | `admin/categories/index.blade.php` |
-| View giảng viên | `resources/views/instructor/` | `instructor/courses/create.blade.php` |
-| Route | Gom theo nhóm có prefix `admin`, `instructor` | `/admin/categories` |
-
-## Phân quyền
-
-Vai trò lưu ở cột `role` của bảng `users`:
-
-| Vai trò | Giá trị `role` | Quyền |
-|---|---|---|
-| Khách | (chưa đăng nhập) | Xem trang chủ, danh sách và chi tiết khóa học |
-| Học viên | `student` | Đăng ký học, học bài, làm quiz, đánh giá, bình luận |
-| Giảng viên | `instructor` | Quản lý khóa học, bài học, quiz **của chính mình** |
-| Quản trị | `admin` | Toàn quyền quản lý hệ thống |
-
-Nguyên tắc: **mọi trang và mọi hành động sửa/xóa đều phải kiểm tra quyền**, kể cả quyền sở hữu (giảng viên chỉ sửa được khóa học của mình). Khi cho người dùng tự đăng ký, chỉ chấp nhận `student` hoặc `instructor`, tuyệt đối không nhận `admin` từ form.
-
-Vòng đời trạng thái của khóa học: `draft` → `pending` → `published` (hoặc `rejected` → `draft`, hoặc `hidden`).
-
-## Quy trình làm việc nhóm
-
-**Nhánh**
-
-- `main`: luôn chạy được, **không push trực tiếp**.
-- Mỗi người làm trên nhánh riêng theo tính năng: `feature/<tên-tính-năng>`, ví dụ `feature/admin-category-crud`, `fix/login-redirect`.
+## Lệnh thường dùng
 
 ```bash
-git checkout main
-git pull origin main
-git checkout -b feature/admin-category-crud
-# ... làm việc, commit ...
-git push -u origin feature/admin-category-crud
-```
-
-Sau đó mở **Pull Request** vào `main` trên GitHub, ít nhất một bạn khác xem qua rồi mới merge.
-
-**Commit message** theo dạng `loại: mô tả ngắn`:
-
-| Tiền tố | Dùng khi |
-|---|---|
-| `feat:` | Thêm tính năng mới |
-| `fix:` | Sửa lỗi |
-| `refactor:` | Chỉnh code, không đổi hành vi |
-| `style:` | Giao diện, định dạng |
-| `docs:` | Tài liệu |
-| `chore:` | Cấu hình, thư viện |
-
-Ví dụ: `feat: thêm CRUD danh mục cho admin`.
-
-**Lưu ý tránh xung đột**
-
-- Trước khi làm, luôn `git pull origin main` để lấy bản mới nhất.
-- **Migration:** không sửa migration đã được merge vào `main`. Cần đổi cấu trúc bảng thì tạo migration mới bằng `php artisan make:migration`.
-- Sau khi pull về có migration mới, chạy `php artisan migrate`. Nếu bị lỗi lệch dữ liệu, chạy `php artisan migrate:fresh --seed` (sẽ xóa sạch dữ liệu local).
-- Không commit `.env`, `vendor/`, `node_modules/`, file upload.
-
-## Các lệnh hay dùng
-
-```bash
-php artisan migrate                 # chạy migration mới
-php artisan migrate:fresh --seed    # xóa hết bảng, tạo lại và nạp dữ liệu mẫu
-php artisan db:seed                 # chỉ nạp dữ liệu mẫu
-php artisan route:list              # xem danh sách route
-php artisan make:model Course -mfc  # tạo model + migration + factory + controller
-php artisan make:controller Admin/CategoryController --resource
-php artisan make:request StoreCourseRequest
-php artisan make:policy CoursePolicy --model=Course
-php artisan optimize:clear          # xóa cache cấu hình, route, view
-php artisan test                    # chạy test
-./vendor/bin/pint                   # tự động định dạng code theo chuẩn
+php artisan migrate
+php artisan migrate:fresh --seed
+php artisan db:seed
+php artisan route:list
+php artisan optimize:clear
+php artisan test
+vendor/bin/pint
+npm run build
 ```
 
 ## Xử lý lỗi thường gặp
@@ -302,26 +253,24 @@ php artisan test                    # chạy test
 | Lỗi | Cách xử lý |
 |---|---|
 | `No application encryption key has been specified` | Chạy `php artisan key:generate` |
-| `SQLSTATE[HY000] [1049] Unknown database` | Chưa tạo database `online_elearning` (xem bước 4) |
-| `SQLSTATE[HY000] [2002] Connection refused` | MySQL chưa bật, hoặc sai `DB_HOST`/`DB_PORT` trong `.env` |
+| `Unknown database` | Tạo database và kiểm tra `DB_*` trong `.env` |
+| `Connection refused` | Bật MySQL hoặc kiểm tra `DB_HOST` và `DB_PORT` |
 | `Vite manifest not found` | Chạy `npm run dev` hoặc `npm run build` |
 | Ảnh upload không hiển thị | Chạy `php artisan storage:link` |
-| Sửa `.env` hoặc config mà không có tác dụng | Chạy `php artisan optimize:clear` |
-| Đăng nhập Google báo `redirect_uri_mismatch` | Kiểm tra `GOOGLE_REDIRECT_URI`, `APP_URL` và Authorized redirect URI trong Google Cloud Console phải trùng tuyệt đối |
-| Đăng nhập Google thất bại | Kiểm tra `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, callback URL và chạy lại `php artisan optimize:clear` |
-| `Your lock file does not contain a compatible set of packages` | Phiên bản PHP chưa đủ (cần 8.3+) hoặc thiếu extension |
-| Sau khi pull, giao diện lỗi hoặc thiếu class | Chạy lại `composer install` và `npm install` |
+| Config hoặc `.env` chưa được nhận | Chạy `php artisan optimize:clear` |
+| `redirect_uri_mismatch` | Đồng bộ `APP_URL`, `GOOGLE_REDIRECT_URI` và callback trên Google Cloud |
+| Thiếu package hoặc class | Chạy lại `composer install` và `npm install` |
 
-## Thành viên nhóm
+## Quy ước đóng góp
 
-| STT | Họ tên | MSSV | Phụ trách |
-|---|---|---|---|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
+- Tạo branch riêng theo tính năng, không push trực tiếp vào `main`.
+- Dùng Pull Request để review trước khi merge.
+- Đặt commit message theo dạng `feat:`, `fix:`, `refactor:`, `style:`,
+  `docs:` hoặc `chore:`.
+- Không commit `.env`, `vendor/`, `node_modules/` và file upload.
+- Không sửa migration đã được merge; tạo migration mới khi thay đổi schema.
 
 ---
 
-Bài tập nhóm môn Lập trình Web. Xây dựng trên [Laravel](https://laravel.com) (giấy phép MIT).
+Dự án nhóm môn Lập trình Web, xây dựng trên
+[Laravel](https://laravel.com) và phát hành theo giấy phép MIT.
