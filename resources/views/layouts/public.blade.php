@@ -186,9 +186,16 @@
                             </div>
                         </div>
                     @else
-                        <!-- Single Uiverse Interactive 'Đăng nhập' Button (with embedded sign up) -->
+                        <!-- Compact Mobile 'Đăng nhập' Pill (< sm) -->
                         <a href="{{ route('login') }}"
-                           class="relative inline-flex items-center justify-center h-11 sm:h-12 w-36 sm:w-40 rounded-2xl bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] text-[15px] font-bold text-[#1D1D1F] dark:text-[#f0f6fc] overflow-hidden group shadow-sm transition-all hover:shadow hover:border-[#019D91]/40 active:scale-[0.98]">
+                           class="sm:hidden inline-flex items-center justify-center h-9 px-3.5 rounded-xl bg-[#019D91] hover:bg-[#008b80] text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0"
+                           aria-label="Đăng nhập">
+                            Đăng nhập
+                        </a>
+
+                        <!-- Single Uiverse Interactive 'Đăng nhập' Button (>= sm) -->
+                        <a href="{{ route('login') }}"
+                           class="hidden sm:inline-flex relative items-center justify-center h-11 sm:h-12 w-36 sm:w-40 rounded-2xl bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] text-[15px] font-bold text-[#1D1D1F] dark:text-[#f0f6fc] overflow-hidden group shadow-sm transition-all hover:shadow hover:border-[#019D91]/40 active:scale-[0.98]">
                             <!-- Expanding Teal Box with Arrow (centers when expanded) -->
                             <div class="absolute left-1 top-[3px] bottom-[3px] w-9 rounded-xl bg-[#019D91] flex items-center justify-center text-white transition-all duration-300 ease-out group-hover:w-[calc(100%-8px)] z-10 shadow-sm">
                                 <svg class="w-4 h-4 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,7 +290,7 @@
     <footer class="bg-[#0b0c0e] text-[#8e8e93] mt-12 select-none">
         <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 pt-8 pb-4">
             <!-- Multi-Column Navigation (Dàn rộng sang 2 bên, thoáng đãng ở giữa) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 lg:gap-16 xl:gap-24 pb-8 border-b border-[#1f2228]/80">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-16 xl:gap-24 pb-8 border-b border-[#1f2228]/80">
                 <div>
                     <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Khám phá khóa học</h3>
                     <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
