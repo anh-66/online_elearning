@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Quản Trị Viên Hệ Thống',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_ADMIN,
             'status' => User::STATUS_ACTIVE,
             'avatar' => null,
@@ -50,6 +51,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'ThS. Nguyễn Văn Giảng',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_INSTRUCTOR,
             'bio' => 'Thạc sĩ Khoa học Máy tính, chuyên gia Fullstack Web & Cloud Computing với hơn 8 năm kinh nghiệm giảng dạy tại các trường đại học lớn.',
             'status' => User::STATUS_ACTIVE,
@@ -62,6 +64,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'ThS. Nguyễn Văn Giảng',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_INSTRUCTOR,
             'bio' => 'Thạc sĩ Khoa học Máy tính, chuyên gia Fullstack Web & Cloud Computing.',
             'status' => User::STATUS_ACTIVE,
@@ -73,6 +76,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'TS. Trần Thị Minh',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_INSTRUCTOR,
             'bio' => 'Tiến sĩ Trí tuệ Nhân tạo & Khoa học Dữ liệu, tác giả nhiều công trình nghiên cứu và khóa học lập trình thực chiến.',
             'status' => User::STATUS_ACTIVE,
@@ -85,6 +89,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Lê Hoàng Học Viên',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
             'avatar' => null,
@@ -95,6 +100,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Lê Hoàng Học Viên',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
             'avatar' => null,
@@ -105,6 +111,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Phạm Minh Anh',
             'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
             'avatar' => null,
@@ -115,6 +122,18 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Võ Quốc Huy',
             'password' => 'Password123',
+            'email_verified_at' => now(),
+            'role' => User::ROLE_STUDENT,
+            'status' => User::STATUS_ACTIVE,
+            'avatar' => null,
+        ]);
+
+        User::updateOrCreate([
+            'email' => 'student4@gmail.com',
+        ], [
+            'name' => 'Nguyễn Ngọc Hà',
+            'password' => 'Password123',
+            'email_verified_at' => now(),
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
             'avatar' => null,
@@ -508,5 +527,7 @@ class DatabaseSeeder extends Seeder
             'admin_notes' => 'Đã gửi email giải đáp cho học viên: mã có hiệu lực 30 ngày.',
             'resolved_at' => now()->subDay(),
         ]);
+
+        $this->call(DemoCourseSeeder::class);
     }
 }
