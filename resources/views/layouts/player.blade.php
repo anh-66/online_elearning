@@ -9,7 +9,7 @@
 
     @include('partials.theme-script')
 
-    <!-- Preconnect Fonts: Be Vietnam Pro đồng nhất với toàn bộ hệ thống EduLearn -->
+    <!-- Preconnect Fonts: Be Vietnam Pro -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700,800&display=swap" rel="stylesheet" />
 

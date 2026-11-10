@@ -18,9 +18,19 @@ class LearningController extends Controller
     {
         $user = Auth::user();
 
-        return $user->isAdmin()
-            || $user->id === $course->instructor_id
-            || $user->isEnrolledIn($course);
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->id === $course->instructor_id) {
+            return true;
+        }
+
+        if ($course->isFree()) {
+            return true;
+        }
+
+        return $user->isEnrolledIn($course);
     }
 
     public function player(Course $course, ?int $lesson_id = null): View|RedirectResponse

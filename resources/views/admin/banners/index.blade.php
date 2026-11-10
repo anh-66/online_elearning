@@ -9,7 +9,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-gray-900">Danh sách Banner quảng bá</h2>
+            <h2 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Danh sách Banner quảng bá</h2>
             <p class="text-sm text-gray-500 mt-0.5">Chỉ banner đang bật (Active) mới hiển thị trên slider trang chủ.</p>
         </div>
         <a href="{{ route('admin.banners.create') }}"
@@ -38,7 +38,8 @@
                             {{-- Banner Image & Title --}}
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-28 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center">
+                                    <div class="w-28 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center"
+                                         @if(!$banner->image_path && $banner->bg_color) style="background: {{ $banner->bg_color }};" @endif>
                                         @if($banner->image_path)
                                             <img src="{{ asset('storage/'.$banner->image_path) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover"
                                                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
@@ -46,8 +47,8 @@
                                                 <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>
                                             </div>
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                                <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>
+                                            <div class="w-full h-full flex items-center justify-center text-white/90">
+                                                <iconify-icon icon="lucide:palette" class="text-xl drop-shadow"></iconify-icon>
                                             </div>
                                         @endif
                                     </div>

@@ -71,7 +71,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Biểu đồ ghi danh -->
         <div class="lg:col-span-2 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
-            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4">Lượt ghi danh 6 tháng gần nhất</h3>
+            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 uppercase tracking-wide">Lượt ghi danh 6 tháng gần nhất</h3>
             <div class="h-72 w-full">
                 <canvas id="instructorEnrollmentChart"></canvas>
             </div>
@@ -80,7 +80,7 @@
         <!-- Ghi danh gần đây -->
         <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100">Ghi danh gần đây</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Ghi danh gần đây</h3>
                 <a href="{{ route('instructor.students.index') }}" class="text-xs font-semibold text-brand-700 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300">Xem tất cả</a>
             </div>
             <ul class="space-y-3">
@@ -111,7 +111,7 @@
         <!-- Thống kê theo khóa học -->
         <div class="lg:col-span-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-                <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100">Thống kê theo khóa học</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Thống kê theo khóa học</h3>
                 <a href="{{ route('instructor.courses.create') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-brand-700 text-white text-xs font-semibold hover:bg-brand-800">+ Tạo khóa học</a>
             </div>
             <div class="overflow-x-auto">
@@ -153,7 +153,7 @@
 
         <!-- Đánh giá mới -->
         <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
-            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4">Đánh giá mới nhất</h3>
+            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 uppercase tracking-wide">Đánh giá mới nhất</h3>
             <ul class="space-y-4">
                 @forelse($recentReviews as $review)
                     <li class="border-b border-gray-100 dark:border-neutral-800 pb-3 last:border-0 last:pb-0">

@@ -13,8 +13,8 @@ class EnrollmentController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->id === $course->instructor_id || $user->isAdmin()) {
-            return back()->with('error', 'Bạn không thể ghi danh khóa học này.');
+        if ($user->id === $course->instructor_id) {
+            return back()->with('error', 'Bạn không thể ghi danh khóa học của chính mình.');
         }
 
         if ($course->price > 0) {

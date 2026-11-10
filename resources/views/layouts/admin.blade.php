@@ -337,7 +337,7 @@
                             class="flex lg:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
                         <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
                     </button>
-                    <h1 class="text-base font-semibold text-gray-800 truncate">
+                    <h1 class="text-base font-bold text-gray-800 truncate uppercase tracking-wide">
                         @yield('page_title', 'Bảng Quản Trị Hệ Thống')
                     </h1>
                 </div>

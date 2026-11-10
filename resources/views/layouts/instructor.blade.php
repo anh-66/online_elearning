@@ -81,6 +81,16 @@
                 </a>
 
                 <div class="pt-4 pb-2">
+                    <span class="px-3 text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Học tập</span>
+                </div>
+
+                <!-- Khóa học đang học (với tư cách học viên) -->
+                <a href="{{ route('dashboard') }}" class="flex items-center px-3.5 py-2.5 rounded-xl text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white transition">
+                    <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                    <span>Khóa học của tôi (Học viên)</span>
+                </a>
+
+                <div class="pt-3 pb-2">
                     <span class="px-3 text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Hệ thống</span>
                 </div>
 
@@ -120,7 +130,7 @@
                     <button @click="sidebarOpen = true" class="lg:hidden text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white" aria-label="Mở menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <h1 class="text-lg font-bold text-neutral-900 dark:text-white truncate">
+                    <h1 class="text-lg font-bold text-neutral-900 dark:text-white truncate uppercase tracking-wide">
                         @yield('page_title', 'Studio Giảng viên')
                     </h1>
                 </div>

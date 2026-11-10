@@ -27,6 +27,7 @@ export default {
                     "Arial",
                     ...defaultTheme.fontFamily.sans,
                 ],
+                anton: ['"Anton"', "sans-serif"],
             },
             colors: {
                 // Apple Retail Design System Tokens with Teal Brand Theme

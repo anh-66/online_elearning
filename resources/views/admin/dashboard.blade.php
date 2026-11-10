@@ -88,7 +88,7 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h2 class="text-base font-semibold text-gray-900">Xu hướng doanh thu</h2>
+                    <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Xu hướng doanh thu</h2>
                     <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm đã chọn</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
@@ -113,7 +113,7 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h2 class="text-base font-semibold text-gray-900">Lượt ghi danh</h2>
+                    <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Lượt ghi danh</h2>
                     <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm {{ $selectedYear }}</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
@@ -140,7 +140,7 @@
         {{-- Course Status Doughnut --}}
         <div class="glass-card p-6">
             <div class="mb-6">
-                <h2 class="text-base font-semibold text-gray-900">Phân bố khóa học</h2>
+                <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Phân bố khóa học</h2>
                 <p class="text-xs text-gray-400 mt-0.5">Theo trạng thái kiểm duyệt</p>
             </div>
             <div class="h-56 w-full">
@@ -153,7 +153,7 @@
             <div class="xl:col-span-2 glass-card overflow-hidden">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <div>
-                        <h2 class="text-base font-semibold text-gray-900">Khóa học chờ duyệt</h2>
+                        <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Khóa học chờ duyệt</h2>
                         <p class="text-xs text-gray-400 mt-0.5">Cần xem xét trước khi xuất bản</p>
                     </div>
                     <a href="{{ route('admin.courses.index', ['status' => 'pending']) }}"

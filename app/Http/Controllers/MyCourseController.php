@@ -10,11 +10,11 @@ class MyCourseController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $courses = $user->enrolledCourses()
+        $enrolledCourses = $user->enrolledCourses()
             ->with(['instructor', 'category', 'reviews'])
             ->withCount('enrollments')
-            ->orderByDesc('enrollments.enrolled_at')
-            ->paginate(9, ['courses.*']);
+            ->latest('enrollments.enrolled_at')
+            ->get();
 
         $wishlistCourses = $user->wishlistCourses()
             ->with(['instructor', 'category', 'reviews'])
@@ -26,8 +26,8 @@ class MyCourseController extends Controller
         $completedTotal = $user->enrollments()->where('progress_percent', 100)->count();
         $averageProgress = (int) round($user->enrollments()->avg('progress_percent') ?? 0);
 
-        return view('my-courses.index', compact(
-            'courses',
+        return view('dashboard', compact(
+            'enrolledCourses',
             'wishlistCourses',
             'enrollmentTotal',
             'completedTotal',

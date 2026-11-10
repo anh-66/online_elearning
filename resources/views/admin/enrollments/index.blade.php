@@ -9,7 +9,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-gray-900">Danh sách Ghi danh</h2>
+            <h2 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Danh sách Ghi danh</h2>
             <p class="text-sm text-gray-500 mt-0.5">Theo dõi lượt tham gia học tập của học viên vào các khóa học.</p>
         </div>
     </div>

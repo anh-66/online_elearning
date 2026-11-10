@@ -10,8 +10,11 @@
     @include('partials.theme-script')
 
     <!-- Preconnect Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -115,8 +118,22 @@
                     <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2.5 transition" />
 
                     @auth
-                        @if (Route::has('my-courses'))
-                            <a href="{{ route('my-courses') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                        @if(Auth::user()->isAdmin())
+                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Khóa học của tôi
+                            </a>
+                            <a href="{{ route('admin.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#019D91] dark:text-[#02b3a5] hover:text-[#008b80] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Trang Quản trị Admin
+                            </a>
+                        @elseif(Auth::user()->isInstructor())
+                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Khóa học của tôi
+                            </a>
+                            <a href="{{ route('instructor.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#019D91] dark:text-[#02b3a5] hover:text-[#008b80] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Studio Giảng viên
+                            </a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Khóa học của tôi
                             </a>
                         @endif
@@ -155,21 +172,23 @@
                                     </span>
                                 </div>
 
-                                @unless(Auth::user()->isAdmin() || Auth::user()->isInstructor())
-                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
-                                        Bảng điều khiển
-                                    </a>
-                                @endunless
-
                                 @if(Auth::user()->isAdmin())
                                     <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-semibold text-[#019D91] dark:text-[#02b3a5]">
                                         Trang Quản trị Admin
                                     </a>
-                                @endif
-
-                                @if(Auth::user()->isInstructor())
+                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
+                                        Khóa học của tôi
+                                    </a>
+                                @elseif(Auth::user()->isInstructor())
                                     <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-semibold text-[#019D91] dark:text-[#02b3a5]">
                                         Studio Giảng viên
+                                    </a>
+                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
+                                        Khóa học của tôi
+                                    </a>
+                                @else
+                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
+                                        Khóa học của tôi
                                     </a>
                                 @endif
 
@@ -231,8 +250,19 @@
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': mobileFeaturesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="mobileFeaturesOpen" x-cloak class="pl-3 pr-2 py-1 space-y-1">
-                        <a href="{{ auth()->check() ? route('my-courses') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Khóa học của tôi</a>
-                        <a href="{{ auth()->check() ? route('my-courses') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Danh sách yêu thích</a>
+                        <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">
+                            Khóa học của tôi
+                        </a>
+                        @if(auth()->check() && Auth::user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#019D91] dark:text-[#02b3a5] font-semibold hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Trang Quản trị Admin
+                            </a>
+                        @elseif(auth()->check() && Auth::user()->isInstructor())
+                            <a href="{{ route('instructor.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#019D91] dark:text-[#02b3a5] font-semibold hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Studio Giảng viên
+                            </a>
+                        @endif
+                        <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Danh sách yêu thích</a>
                         <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Bài thi & Đánh giá</a>
                     </div>
                 </div>
@@ -287,7 +317,7 @@
     @include('partials.back-to-top')
 
     <!-- Footer (Theme tối chuẩn LottieFiles - Rộng rãi, chữ to rõ ràng, không ôm sát khung) -->
-    <footer class="bg-[#0b0c0e] text-[#8e8e93] mt-12 select-none">
+    <footer class="bg-[#0b0c0e] text-[#8e8e93] {{ request()->routeIs('home') ? 'mt-0' : 'mt-12' }} select-none">
         <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 pt-8 pb-4">
             <!-- Multi-Column Navigation (Dàn rộng sang 2 bên, thoáng đãng ở giữa) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-16 xl:gap-24 pb-8 border-b border-[#1f2228]/80">
@@ -325,7 +355,7 @@
                 <div>
                     <h3 class="font-bold text-white text-base sm:text-[17px] mb-5 tracking-tight">Về EduLearn</h3>
                     <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
-                        <li><a href="{{ route('support.index') }}" class="text-[#00ddb3] hover:text-white transition-colors duration-150 font-semibold">Trung tâm hỗ trợ</a></li>
+                        <li><a href="{{ route('support.index') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Trung tâm hỗ trợ</a></li>
                         <li><a href="{{ route('support.feedback') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Báo cáo sự cố & góp ý</a></li>
                         <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-150">Giới thiệu nền tảng</a></li>
                         <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-150">Điều khoản dịch vụ</a></li>
@@ -351,9 +381,39 @@
                     </div>
                 </div>
 
-                <!-- Right: Social Media Icons (trên) & Made with ❤️ from Vietnam (dưới) -->
-                <div class="flex flex-col items-center sm:items-end gap-2.5">
-                    <div class="flex items-center space-x-6 text-white">
+                <!-- Right: App Store & Google Play Badges + Social Icons (trên) & Made with ❤️ from Vietnam (dưới) -->
+                <div class="flex flex-col items-center lg:items-end gap-3">
+                    <div class="flex flex-wrap items-center justify-center lg:justify-end gap-4 sm:gap-6 text-white">
+                        <!-- App Store & Google Play Badges (bên trái các icon mạng xã hội) -->
+                        <div class="flex items-center gap-2.5">
+                            <!-- Download on the App Store -->
+                            <a href="#" class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-neutral-700 hover:border-neutral-400 bg-black text-white hover:bg-[#141518] transition-all duration-150 shadow-sm group" title="Download on the App Store">
+                                <svg class="w-4 h-5 fill-white shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 814 1000" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/>
+                                </svg>
+                                <div class="flex flex-col text-left leading-none">
+                                    <span class="text-[9px] text-neutral-300 font-normal tracking-tight">Download on the</span>
+                                    <span class="text-[13px] font-semibold text-white tracking-tight mt-0.5 font-sans">App Store</span>
+                                </div>
+                            </a>
+
+                            <!-- GET IT ON Google Play -->
+                            <a href="#" class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-neutral-700 hover:border-neutral-400 bg-black text-white hover:bg-[#141518] transition-all duration-150 shadow-sm group" title="Get it on Google Play">
+                                <svg class="w-4 h-5 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 28.5 32" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M.12 2.66a3.46 3.46 0 0 0-.12.92v24.84a3.66 3.66 0 0 0 .12.92L14 15.64Z" fill="#4285f4"/>
+                                    <path d="M13.54 15.28.12 29.34a3.64 3.64 0 0 0 5.33 2.16l15.1-8.6z" fill="#ea4335"/>
+                                    <path d="m27.11 12.89-6.53-3.74-7.35 6.45 7.38 7.28 6.48-3.7a3.55 3.55 0 0 0 0-6.29z" fill="#fbbc04"/>
+                                    <path d="m13.64 16 6.94-6.85L5.5.51A3.72 3.72 0 0 0 3.63 0 3.64 3.64 0 0 0 .12 2.65Z" fill="#34a853"/>
+                                </svg>
+                                <div class="flex flex-col text-left leading-none">
+                                    <span class="text-[8px] uppercase tracking-wider text-neutral-300 font-medium">GET IT ON</span>
+                                    <span class="text-[13px] font-semibold text-white tracking-tight mt-0.5 font-sans">Google Play</span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Social Media Icons -->
+                        <div class="flex items-center space-x-6 text-white">
                         <!-- Facebook -->
                         <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-[#00ddb3] transition-colors" title="Facebook">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -375,6 +435,7 @@
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm9.849 10.995c-.328-.016-2.585-.102-5.011.604-.377-.852-.785-1.705-1.229-2.537 2.684-1.127 4.984-1.023 5.315-.997.587.893.925 1.954.925 3.09v-.16zm-1.89-5.18c-.469-.026-2.454-.08-4.908.974-1.258-2.222-2.623-4.143-2.822-4.421 3.256.49 5.992 2.052 7.73 4.447zM12 2.058c.241.332 1.583 2.213 2.827 4.398-3.418 1.054-6.536 1.134-7.066 1.141 1.01-2.42 2.723-4.42 4.239-5.539zM4.095 8.924c.535-.008 3.328-.088 6.577-1.111.424.8.816 1.621 1.176 2.441-4.225 1.349-8.156 4.364-8.497 4.631-.568-1.478-.851-3.085-.851-4.757 0-.411.026-.818.077-1.218.496-.005 1.05-.008 1.518.014zm-2.037 7.025c.348-.28 3.992-3.076 8.083-4.372 1.028 2.643 1.838 5.419 2.062 6.287-3.924 1.189-7.391-.129-7.735-.27-.881-.462-1.636-1.077-2.23-1.802-.122-.164-.18-.328-.18-.443zm12.392 5.922c-.237-.905-1.033-3.64-2.05-6.241 2.285-.688 4.395-.623 4.743-.604.147 2.76-1.033 5.378-2.693 6.845zm4.013-1.658c-.378-.016-2.278-.066-4.382.571 1.545-1.42 2.624-3.791 2.756-6.301 2.072.106 3.847.785 4.195.94-.469 1.859-1.442 3.493-2.569 4.79z"/></svg>
                         </a>
                     </div>
+                </div>
                     <p class="text-xs sm:text-sm text-neutral-400 flex items-center gap-1.5 font-medium whitespace-nowrap">
                         <span>Made with</span>
                         <span class="text-red-500 text-sm">❤️</span>

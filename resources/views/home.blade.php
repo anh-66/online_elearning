@@ -29,8 +29,15 @@
     <div class="circuit-background"></div>
     <div class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8">
         {{-- Headline --}}
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.08]">
-            Nâng tầm tri thức.<br>Khởi đầu bứt phá.
+        <h1 class="font-anton text-5xl sm:text-7xl lg:text-8xl tracking-wide text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.12] sm:leading-[1.16] uppercase">
+            <span class="block">NÂNG TẦM TRI THỨC</span>
+            <span class="block mt-3.5 sm:mt-5 lg:mt-6">
+                <span class="relative inline-block">
+                    {{-- Highlighter accent stripe behind text (matching reference tape/marker aesthetic) --}}
+                    <span class="absolute -inset-x-3 sm:-inset-x-5 bottom-1.5 sm:bottom-2.5 lg:bottom-3.5 h-4 sm:h-7 lg:h-9 bg-[#ffe17c] dark:bg-[#ffe17c] -rotate-[0.8deg] rounded-sm -z-10 pointer-events-none" aria-hidden="true"></span>
+                    <span class="relative z-10">KHỞI ĐẦU BỨT PHÁ</span>
+                </span>
+            </span>
         </h1>
 
         {{-- Subheadline --}}
@@ -58,7 +65,7 @@
         <div class="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-4xl mx-auto">
             @foreach($heroStats as $stat)
                 <div class="text-center">
-                    <p class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc] leading-none">
+                    <p class="font-anton text-5xl sm:text-6xl lg:text-7xl text-[#1D1D1F] dark:text-[#f0f6fc] leading-none">
                         {{ number_format($stat['value']) }}+
                     </p>
                     <p class="mt-3 text-sm sm:text-base font-normal text-[#86868B] dark:text-[#8b949e]">
@@ -74,52 +81,181 @@
 {{-- 2. BILLBOARD BANNER (Full Width Edge-to-Edge) --}}
 {{-- ======================================================== --}}
 @if($banners->isNotEmpty())
-<section class="w-full bg-[#161b22] border-y border-[#30363d] text-white py-16 sm:py-24 text-center transition-colors" x-data="{ current: 0, total: {{ $banners->count() }} }" x-init="setInterval(() => { current = (current + 1) % total }, 6000)">
-    <div class="w-full max-w-5xl mx-auto px-4 sm:px-8">
-        <div class="relative min-h-[180px] flex items-center justify-center">
-            @foreach($banners as $index => $banner)
-                <div class="relative w-full transition-opacity duration-500"
-                     x-show="current === {{ $index }}"
-                     x-cloak>
-                    <img src="{{ asset('storage/'.$banner->image_path) }}"
-                         alt="{{ $banner->title }}"
-                         class="absolute inset-0 h-full w-full object-cover opacity-30"
-                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-                         onerror="this.style.display='none'">
-                    <div class="absolute inset-0 bg-[#161b22]/70"></div>
-                    <div class="relative z-10">
-                    <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 max-w-4xl mx-auto leading-tight">
-                        {{ $banner->title }}
-                    </h2>
-                    <p class="text-base sm:text-xl text-[#8b949e] max-w-2xl mx-auto mb-8 leading-relaxed">
-                        Khám phá khóa học chuyên sâu được cập nhật liên tục theo chuẩn doanh nghiệp.
-                    </p>
-                    @if($banner->link_url)
-                        <div class="flex items-center justify-center">
-                            <a href="{{ url($banner->link_url) }}" class="inline-flex items-center justify-center rounded-full bg-white text-[#161b22] hover:bg-neutral-100 px-8 py-3.5 text-sm font-semibold transition active:scale-[0.98] shadow-lg">
-                                Khám phá chương trình
-                            </a>
+<section class="w-full relative overflow-hidden select-none border-y border-[#30363d]" 
+         x-data="{ current: 0, total: {{ $banners->count() }} }" 
+         x-init="total > 1 && setInterval(() => { current = (current + 1) % total }, 6000)">
+    
+    {{-- Banner Slider: Tràn viền toàn diện, thay thế hoàn toàn ô màu đen cũ --}}
+    <div class="relative w-full h-[260px] sm:h-[360px] md:h-[420px] lg:h-[480px] overflow-hidden">
+        @foreach($banners as $index => $banner)
+            <div class="absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out"
+                 x-show="current === {{ $index }}"
+                 x-cloak
+                 style="@if(!$banner->image_path && $banner->bg_color) background: {{ $banner->bg_color }}; @endif">
+                
+                @if($banner->image_path)
+                    <a href="{{ $banner->link_url ? url($banner->link_url) : 'javascript:void(0)' }}" 
+                       class="block w-full h-full relative group">
+                        <img src="{{ asset('storage/'.$banner->image_path) }}"
+                             alt="{{ $banner->title }}"
+                             class="w-full h-full object-cover object-center"
+                             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                             onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('hidden');">
+                        
+                        {{-- Fallback nếu ảnh bị lỗi đường dẫn --}}
+                        <div class="hidden absolute inset-0 w-full h-full items-center justify-center p-6 text-center"
+                             style="background: {{ $banner->bg_color ?: '#019D91' }};">
+                            <h2 class="banner-headline font-anton uppercase tracking-wide text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.2] sm:leading-[1.28] drop-shadow-lg max-w-4xl mx-auto">
+                                {{ $banner->title }}
+                            </h2>
                         </div>
-                    @endif
+
+                        {{-- Optional Text Overlay: Chỉ hiển thị nếu admin bật show_text --}}
+                        @if($banner->show_text)
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-center justify-center p-6 text-center">
+                                <div class="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+                                    <h2 class="banner-headline font-anton uppercase tracking-wide text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.2] sm:leading-[1.28] drop-shadow-lg max-w-4xl mx-auto">
+                                        {{ $banner->title }}
+                                    </h2>
+                                    <p class="text-xs sm:text-base text-white/90 max-w-xl mx-auto leading-relaxed drop-shadow">
+                                        Khám phá khóa học chuyên sâu được cập nhật liên tục theo chuẩn doanh nghiệp.
+                                    </p>
+                                    @if($banner->link_url)
+                                        <div class="pt-1">
+                                            <span class="inline-flex items-center gap-1.5 px-6 sm:px-7 py-2.5 sm:py-3 rounded-full bg-white text-[#161b22] text-xs sm:text-sm font-bold shadow-xl group-hover:bg-neutral-100 transition">
+                                                Khám phá chương trình &rarr;
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                    </a>
+                @else
+                    {{-- Color Only Banner (Toàn màn hình lấp đầy bằng màu/gradient và chữ) --}}
+                    <div class="w-full h-full flex items-center justify-center p-6 sm:p-12 text-center text-white relative"
+                         style="background: {{ $banner->bg_color ?: '#019D91' }};">
+                        
+                        {{-- Subtle dot pattern --}}
+                        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+                        <div class="relative z-10 max-w-4xl mx-auto space-y-3 sm:space-y-4">
+                            <h2 class="banner-headline font-anton uppercase tracking-wide text-3xl sm:text-5xl lg:text-6xl text-white leading-[1.2] sm:leading-[1.28] drop-shadow-md max-w-4xl mx-auto">
+                                {{ $banner->title }}
+                            </h2>
+                            <p class="text-sm sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed drop-shadow">
+                                Khám phá khóa học chuyên sâu được cập nhật liên tục theo chuẩn doanh nghiệp.
+                            </p>
+                            @if($banner->link_url)
+                                <div class="pt-2">
+                                    <a href="{{ url($banner->link_url) }}" class="inline-flex items-center justify-center rounded-full bg-white text-[#161b22] hover:bg-neutral-100 px-8 py-3.5 text-xs sm:text-sm font-bold shadow-xl transition active:scale-95">
+                                        Khám phá chương trình &rarr;
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
+            </div>
+        @endforeach
+    </div>
+
+    {{-- Left / Right Slider Arrows --}}
+    @if($banners->count() > 1)
+        <button type="button" @click="current = (current - 1 + total) % total" aria-label="Banner trước"
+                class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
+            <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button type="button" @click="current = (current + 1) % total" aria-label="Banner sau"
+                class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
+            <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+    @endif
+
+    {{-- Dots Indicator --}}
+    @if($banners->count() > 1)
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2.5 z-20">
+            @foreach($banners as $index => $banner)
+                <button type="button" @click="current = {{ $index }}" aria-label="Banner {{ $index + 1 }}"
+                        class="h-2 rounded-full transition-all duration-300 drop-shadow"
+                        :class="current === {{ $index }} ? 'bg-white w-8' : 'bg-white/40 w-2.5 hover:bg-white/70'">
+                </button>
             @endforeach
         </div>
-
-        {{-- Dots Indicator --}}
-        @if($banners->count() > 1)
-            <div class="mt-8 flex justify-center space-x-2.5">
-                @foreach($banners as $index => $banner)
-                    <button type="button" @click="current = {{ $index }}" aria-label="Banner {{ $index + 1 }}"
-                            class="h-2.5 rounded-full transition-all duration-300"
-                            :class="current === {{ $index }} ? 'bg-white w-8' : 'bg-white/30 w-2.5'">
-                    </button>
-                @endforeach
-            </div>
-        @endif
-    </div>
+    @endif
 </section>
 @endif
+
+{{-- ======================================================== --}}
+{{-- 2.5. HOW IT WORKS / START LEARNING (Lộ trình 3 bước) --}}
+{{-- ======================================================== --}}
+<section class="bg-white dark:bg-[#0d1117] py-16 sm:py-24 border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors">
+    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
+        {{-- Two-column layout (1:2 ratio) --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16 items-start">
+            {{-- Left column: Sticky 'Anton' title (text-7xl) --}}
+            <div class="lg:col-span-1 lg:sticky lg:top-28">
+                <h2 class="font-anton text-6xl sm:text-7xl text-[#1D1D1F] dark:text-white uppercase leading-[1.15] tracking-wide">
+                    <span class="block">BẮT ĐẦU</span>
+                    <span class="block mt-2 sm:mt-3">BỨT PHÁ</span>
+                </h2>
+                <p class="mt-6 text-base text-[#86868B] dark:text-[#8b949e] max-w-sm leading-relaxed">
+                    Phương pháp học tập tinh gọn giúp bạn nắm vững kiến thức thực chiến và nhanh chóng đạt mục tiêu nghề nghiệp.
+                </p>
+            </div>
+
+            {{-- Right column: Vertical stack of three steps --}}
+            <div class="lg:col-span-2 flex flex-col divide-y divide-neutral-200/80 dark:divide-neutral-800/80 border-t border-b border-neutral-200/80 dark:border-neutral-800/80">
+                {{-- Step 01 --}}
+                <div class="py-8 sm:py-10 flex items-start gap-6 sm:gap-10 group cursor-pointer transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 px-3 sm:px-5 -mx-3 sm:-mx-5 rounded-2xl">
+                    {{-- Massive 8xl numeral in #ffe17c/20% that changes to full opacity on hover --}}
+                    <span class="font-anton text-7xl sm:text-8xl text-[#ffe17c] opacity-20 group-hover:opacity-100 group-hover:scale-105 leading-none shrink-0 w-24 sm:w-32 select-none tracking-tight transition-all duration-300">
+                        01
+                    </span>
+                    <div class="flex-1 pt-1 sm:pt-2">
+                        {{-- 'Anton' title --}}
+                        <h3 class="font-anton text-xl sm:text-2xl tracking-wide text-[#1D1D1F] dark:text-white uppercase group-hover:text-[#019D91] dark:group-hover:text-[#02b3a5] transition-colors">
+                            CHỌN LỘ TRÌNH PHÙ HỢP
+                        </h3>
+                        <p class="mt-2 text-sm sm:text-base text-[#86868B] dark:text-[#8b949e] leading-relaxed">
+                            Khám phá hàng trăm khóa học lập trình, dữ liệu và công nghệ được thiết kế bài bản từ nền tảng đến chuyên sâu theo tiêu chuẩn doanh nghiệp.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Step 02 --}}
+                <div class="py-8 sm:py-10 flex items-start gap-6 sm:gap-10 group cursor-pointer transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 px-3 sm:px-5 -mx-3 sm:-mx-5 rounded-2xl">
+                    <span class="font-anton text-7xl sm:text-8xl text-[#ffe17c] opacity-20 group-hover:opacity-100 group-hover:scale-105 leading-none shrink-0 w-24 sm:w-32 select-none tracking-tight transition-all duration-300">
+                        02
+                    </span>
+                    <div class="flex-1 pt-1 sm:pt-2">
+                        <h3 class="font-anton text-xl sm:text-2xl tracking-wide text-[#1D1D1F] dark:text-white uppercase group-hover:text-[#019D91] dark:group-hover:text-[#02b3a5] transition-colors">
+                            LÀM CHỦ NHỊP ĐỘ HỌC
+                        </h3>
+                        <p class="mt-2 text-sm sm:text-base text-[#86868B] dark:text-[#8b949e] leading-relaxed">
+                            Học mọi lúc mọi nơi trên đa thiết bị. Tương tác trực tiếp qua bài giảng video chất lượng cao, bài tập thực hành bám sát thực tế cùng hỗ trợ từ giảng viên.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Step 03 --}}
+                <div class="py-8 sm:py-10 flex items-start gap-6 sm:gap-10 group cursor-pointer transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 px-3 sm:px-5 -mx-3 sm:-mx-5 rounded-2xl">
+                    <span class="font-anton text-7xl sm:text-8xl text-[#ffe17c] opacity-20 group-hover:opacity-100 group-hover:scale-105 leading-none shrink-0 w-24 sm:w-32 select-none tracking-tight transition-all duration-300">
+                        03
+                    </span>
+                    <div class="flex-1 pt-1 sm:pt-2">
+                        <h3 class="font-anton text-xl sm:text-2xl tracking-wide text-[#1D1D1F] dark:text-white uppercase group-hover:text-[#019D91] dark:group-hover:text-[#02b3a5] transition-colors">
+                            TẠO NÊN SẢN PHẨM THỰC TẾ
+                        </h3>
+                        <p class="mt-2 text-sm sm:text-base text-[#86868B] dark:text-[#8b949e] leading-relaxed">
+                            Xây dựng sản phẩm hoàn chỉnh để đưa vào hồ sơ năng lực (Portfolio), nhận chứng chỉ hoàn thành khóa học và tự tin bứt phá trong sự nghiệp.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 {{-- ======================================================== --}}
 {{-- 3. DANH MỤC NỔI BẬT --}}
@@ -128,7 +264,7 @@
 <section class="bg-white dark:bg-[#0d1117] py-16 sm:py-20 transition-colors">
     <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
         <div class="mb-8">
-            <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc]">
+            <h2 class="font-anton uppercase tracking-wide text-2xl sm:text-4xl text-[#1D1D1F] dark:text-[#f0f6fc]">
                 Danh mục chuyên ngành
             </h2>
         </div>
@@ -170,7 +306,7 @@
     <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
             <div>
-                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc]">
+                <h2 class="font-anton uppercase tracking-wide text-2xl sm:text-4xl text-[#1D1D1F] dark:text-[#f0f6fc]">
                     Khóa học được lựa chọn nhiều nhất
                 </h2>
             </div>
@@ -330,8 +466,9 @@
 
         {{-- ================= KHỐI NỘI DUNG CHÍNH (Chính giữa) ================= --}}
         <div class="relative z-10 max-w-xl mx-auto px-4 py-8">
-            <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.15]">
-                Bắt đầu hành trình học tập ngay hôm nay.
+            <h2 class="font-anton uppercase tracking-wide text-3xl sm:text-5xl text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.2] sm:leading-[1.25]">
+                <span class="block">BẮT ĐẦU HÀNH TRÌNH HỌC</span>
+                <span class="block mt-2 sm:mt-3">TẬP NGAY HÔM NAY</span>
             </h2>
             <p class="mt-4 text-base sm:text-lg text-[#86868B] dark:text-[#8b949e] max-w-md sm:max-w-lg mx-auto leading-relaxed">
                 Hàng chục khóa học chất lượng cao đang chờ đón bạn. Đăng ký dễ dàng, học mọi lúc mọi nơi.
@@ -349,6 +486,54 @@
             </div>
         </div>
 
+    </div>
+</section>
+
+{{-- ======================================================== --}}
+{{-- 6. BECOME AN INSTRUCTOR / WORK EMAIL CTA (Clean Pure White Theme) --}}
+{{-- ======================================================== --}}
+<section class="relative bg-white dark:bg-[#0d1117] pt-16 pb-20 sm:pt-24 sm:pb-28 lg:pt-28 lg:pb-32 text-center overflow-hidden transition-colors">
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-8">
+        {{-- Massive Headline in Anton with proper vertical clearance and highlighter stripe --}}
+        <h2 class="font-anton uppercase text-5xl sm:text-7xl lg:text-8xl text-[#1D1D1F] dark:text-[#f0f6fc] leading-[1.12] sm:leading-[1.16] tracking-tight">
+            <span class="block">ĐỒNG HÀNH GIẢNG DẠY</span>
+            <span class="block mt-3.5 sm:mt-5 lg:mt-6">
+                <span class="relative inline-block">
+                    {{-- Highlighter accent stripe behind text (matching KHỞI ĐẦU BỨT PHÁ) --}}
+                    <span class="absolute -inset-x-3 sm:-inset-x-5 bottom-1.5 sm:bottom-2.5 lg:bottom-3.5 h-4 sm:h-7 lg:h-9 bg-[#ffe17c] dark:bg-[#ffe17c] -rotate-[0.8deg] rounded-sm -z-10 pointer-events-none" aria-hidden="true"></span>
+                    <span class="relative z-10">LAN TỎA TRI THỨC</span>
+                </span>
+            </span>
+        </h2>
+
+        {{-- Subheadline --}}
+        <p class="mt-5 sm:mt-6 text-base sm:text-xl text-[#86868B] dark:text-[#8b949e] font-normal max-w-2xl mx-auto leading-relaxed">
+            Gia nhập cộng đồng giảng viên chuyên gia, chia sẻ kiến thức thực chiến và tạo dấu ấn cùng hàng ngàn học viên.
+        </p>
+
+        {{-- Email Subscription Input Bar (Clean Apple / GitHub Dark Tokens) --}}
+        <div class="mt-8 sm:mt-10 max-w-lg mx-auto" x-data="{ email: '', submitted: false }">
+            <form @submit.prevent="if(email) { submitted = true; setTimeout(() => { submitted = false; email = ''; }, 4500); }"
+                  class="flex flex-col sm:flex-row gap-3 items-stretch">
+                <input type="email"
+                       x-model="email"
+                       required
+                       placeholder="Your work email"
+                       class="flex-1 h-14 sm:h-16 px-5 sm:px-6 rounded-xl sm:rounded-2xl bg-[#F5F5F7] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#f0f6fc] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-[#E5E5EA] dark:border-[#30363d] focus:outline-none focus:ring-2 focus:ring-[#019D91] dark:focus:border-[#02b3a5] text-sm sm:text-base shadow-sm transition">
+                <button type="submit"
+                        class="h-14 sm:h-16 px-7 sm:px-9 bg-[#019D91] hover:bg-[#008b80] text-white rounded-xl sm:rounded-2xl font-anton uppercase text-sm sm:text-base tracking-wide flex items-center justify-center transition active:scale-[0.98] shadow-md hover:shadow-lg shrink-0">
+                    GỬI LIÊN HỆ
+                </button>
+            </form>
+
+            {{-- Decorative Success Message --}}
+            <div x-show="submitted"
+                 x-cloak
+                 x-transition
+                 class="mt-4 p-3.5 bg-[#019D91]/10 border border-[#019D91]/20 text-[#019D91] dark:text-[#02b3a5] text-xs sm:text-sm font-semibold rounded-xl text-center">
+                ✓ Cảm ơn bạn! Đội ngũ tuyển dụng giảng viên EduLearn sẽ liên hệ qua email của bạn sớm nhất.
+            </div>
+        </div>
     </div>
 </section>
 

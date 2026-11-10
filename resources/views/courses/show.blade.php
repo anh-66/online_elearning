@@ -475,11 +475,7 @@
                                 <svg class="w-7 h-7 shrink-0 text-[#019D91] dark:text-[#02b3a5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
                                 <span>Giảng viên</span>
                             </p>
-                        @elseif($isAdmin)
-                            <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Quyền truy cập</span>
-                            <p class="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400 tracking-tight flex items-center gap-2">
-                                <span>Quản trị viên</span>
-                            </p>
+
                         @else
                             <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Mức học phí</span>
                             @if($course->price == 0)
@@ -509,16 +505,28 @@
                             <p class="text-sm text-center text-[#019D91] dark:text-[#02b3a5] font-semibold">✓ Bạn là giảng viên phụ trách khóa học này</p>
                         @elseif($isAdmin)
                             <div class="space-y-2.5 mb-3">
-                                <a href="{{ route('learning.player', $course->slug) }}"
-                                   class="block w-full text-center bg-[#019D91] hover:bg-[#008b80] text-white font-bold px-6 py-3.5 rounded-xl transition shadow-sm text-base">
-                                    Vào phòng học (Quyền Admin)
-                                </a>
+                                @if($isEnrolled)
+                                    <a href="{{ route('learning.player', $course->slug) }}"
+                                       class="block w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl transition shadow-sm text-base">
+                                        Vào học ngay
+                                    </a>
+                                @elseif($course->price > 0)
+                                    <a href="{{ route('courses.checkout', $course->slug) }}"
+                                       class="btn-apple-primary w-full py-3.5 text-base font-bold rounded-xl shadow-md block text-center">
+                                        Đăng ký mua khóa học ({{ number_format($course->price, 0, ',', '.') }} ₫)
+                                    </a>
+                                @else
+                                    <a href="{{ route('learning.player', $course->slug) }}"
+                                       class="block w-full text-center bg-[#019D91] hover:bg-[#008b80] text-white font-bold px-6 py-3.5 rounded-xl transition shadow-sm text-base">
+                                        Vào phòng học (Miễn phí)
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.courses.index') }}"
                                    class="block w-full text-center bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-gray-800 dark:text-neutral-200 font-semibold px-4 py-3 rounded-xl transition text-sm">
                                     Quản trị khóa học (Admin)
                                 </a>
                             </div>
-                            <p class="text-sm text-center text-purple-600 dark:text-purple-400 font-semibold">✓ Bạn đang xem với quyền Quản trị viên</p>
+                            <p class="text-xs text-center text-purple-600 dark:text-purple-400 font-medium">Quyền Quản trị viên hệ thống</p>
                         @elseif($isEnrolled)
                             <a href="{{ route('learning.player', $course->slug) }}"
                                class="block w-full text-center bg-emerald-600 text-white font-bold px-6 py-3.5 rounded-xl hover:bg-emerald-700 transition mb-2 shadow-sm text-base">
@@ -560,7 +568,7 @@
                     </div>
 
                     @auth
-                        @if(! $isCourseOwner && ! $isAdmin)
+                        @if(! $isCourseOwner)
                             <div
                                 x-data="{
                                     pressed: {{ $isWishlisted ? 'true' : 'false' }},

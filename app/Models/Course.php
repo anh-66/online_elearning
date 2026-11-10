@@ -41,6 +41,16 @@ class Course extends Model
 
     public const LEVEL_ADVANCED = 'advanced';
 
+    public function levelLabel(): string
+    {
+        return match ($this->level) {
+            self::LEVEL_BEGINNER => 'Cơ bản',
+            self::LEVEL_INTERMEDIATE => 'Trung cấp',
+            self::LEVEL_ADVANCED => 'Nâng cao',
+            default => 'Cơ bản',
+        };
+    }
+
     protected function casts(): array
     {
         return [
@@ -118,6 +128,11 @@ class Course extends Model
     public function isRejected(): bool
     {
         return $this->status === self::STATUS_REJECTED;
+    }
+
+    public function isFree(): bool
+    {
+        return (float) $this->price <= 0;
     }
 
     public function averageRating(): float

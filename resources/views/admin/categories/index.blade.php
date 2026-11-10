@@ -9,7 +9,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-gray-900">Danh sách Danh mục</h2>
+            <h2 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Danh sách Danh mục</h2>
             <p class="text-sm text-gray-500 mt-0.5">Phân loại các khóa học để người học dễ dàng tìm kiếm.</p>
         </div>
         <a href="{{ route('admin.categories.create') }}"
