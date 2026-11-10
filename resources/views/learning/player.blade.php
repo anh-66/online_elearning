@@ -141,7 +141,7 @@
                             {{ $mainChapterHeading }}
                         </p>
                     @endif
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-relaxed sm:leading-[1.7]" data-sd-id="34">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-snug sm:leading-[1.28]" data-sd-id="34">
                         {{ $mainLessonHeading }}
                     </h2>
                 </div>

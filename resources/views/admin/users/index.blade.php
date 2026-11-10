@@ -9,7 +9,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-gray-900">Người dùng hệ thống</h2>
+            <h2 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Người dùng hệ thống</h2>
             <p class="text-sm text-gray-500 mt-0.5">Quản lý tài khoản, phân quyền và trạng thái hoạt động.</p>
         </div>
         <div class="flex items-center gap-3">

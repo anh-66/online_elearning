@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,6 +17,24 @@
 
     h1, h2, h3, h4, h5, h6 {
         letter-spacing: -0.022em;
+    }
+
+    .font-anton {
+        font-family: "Anton", sans-serif !important;
+    }
+
+    .banner-title,
+    .banner-headline {
+        line-height: 1.25 !important;
+        letter-spacing: 0.03em !important;
+    }
+
+    @media (min-width: 640px) {
+        .banner-title,
+        .banner-headline {
+            line-height: 1.32 !important;
+            letter-spacing: 0.035em !important;
+        }
     }
 
     .dark input:not([type='checkbox'], [type='radio'], [type='file'], [type='range']):not(.bg-white):not(section.bg-white *),
@@ -556,6 +576,7 @@
         background-color: #0d1117;
     }
 
+    /* Clean Square Grid Pattern (Khớp 100% mẫu lưới ô vuông sạch không chấm) */
     .circuit-background {
         position: absolute;
         top: 0;
@@ -564,80 +585,18 @@
         left: 0;
         z-index: 0;
         pointer-events: none;
+        background-size: 56px 56px;
         background-image:
-            repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 19px,
-                rgba(75, 85, 99, 0.08) 19px,
-                rgba(75, 85, 99, 0.08) 20px,
-                transparent 20px,
-                transparent 39px,
-                rgba(75, 85, 99, 0.08) 39px,
-                rgba(75, 85, 99, 0.08) 40px
-            ),
-            repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 19px,
-                rgba(75, 85, 99, 0.08) 19px,
-                rgba(75, 85, 99, 0.08) 20px,
-                transparent 20px,
-                transparent 39px,
-                rgba(75, 85, 99, 0.08) 39px,
-                rgba(75, 85, 99, 0.08) 40px
-            ),
-            radial-gradient(
-                circle at 20px 20px,
-                rgba(55, 65, 81, 0.12) 2px,
-                transparent 2px
-            ),
-            radial-gradient(
-                circle at 40px 40px,
-                rgba(55, 65, 81, 0.12) 2px,
-                transparent 2px
-            );
-        background-size:
-            40px 40px,
-            40px 40px,
-            40px 40px,
-            40px 40px;
+            linear-gradient(to right, rgba(0, 0, 0, 0.055) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+        mask-image: radial-gradient(ellipse 90% 80% at 50% 35%, #000 65%, transparent 100%);
+        -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 35%, #000 65%, transparent 100%);
     }
 
     .dark .circuit-background {
         background-image:
-            repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 19px,
-                rgba(255, 255, 255, 0.035) 19px,
-                rgba(255, 255, 255, 0.035) 20px,
-                transparent 20px,
-                transparent 39px,
-                rgba(255, 255, 255, 0.035) 39px,
-                rgba(255, 255, 255, 0.035) 40px
-            ),
-            repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 19px,
-                rgba(255, 255, 255, 0.035) 19px,
-                rgba(255, 255, 255, 0.035) 20px,
-                transparent 20px,
-                transparent 39px,
-                rgba(255, 255, 255, 0.035) 39px,
-                rgba(255, 255, 255, 0.035) 40px
-            ),
-            radial-gradient(
-                circle at 20px 20px,
-                rgba(255, 255, 255, 0.07) 2px,
-                transparent 2px
-            ),
-            radial-gradient(
-                circle at 40px 40px,
-                rgba(255, 255, 255, 0.07) 2px,
-                transparent 2px
-            );
+            linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
     }
 
     /* Rich content */

@@ -24,7 +24,7 @@
                         @include('instructor.partials.status-badge', ['status' => $course->status])
                         <span class="text-xs text-gray-500 dark:text-neutral-400">{{ $course->category->name ?? 'Chưa phân loại' }}</span>
                     </div>
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-neutral-100">{{ $course->title }}</h2>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">{{ $course->title }}</h2>
                     <p class="text-sm text-gray-500 dark:text-neutral-400 mt-1">
                         {{ $course->chapters->count() }} chương · {{ $course->lessons_count }} bài học · {{ $course->quizzes->count() }} quiz ·
                         <a href="{{ route('instructor.students.index', ['course_id' => $course->id]) }}" class="text-brand-700 dark:text-brand-400 hover:underline">{{ $course->enrollments_count }} học viên</a>

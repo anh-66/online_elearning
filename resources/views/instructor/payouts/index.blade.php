@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Thu nhập & Rút tiền</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight uppercase tracking-wide">Thu nhập & Rút tiền</h1>
             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                 Chính sách chia sẻ doanh thu: <span class="font-semibold text-brand-600 dark:text-brand-400">70% cho Giảng viên</span> — 30% phí nền tảng & hạ tầng.
             </p>
@@ -84,7 +84,7 @@
     <div class="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm">
         <div class="p-6 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
             <div>
-                <h2 class="text-lg font-bold text-neutral-900 dark:text-white">Lịch sử yêu cầu rút tiền</h2>
+                <h2 class="text-lg font-bold text-neutral-900 dark:text-white uppercase tracking-wide">Lịch sử yêu cầu rút tiền</h2>
                 <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Theo dõi trạng thái các lệnh rút về tài khoản ngân hàng</p>
             </div>
         </div>
@@ -156,7 +156,7 @@
     <!-- Section 2: Bảng chi tiết doanh thu từng đơn hàng (70% - 30%) -->
     <div class="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm">
         <div class="p-6 border-b border-neutral-200 dark:border-neutral-800">
-            <h2 class="text-lg font-bold text-neutral-900 dark:text-white">Chi tiết thu nhập từng đơn hàng</h2>
+            <h2 class="text-lg font-bold text-neutral-900 dark:text-white uppercase tracking-wide">Chi tiết thu nhập từng đơn hàng</h2>
             <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Minh bạch tỷ lệ chia 70% giảng viên và 30% phí nền tảng</p>
         </div>
 

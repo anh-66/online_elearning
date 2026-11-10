@@ -34,6 +34,13 @@
             @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
 
+        <div>
+            <label for="bio" class="block text-sm font-semibold text-gray-700">Tiểu sử / Giới thiệu ngắn</label>
+            <textarea id="bio" name="bio" rows="3" placeholder="Giới thiệu về chuyên môn, kinh nghiệm giảng dạy..."
+                      class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">{{ old('bio', $user->bio) }}</textarea>
+            @error('bio') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <label for="role" class="block text-sm font-semibold text-gray-700">Vai trò <span class="text-red-500">*</span></label>

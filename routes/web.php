@@ -74,16 +74,30 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function (Request $request) {
-    $enrolledCourses = $request->user()->enrolledCourses()
+    $user = $request->user();
+    $enrolledCourses = $user->enrolledCourses()
         ->with(['instructor', 'category', 'reviews'])
         ->withCount('enrollments')
         ->latest('enrollments.enrolled_at')
         ->take(6)
         ->get();
 
+    $wishlistCourses = $user->wishlistCourses()
+        ->with(['instructor', 'category', 'reviews'])
+        ->withCount('enrollments')
+        ->latest('wishlists.created_at')
+        ->get();
+
+    $enrollmentTotal = $user->enrollments()->count();
+    $completedTotal = $user->enrollments()->where('progress_percent', 100)->count();
+    $averageProgress = (int) round($user->enrollments()->avg('progress_percent') ?? 0);
+
     return view('dashboard', [
         'enrolledCourses' => $enrolledCourses,
-        'enrollmentTotal' => $request->user()->enrollments()->count(),
+        'wishlistCourses' => $wishlistCourses,
+        'enrollmentTotal' => $enrollmentTotal,
+        'completedTotal' => $completedTotal,
+        'averageProgress' => $averageProgress,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

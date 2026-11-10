@@ -24,9 +24,9 @@
     {{-- Bảng danh sách học viên --}}
     <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100">
+            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">
                 {{ $selectedCourse ? 'Học viên của khóa: '.$selectedCourse->title : 'Tất cả học viên' }}
-                <span class="text-sm font-normal text-gray-500 dark:text-neutral-400">({{ $enrollments->total() }} lượt ghi danh)</span>
+                <span class="text-sm font-normal text-gray-500 dark:text-neutral-400 normal-case">({{ $enrollments->total() }} lượt ghi danh)</span>
             </h3>
             <span class="text-xs text-gray-400 dark:text-neutral-500 hidden sm:inline">Nhấp vào học viên để xem chi tiết bài học đã hoàn thành</span>
         </div>

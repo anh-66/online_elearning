@@ -97,19 +97,32 @@ class CourseCatalogController extends Controller
 
         // Kiểm tra xem user đã ghi danh và đã đánh giá chưa (nếu đã đăng nhập)
         $isEnrolled = false;
+        $enrollment = null;
         $userReview = null;
         $isWishlisted = false;
+        $enrollmentTotal = 0;
+        $completedTotal = 0;
+        $averageProgress = 0;
+
         if (auth()->check()) {
-            $isEnrolled = $course->enrollments()
-                ->where('user_id', auth()->id())
-                ->exists();
+            $user = auth()->user();
+            $enrollment = $course->enrollments()
+                ->where('user_id', $user->id)
+                ->first();
+            $isEnrolled = $enrollment !== null;
 
             $userReview = $course->reviews()
-                ->where('user_id', auth()->id())
+                ->where('user_id', $user->id)
                 ->first();
             $isWishlisted = $course->wishlists()
-                ->where('user_id', auth()->id())
+                ->where('user_id', $user->id)
                 ->exists();
+
+            if ($isEnrolled) {
+                $enrollmentTotal = $user->enrollments()->count();
+                $completedTotal = $user->enrollments()->where('progress_percent', 100)->count();
+                $averageProgress = (int) round($user->enrollments()->avg('progress_percent') ?? 0);
+            }
         }
 
         return view('courses.show', compact(
@@ -119,6 +132,10 @@ class CourseCatalogController extends Controller
             'totalReviews',
             'ratingBreakdown',
             'isEnrolled',
+            'enrollment',
+            'enrollmentTotal',
+            'completedTotal',
+            'averageProgress',
             'userReview',
             'isWishlisted'
         ));

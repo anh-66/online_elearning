@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\InstructorEarning;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,8 +15,9 @@ class CourseCheckoutController extends Controller
 {
     public function show(Course $course): View|RedirectResponse
     {
-        if (Auth::user()->id === $course->instructor_id || Auth::user()->isAdmin()) {
-            return redirect()->route('courses.show', $course->slug);
+        if (Auth::user()->id === $course->instructor_id) {
+            return redirect()->route('courses.show', $course->slug)
+                ->with('error', 'Bạn không thể mua khóa học của chính mình.');
         }
 
         if (Auth::user()->isEnrolledIn($course)) {
@@ -38,7 +40,7 @@ class CourseCheckoutController extends Controller
         ]);
 
         $user = Auth::user();
-        if ($user->id === $course->instructor_id || $user->isAdmin()) {
+        if ($user->id === $course->instructor_id) {
             return redirect()->route('courses.show', $course->slug)
                 ->with('error', 'Bạn không thể mua khóa học của chính mình.');
         }
@@ -87,7 +89,7 @@ class CourseCheckoutController extends Controller
             $instructorShare = round($orderAmount * 0.70, 2);
             $adminShare = round($orderAmount * 0.30, 2);
 
-            \App\Models\InstructorEarning::create([
+            InstructorEarning::create([
                 'instructor_id' => $course->instructor_id,
                 'course_id' => $course->id,
                 'enrollment_id' => $enrollment->id,
@@ -96,7 +98,7 @@ class CourseCheckoutController extends Controller
                 'admin_rate' => 30.00,
                 'instructor_share' => $instructorShare,
                 'admin_share' => $adminShare,
-                'status' => \App\Models\InstructorEarning::STATUS_AVAILABLE,
+                'status' => InstructorEarning::STATUS_AVAILABLE,
                 'available_at' => now(),
             ]);
         }
