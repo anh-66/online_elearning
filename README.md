@@ -52,7 +52,7 @@ Các thành viên đã hoàn thành các module chính của dự án:
 | Thành phần | Công nghệ |
 |---|---|
 | Backend | PHP 8.3+, Laravel 13, Eloquent ORM |
-| Cơ sở dữ liệu | MySQL hoặc MariaDB |
+| Cơ sở dữ liệu | MySQL |
 | Xác thực | Laravel Breeze, Laravel Socialite |
 | Frontend | Blade, React, Tailwind CSS 3, Alpine.js, Vite |
 | Soạn thảo nội dung | CKEditor 5 |
