@@ -720,7 +720,7 @@
                             <a href="{{ route('instructors.show', $course->instructor->id) }}" class="flex items-center space-x-3 group">
                                 <div class="w-11 h-11 rounded-full bg-black text-white dark:bg-neutral-800 dark:text-white font-bold text-sm flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                                     @if($course->instructor->avatar_url)
-                                        <img src="{{ $course->instructor->avatar_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                        <img src="{{ $course->instructor->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                         <span class="hidden flex items-center justify-center w-full h-full">{{ $course->instructor->initialLetter() }}</span>
                                     @else
                                         <span>{{ $course->instructor->initialLetter() }}</span>

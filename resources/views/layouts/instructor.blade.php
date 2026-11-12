@@ -107,7 +107,7 @@
                     <div class="flex items-center space-x-3 truncate">
                         <div class="w-9 h-9 rounded-lg bg-black text-white font-bold flex items-center justify-center shrink-0 overflow-hidden">
                             @if(Auth::user()->avatar_url)
-                                <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                 <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
                             @else
                                 <span>{{ Auth::user()->initialLetter() }}</span>

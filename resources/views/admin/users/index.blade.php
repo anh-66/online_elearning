@@ -85,7 +85,7 @@
                                     <div class="relative shrink-0">
                                         <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm overflow-hidden">
                                             @if($user->avatar_url)
-                                                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                                <img src="{{ $user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                                 <span class="hidden flex items-center justify-center w-full h-full">{{ $user->initialLetter() }}</span>
                                             @else
                                                 <span>{{ $user->initialLetter() }}</span>

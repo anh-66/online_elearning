@@ -24,6 +24,7 @@ class GoogleController extends Controller
             $googleUser = Socialite::driver('google')->user();
             $googleId = $googleUser->getId();
             $email = $googleUser->getEmail();
+            $avatarUrl = $googleUser->getAvatar();
 
             if (! $googleId || ! $email) {
                 throw new \RuntimeException('Google did not return a valid identity.');
@@ -49,6 +50,7 @@ class GoogleController extends Controller
                     'email' => $email,
                     'google_id' => $googleId,
                     'password' => Str::random(32),
+                    'avatar' => $avatarUrl,
                     'role' => User::ROLE_STUDENT,
                     'status' => User::STATUS_ACTIVE,
                     'email_verified_at' => now(),
@@ -59,6 +61,8 @@ class GoogleController extends Controller
                 throw new \RuntimeException('The user account is not active.');
             }
 
+            $this->syncGoogleAvatar($user, $avatarUrl);
+
             Auth::login($user);
             $request->session()->regenerate();
 
@@ -68,6 +72,22 @@ class GoogleController extends Controller
             report($exception);
 
             return redirect()->route('login')->with('error', 'Đăng nhập bằng Google thất bại. Vui lòng thử lại!');
+        }
+    }
+
+    /**
+     * Use the Google profile picture unless the user has their own uploaded avatar.
+     */
+    private function syncGoogleAvatar(User $user, ?string $avatarUrl): void
+    {
+        if (! is_string($avatarUrl) || $avatarUrl === '' || $user->avatar === $avatarUrl) {
+            return;
+        }
+
+        $hasExternalAvatar = is_string($user->avatar) && str_starts_with($user->avatar, 'http');
+
+        if (! $user->hasAvatar() || $hasExternalAvatar) {
+            $user->update(['avatar' => $avatarUrl]);
         }
     }
 }

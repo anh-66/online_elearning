@@ -88,7 +88,7 @@
                     <li class="flex items-start space-x-3">
                         <div class="w-9 h-9 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
                             @if($enrollment->user->avatar_url)
-                                <img src="{{ $enrollment->user->avatar_url }}" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                <img src="{{ $enrollment->user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                 <span class="hidden flex items-center justify-center w-full h-full">{{ $enrollment->user->initialLetter() }}</span>
                             @else
                                 <span>{{ $enrollment->user->initialLetter() }}</span>

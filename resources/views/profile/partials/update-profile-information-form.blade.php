@@ -9,7 +9,7 @@
         <div class="relative">
             <div class="w-20 h-20 bg-black text-white dark:bg-black dark:text-white rounded-full flex items-center justify-center overflow-hidden font-bold text-2xl select-none ring-2 ring-gray-100 dark:ring-neutral-800">
                 <template x-if="avatarPreview">
-                    <img :src="avatarPreview" alt="Ảnh đại diện mới" class="h-full w-full object-cover" x-on:error="avatarPreview = null">
+                    <img :src="avatarPreview" referrerpolicy="no-referrer" alt="Ảnh đại diện mới" class="h-full w-full object-cover" x-on:error="avatarPreview = null">
                 </template>
                 <template x-if="!avatarPreview">
                     <span>{{ $user->initialLetter() }}</span>
