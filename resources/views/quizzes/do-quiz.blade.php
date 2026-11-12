@@ -95,8 +95,8 @@
                             {{ $question->question_text }}
                         </h2>
 
-                        {{-- Danh sách các lựa chọn đáp án --}}
-                        <div class="space-y-3.5">
+                        {{-- Danh sách các lựa chọn đáp án (Radio Group phong cách Animate UI) --}}
+                        <div data-slot="radio-group" class="space-y-3.5">
                             @php
                                 $letters = ['A', 'B', 'C', 'D', 'E', 'F'];
                             @endphp
@@ -104,10 +104,10 @@
                                 @php
                                     $letter = $letters[$aIndex] ?? chr(65 + $aIndex);
                                 @endphp
-                                <label class="w-full flex items-center gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-150 select-none"
+                                <label class="w-full flex items-center gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-150 select-none group/choice"
                                        :class="answers[{{ $question->id }}] === {{ $answer->id }}
-                                            ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white shadow-md'
-                                            : 'bg-white dark:bg-[#161b22] text-gray-800 dark:text-gray-200 border-gray-200 dark:border-[#30363d] hover:bg-gray-50 dark:hover:bg-[#21262d]'">
+                                            ? 'bg-neutral-50/80 dark:bg-white/[0.06] border-neutral-900 dark:border-white ring-1 ring-neutral-900/10 dark:ring-white/10 shadow-xs'
+                                            : 'bg-white dark:bg-[#161b22] text-gray-800 dark:text-gray-200 border-gray-200 dark:border-[#30363d] hover:bg-neutral-50/60 dark:hover:bg-white/[0.03]'">
                                     
                                     <input type="radio"
                                            name="answers[{{ $question->id }}]"
@@ -116,15 +116,18 @@
                                            @change="selectAnswer({{ $question->id }}, {{ $answer->id }})">
 
                                     {{-- Khối chữ cái A, B, C, D --}}
-                                    <span class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors"
+                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 transition-colors font-mono"
                                           :class="answers[{{ $question->id }}] === {{ $answer->id }}
-                                                ? 'bg-neutral-800 text-white dark:bg-neutral-200 dark:text-black'
+                                                ? 'bg-neutral-900 text-white dark:bg-white dark:text-black'
                                                 : 'bg-gray-100 dark:bg-[#21262d] text-gray-700 dark:text-gray-300'">
                                         {{ $letter }}
                                     </span>
 
                                     {{-- Nội dung đáp án --}}
-                                    <span class="text-sm sm:text-base font-normal leading-relaxed flex-1">
+                                    <span class="text-sm sm:text-base leading-relaxed flex-1 transition-colors"
+                                          :class="answers[{{ $question->id }}] === {{ $answer->id }}
+                                                ? 'font-bold text-neutral-950 dark:text-white'
+                                                : 'font-normal text-gray-800 dark:text-gray-200'">
                                         {{ $answer->answer_text }}
                                     </span>
                                 </label>
@@ -182,24 +185,43 @@
                     </div>
                 </div>
 
-                {{-- ===== BĂNG SỐ PHÂN TRANG CÂU HỎI Ở ĐÁY ===== --}}
-                <div class="flex flex-wrap items-center justify-center gap-2 pt-4">
-                    @foreach($quiz->questions as $pIndex => $q)
-                        <button type="button"
-                                @click="jumpToQuestion({{ $pIndex }})"
-                                class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center transition-all relative"
-                                :class="{
-                                    'border-2 border-black dark:border-white bg-white dark:bg-[#161b22] text-black dark:text-white shadow-sm': currentIndex === {{ $pIndex }},
-                                    'bg-black text-white dark:bg-white dark:text-black': currentIndex !== {{ $pIndex }} && answers[{{ $q->id }}],
-                                    'bg-gray-100 dark:bg-[#21262d] text-gray-500 dark:text-gray-400 hover:bg-gray-200': currentIndex !== {{ $pIndex }} && !answers[{{ $q->id }}]
-                                }">
-                            <span>{{ $pIndex + 1 }}</span>
-                            <template x-if="flags[{{ $q->id }}]">
-                                <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white dark:ring-[#0d1117]"></span>
-                            </template>
-                        </button>
-                    @endforeach
-                </div>
+                {{-- ===== BĂNG SỐ PHÂN TRANG CÂU HỎI Ở ĐÁY (CHUẨN ANIMATE UI PAGINATION) ===== --}}
+                <nav role="navigation"
+                     aria-label="Quiz question pagination"
+                     data-slot="pagination"
+                     class="mx-auto flex w-full justify-center select-none pt-4">
+                    <ul data-slot="pagination-content"
+                        class="relative flex items-center flex-wrap justify-center gap-1 p-1 rounded-xl"
+                        @mouseleave="clearHover()">
+
+                        {{-- Gliding Hover Pill (Animate UI Fluid Motion) --}}
+                        <div class="absolute rounded-lg bg-black/[0.06] dark:bg-white/15 pointer-events-none transition-all duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] z-0"
+                             :style="`left: ${hover.left}; top: ${hover.top}; width: ${hover.width}; height: ${hover.height}; opacity: ${hover.opacity};`"
+                             x-cloak>
+                        </div>
+
+                        @foreach($quiz->questions as $pIndex => $q)
+                            <li data-slot="pagination-item">
+                                <button type="button"
+                                        @click="jumpToQuestion({{ $pIndex }})"
+                                        @mouseenter="setHover($el)"
+                                        data-slot="pagination-link"
+                                        :data-active="currentIndex === {{ $pIndex }}"
+                                        class="relative z-10 size-9 inline-flex items-center justify-center rounded-lg text-sm transition-all select-none active:scale-95"
+                                        :class="{
+                                            'bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 font-bold shadow-sm': currentIndex === {{ $pIndex }},
+                                            'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 font-semibold': currentIndex !== {{ $pIndex }} && answers[{{ $q->id }}],
+                                            'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white font-medium': currentIndex !== {{ $pIndex }} && !answers[{{ $q->id }}]
+                                        }">
+                                    <span>{{ $pIndex + 1 }}</span>
+                                    <template x-if="flags[{{ $q->id }}]">
+                                        <span class="absolute -top-1 -right-1 size-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-[#161b22]"></span>
+                                    </template>
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
+                </nav>
             </form>
         @endif
 
@@ -217,6 +239,22 @@
             answers: {},
             flags: {},
             remaining: timeLimitMinutes * 60,
+            hover: { left: '0px', top: '0px', width: '0px', height: '0px', opacity: 0 },
+
+            setHover(el) {
+                if (!el) return;
+                this.hover = {
+                    left: el.offsetLeft + 'px',
+                    top: el.offsetTop + 'px',
+                    width: el.offsetWidth + 'px',
+                    height: el.offsetHeight + 'px',
+                    opacity: 1
+                };
+            },
+
+            clearHover() {
+                this.hover.opacity = 0;
+            },
 
             init() {
                 // Đọc các đáp án đã tick nếu form re-render

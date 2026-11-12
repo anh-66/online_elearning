@@ -4,10 +4,10 @@
     $reviewsCount = $course->reviews_count ?? $course->reviews->count();
 @endphp
 
-<div class="w-full rounded-2xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-sm overflow-hidden group flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:border-[#019D91]/40 dark:hover:border-[#019D91]/40">
+<div class="w-full rounded-2xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-sm relative group hover:z-30 flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:border-[#019D91]/40 dark:hover:border-[#019D91]/40">
     {{-- Thumbnail Media Section --}}
     <a href="{{ route('courses.show', $course->slug) }}"
-       class="h-44 w-full flex items-center justify-center bg-gray-100 dark:bg-[#0d1117] text-gray-400 overflow-hidden relative block">
+       class="h-44 w-full flex items-center justify-center bg-gray-100 dark:bg-[#0d1117] text-gray-400 overflow-hidden rounded-t-2xl relative block">
         @if($course->thumbnail)
             <img src="{{ Storage::disk('public')->url($course->thumbnail) }}"
                  alt="{{ $course->title }}"
@@ -40,13 +40,30 @@
         <div>
             {{-- Title, Subtitle and Top Badges --}}
             <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0"
-                     x-data="{ overflowing: false, updateOverflow() { this.overflowing = this.$refs.title.scrollWidth > this.$refs.container.clientWidth } }"
+                <div class="flex-1 min-w-0 relative"
+                     x-data="{
+                         hovered: false,
+                         overflowing: false,
+                         timeout: null,
+                         openCard() {
+                             clearTimeout(this.timeout);
+                             this.hovered = true;
+                         },
+                         closeCard() {
+                             this.timeout = setTimeout(() => { this.hovered = false; }, 150);
+                         },
+                         updateOverflow() {
+                             this.overflowing = this.$refs.title.scrollWidth > this.$refs.container.clientWidth;
+                         }
+                     }"
                      x-init="$nextTick(() => updateOverflow())"
                      @resize.window="updateOverflow()">
-                    <div x-ref="container" class="overflow-hidden whitespace-nowrap">
+                    <div x-ref="container"
+                         class="overflow-hidden whitespace-nowrap"
+                         @mouseenter="openCard()"
+                         @mouseleave="closeCard()">
                         <div class="inline-flex min-w-full"
-                             :class="{ 'course-title-marquee': overflowing }">
+                             :class="{ 'course-title-marquee': overflowing && !hovered }">
                             <a x-ref="title"
                                href="{{ route('courses.show', $course->slug) }}"
                                class="shrink-0 text-sm font-semibold text-gray-900 dark:text-[#f0f6fc] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition"
@@ -66,6 +83,26 @@
                     <p class="mt-1 text-xs text-gray-500 dark:text-[#8b949e] truncate">
                         {{ $course->instructor->name ?? 'Giảng viên EduLearn' }}
                     </p>
+
+                    <!-- HoverCard Content Popup (@animate-ui PreviewCard Style) -->
+                    <div x-show="hovered"
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                         @mouseenter="openCard()"
+                         @mouseleave="closeCard()"
+                         class="absolute left-0 bottom-full mb-2 z-50 w-64 rounded-xl border border-gray-200 dark:border-[#30363d] bg-white/95 dark:bg-[#161b22]/95 backdrop-blur-2xl backdrop-saturate-150 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-3 text-left pointer-events-auto flex flex-col gap-1">
+                        <div class="font-semibold text-sm text-gray-900 dark:text-white">
+                            @<span>{{ $course->category->name ?? 'EduLearn' }}</span>
+                        </div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300 leading-snug break-words">
+                            {{ $course->title }}
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Badges: Level & Status/Price --}}

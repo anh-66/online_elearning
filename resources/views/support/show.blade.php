@@ -6,9 +6,9 @@
 <div class="min-h-screen bg-white text-[#1D1D1F] dark:bg-[#000000] dark:text-[#f5f5f7] transition-colors pb-24"
      x-data="{ feedbackGiven: false, feedbackHelpful: true }">
 
-    <!-- Sub-navigation / Breadcrumbs (Sticky aligned right below the navbar h-18/sm:h-20) -->
-    <div class="border-b border-[#E5E5EA] dark:border-[#222224] bg-[#F5F5F7]/95 dark:bg-[#161617]/95 backdrop-blur-md sticky top-[72px] sm:top-[80px] z-30 transition-all shadow-xs">
-        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 py-3 flex items-center justify-between text-xs sm:text-sm">
+    <!-- Sub-navigation / Breadcrumbs fixed below the navbar -->
+    <div class="bg-[#F5F5F7]/95 dark:bg-[#161617]/95 backdrop-blur-md sticky top-[72px] sm:top-[80px] z-30 transition-all shadow-xs">
+        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 py-4 flex items-center justify-between text-base">
             <nav class="flex items-center space-x-2 text-[#86868B] dark:text-[#a1a1a6] truncate">
                 <a href="{{ route('support.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Hỗ Trợ</a>
                 <span>/</span>

@@ -45,8 +45,8 @@
                     </a>
                 </div>
 
-                <!-- Center: Heading & Core Features Checklist -->
-                <div class="py-6 my-auto max-w-xl">
+                <!-- Center: Heading & Core Features Checklist Accordion (Mặc định hiển thị, click để ẩn) -->
+                <div class="py-6 my-auto w-full max-w-xl" x-data="{ open: true }">
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
                         @if(request()->routeIs('login'))
                             Chào mừng bạn trở lại
@@ -62,56 +62,87 @@
                         @endif
                     </p>
 
-                    <p class="mt-7 text-sm font-semibold text-neutral-200 flex items-center gap-1.5 cursor-default">
+                    <!-- Accordion Trigger Button -->
+                    <button type="button"
+                            @click="open = !open"
+                            :aria-expanded="open"
+                            data-slot="accordion-trigger"
+                            class="mt-7 group/accordion-trigger inline-flex items-center gap-2.5 text-sm font-semibold text-neutral-200 hover:text-white transition-colors cursor-pointer select-none rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#019D91]">
                         <span>Quyền lợi tài khoản thành viên</span>
-                        <span class="text-xs">&and;</span>
-                    </p>
+                        <svg class="w-4 h-4 text-neutral-400 transition-transform duration-350 ease-[cubic-bezier(0.215,0.61,0.355,1)] group-hover/accordion-trigger:text-white shrink-0 pointer-events-none"
+                             :class="open ? 'rotate-180 text-white' : ''"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
 
-                    {{-- Checklist items hoàn toàn tiếng Việt --}}
-                    <div class="mt-4 space-y-3.5 text-sm text-neutral-300">
-                        <div class="flex items-start gap-3">
-                            <span class="text-white font-bold text-base mt-0.5 leading-none shrink-0">&#10003;</span>
-                            <div>
-                                <p class="font-semibold text-white">Theo dõi tiến độ</p>
-                                <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Nắm bắt tiến trình hoàn thành từng bài học.</p>
-                            </div>
-                        </div>
+                    <!-- Accordion Content Panel (Smooth Grid Slide-Down Transition) -->
+                    <div class="grid transition-all duration-350 ease-[cubic-bezier(0.215,0.61,0.355,1)]"
+                         :class="open ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'">
+                        <div class="overflow-hidden">
+                            <div class="space-y-3.5 text-sm text-neutral-300">
+                                <div class="flex items-start gap-3">
+                                    <svg class="h-4 w-4 text-white mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-white">Theo dõi tiến độ</p>
+                                        <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Nắm bắt tiến trình hoàn thành từng bài học.</p>
+                                    </div>
+                                </div>
 
-                        <div class="flex items-start gap-3">
-                            <span class="text-white font-bold text-base mt-0.5 leading-none shrink-0">&#10003;</span>
-                            <div>
-                                <p class="font-semibold text-white">Bài kiểm tra Quiz</p>
-                                <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Làm trắc nghiệm củng cố kiến thức và nhận điểm tự động.</p>
-                            </div>
-                        </div>
+                                <div class="flex items-start gap-3">
+                                    <svg class="h-4 w-4 text-white mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-white">Bài kiểm tra Quiz</p>
+                                        <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Làm trắc nghiệm củng cố kiến thức và nhận điểm tự động.</p>
+                                    </div>
+                                </div>
 
-                        <div class="flex items-start gap-3">
-                            <span class="text-white font-bold text-base mt-0.5 leading-none shrink-0">&#10003;</span>
-                            <div>
-                                <p class="font-semibold text-white">Hỏi đáp bài học</p>
-                                <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Thảo luận trực tiếp và đặt câu hỏi dưới mỗi video.</p>
-                            </div>
-                        </div>
+                                <div class="flex items-start gap-3">
+                                    <svg class="h-4 w-4 text-white mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-white">Hỏi đáp bài học</p>
+                                        <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Thảo luận trực tiếp và đặt câu hỏi dưới mỗi video.</p>
+                                    </div>
+                                </div>
 
-                        <div class="flex items-start gap-3">
-                            <span class="text-white font-bold text-base mt-0.5 leading-none shrink-0">&#10003;</span>
-                            <div>
-                                <p class="font-semibold text-white">Danh sách yêu thích</p>
-                                <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Lưu lại các khóa học quan tâm để xem lại sau.</p>
-                            </div>
-                        </div>
+                                <div class="flex items-start gap-3">
+                                    <svg class="h-4 w-4 text-white mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-white">Danh sách yêu thích</p>
+                                        <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Lưu lại các khóa học quan tâm để xem lại sau.</p>
+                                    </div>
+                                </div>
 
-                        <div class="flex items-start gap-3">
-                            <span class="text-white font-bold text-base mt-0.5 leading-none shrink-0">&#10003;</span>
-                            <div>
-                                <p class="font-semibold text-white">Hồ sơ &amp; Avatar</p>
-                                <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Cập nhật thông tin cá nhân và ảnh đại diện chuyên nghiệp.</p>
+                                <div class="flex items-start gap-3">
+                                    <svg class="h-4 w-4 text-white mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-white">Hồ sơ &amp; Avatar</p>
+                                        <p class="text-xs sm:text-sm text-neutral-400 mt-0.5">Cập nhật thông tin cá nhân và ảnh đại diện chuyên nghiệp.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <!-- Bottom Section: Thống kê & Footer (Neo cố định ở đáy, không bị dồn lên khi ẩn checklist) -->
+                <div class="w-full max-w-xl">
                     <!-- Thống kê người dùng thực tế -->
-                    <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-center gap-16 sm:gap-24 text-center">
+                    <div class="pt-6 border-t border-white/10 flex items-center justify-center gap-16 sm:gap-24 text-center">
                         <div>
                             <p class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-none">
                                 {{ number_format($instructorCount) }}
@@ -130,11 +161,11 @@
                             </p>
                         </div>
                     </div>
-                </div>
 
-                <!-- Footer bản quyền nhỏ gọn -->
-                <div class="text-xs text-neutral-500 text-center sm:text-left pt-4">
-                    &copy; {{ date('Y') }} EduLearn Platform. Nền tảng học trực tuyến chất lượng cao.
+                    <!-- Footer bản quyền nhỏ gọn -->
+                    <div class="text-xs text-neutral-500 text-center sm:text-left pt-6">
+                        &copy; {{ date('Y') }} EduLearn Platform. Nền tảng học trực tuyến chất lượng cao.
+                    </div>
                 </div>
             </aside>
 

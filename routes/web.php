@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseCatalogController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\MyCourseController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\ReviewController;
@@ -49,6 +51,9 @@ Route::post('/chat/courses', CourseChatController::class)
 | Các route yêu cầu đăng nhập và phân quyền học viên (hoặc giảng viên/admin đều có thể học thử).
 */
 Route::middleware(['auth'])->group(function () {
+    Route::get('/attendance/week', [AttendanceController::class, 'week'])->name('attendance.week');
+    Route::post('/attendance/check-in', [AttendanceController::class, 'store'])->name('attendance.check-in');
+
     // TV3: Ghi danh & Khóa học của tôi & Phòng học (Learning Player)
     Route::get('/my-courses', [MyCourseController::class, 'index'])->name('my-courses');
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
@@ -81,6 +86,11 @@ Route::middleware(['auth'])->group(function () {
 */
 Route::get('/dashboard', function (Request $request) {
     $user = $request->user();
+
+    if ($user->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+
     $enrolledCourses = $user->enrolledCourses()
         ->with(['instructor', 'category', 'reviews'])
         ->withCount('enrollments')
@@ -135,4 +145,9 @@ Route::middleware('guest')->group(function () {
         ->name('auth.google.callback');
 });
 Route::get('/courses/{course:slug}/learn', [LearningController::class, 'player'])->middleware('auth')->name('learning.index');
+
+// Onboarding cho tài khoản mới (Mascot Lynx / Mascot0)
+Route::get('/welcome', [OnboardingController::class, 'show'])->name('onboarding.welcome');
+Route::post('/welcome/complete', [OnboardingController::class, 'complete'])->name('onboarding.complete');
+
 require __DIR__.'/auth.php';

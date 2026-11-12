@@ -7,10 +7,10 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Review;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends Controller

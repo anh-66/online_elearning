@@ -23,42 +23,34 @@
         </div>
     </div>
 
-    {{-- Stats Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card p-4 flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                <iconify-icon icon="lucide:inbox" class="text-2xl"></iconify-icon>
-            </div>
+    {{-- Stats (Minimalist, raw icons, no colored box background) --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-6 border-b border-gray-100 dark:border-neutral-800">
+        <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:inbox" class="text-2xl text-gray-400 dark:text-neutral-500 shrink-0"></iconify-icon>
             <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Tổng phản hồi</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100">{{ number_format($stats['total']) }}</p>
             </div>
         </div>
 
-        <div class="glass-card p-4 flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                <iconify-icon icon="lucide:clock" class="text-2xl"></iconify-icon>
-            </div>
+        <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:clock" class="text-2xl text-amber-500 dark:text-amber-400 shrink-0"></iconify-icon>
             <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Chờ xử lý</p>
                 <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ number_format($stats['pending']) }}</p>
             </div>
         </div>
 
-        <div class="glass-card p-4 flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                <iconify-icon icon="lucide:refresh-cw" class="text-2xl"></iconify-icon>
-            </div>
+        <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:refresh-cw" class="text-2xl text-indigo-500 shrink-0"></iconify-icon>
             <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Đang xử lý</p>
                 <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{ number_format($stats['in_progress']) }}</p>
             </div>
         </div>
 
-        <div class="glass-card p-4 flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <iconify-icon icon="lucide:check-circle-2" class="text-2xl"></iconify-icon>
-            </div>
+        <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:check-circle-2" class="text-2xl text-emerald-500 dark:text-emerald-400 shrink-0"></iconify-icon>
             <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Đã giải quyết</p>
                 <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($stats['resolved']) }}</p>
@@ -66,11 +58,10 @@
         </div>
     </div>
 
-    {{-- Filter Bar --}}
-    <div class="glass-card p-4">
-        <form method="GET" action="{{ route('admin.feedbacks.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {{-- Keyword --}}
-            <div class="lg:col-span-2 relative">
+    {{-- Filter Toolbar (Minimalist, gray inputs, horizontal divider) --}}
+    <form method="GET" action="{{ route('admin.feedbacks.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pb-6 border-b border-gray-100 dark:border-neutral-800">
+        {{-- Keyword --}}
+        <div class="lg:col-span-2 relative">
                 <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-500 text-lg"></iconify-icon>
                 <input type="text" name="keyword" value="{{ $keyword }}"
                        placeholder="Tìm kiếm tiêu đề, nội dung, người gửi..."
@@ -78,48 +69,170 @@
             </div>
 
             {{-- Status --}}
-            <div>
-                <select name="status" class="w-full px-3 py-2 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91]">
-                    <option value="all" {{ $status === 'all' ? 'selected' : '' }}>Tất cả trạng thái</option>
-                    <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                    <option value="in_progress" {{ $status === 'in_progress' ? 'selected' : '' }}>Đang xử lý</option>
-                    <option value="resolved" {{ $status === 'resolved' ? 'selected' : '' }}>Đã giải quyết</option>
-                    <option value="closed" {{ $status === 'closed' ? 'selected' : '' }}>Đã đóng</option>
-                </select>
+            @php
+                $fbStatusLabels = [
+                    'all' => 'Tất cả trạng thái',
+                    'pending' => 'Chờ xử lý',
+                    'in_progress' => 'Đang xử lý',
+                    'resolved' => 'Đã giải quyết',
+                    'closed' => 'Đã đóng',
+                ];
+                $currentFbStatusLabel = $fbStatusLabels[$status] ?? 'Tất cả trạng thái';
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     selectedValue: '{{ $status }}',
+                     selectedLabel: '{{ addslashes($currentFbStatusLabel) }}',
+                     options: [
+                         { value: 'all', label: 'Tất cả trạng thái' },
+                         { value: 'pending', label: 'Chờ xử lý' },
+                         { value: 'in_progress', label: 'Đang xử lý' },
+                         { value: 'resolved', label: 'Đã giải quyết' },
+                         { value: 'closed', label: 'Đã đóng' },
+                     ],
+                     select(val, label) {
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <input type="hidden" name="status" :value="selectedValue">
+                <button type="button" @click="open = !open" data-slot="combobox-trigger"
+                        class="w-full h-10 px-3.5 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-lg text-sm text-gray-700 dark:text-neutral-200 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-neutral-200"></span>
+                    <svg class="w-4 h-4 text-gray-400 dark:text-neutral-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-neutral-300 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700 dark:text-neutral-200' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" x-cloak @click.outside="open = false" @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1 scale-98" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     data-slot="combobox-content" class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button" @click="select(item.value, item.label)" data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value" class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </button>
+                    </template>
+                </div>
             </div>
 
             {{-- Category --}}
-            <div>
-                <select name="category" class="w-full px-3 py-2 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91]">
-                    <option value="all" {{ $category === 'all' ? 'selected' : '' }}>Tất cả loại</option>
-                    <option value="bug" {{ $category === 'bug' ? 'selected' : '' }}>Lỗi kỹ thuật</option>
-                    <option value="feature" {{ $category === 'feature' ? 'selected' : '' }}>Góp ý tính năng</option>
-                    <option value="question" {{ $category === 'question' ? 'selected' : '' }}>Câu hỏi</option>
-                    <option value="other" {{ $category === 'other' ? 'selected' : '' }}>Khác</option>
-                </select>
+            @php
+                $fbCatLabels = [
+                    'all' => 'Tất cả loại',
+                    'bug' => 'Lỗi kỹ thuật',
+                    'feature' => 'Góp ý tính năng',
+                    'question' => 'Câu hỏi',
+                    'other' => 'Khác',
+                ];
+                $currentFbCatLabel = $fbCatLabels[$category] ?? 'Tất cả loại';
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     selectedValue: '{{ $category }}',
+                     selectedLabel: '{{ addslashes($currentFbCatLabel) }}',
+                     options: [
+                         { value: 'all', label: 'Tất cả loại' },
+                         { value: 'bug', label: 'Lỗi kỹ thuật' },
+                         { value: 'feature', label: 'Góp ý tính năng' },
+                         { value: 'question', label: 'Câu hỏi' },
+                         { value: 'other', label: 'Khác' },
+                     ],
+                     select(val, label) {
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <input type="hidden" name="category" :value="selectedValue">
+                <button type="button" @click="open = !open" data-slot="combobox-trigger"
+                        class="w-full h-10 px-3.5 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-lg text-sm text-gray-700 dark:text-neutral-200 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-neutral-200"></span>
+                    <svg class="w-4 h-4 text-gray-400 dark:text-neutral-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-neutral-300 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700 dark:text-neutral-200' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" x-cloak @click.outside="open = false" @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1 scale-98" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     data-slot="combobox-content" class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button" @click="select(item.value, item.label)" data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value" class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </button>
+                    </template>
+                </div>
             </div>
 
             {{-- Priority & Submit --}}
+            @php
+                $fbPriorityLabels = [
+                    'all' => 'Tất cả mức ưu tiên',
+                    'high' => 'Cao',
+                    'medium' => 'Trung bình',
+                    'low' => 'Thấp',
+                ];
+                $currentFbPriorityLabel = $fbPriorityLabels[$priority] ?? 'Tất cả mức ưu tiên';
+            @endphp
             <div class="flex items-center gap-2">
-                <select name="priority" class="w-full px-3 py-2 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91]">
-                    <option value="all" {{ $priority === 'all' ? 'selected' : '' }}>Tất cả mức ưu tiên</option>
-                    <option value="high" {{ $priority === 'high' ? 'selected' : '' }}>Cao</option>
-                    <option value="medium" {{ $priority === 'medium' ? 'selected' : '' }}>Trung bình</option>
-                    <option value="low" {{ $priority === 'low' ? 'selected' : '' }}>Thấp</option>
-                </select>
-                <button type="submit" class="px-4 py-2 bg-[#019D91] text-white text-sm font-medium rounded-lg hover:bg-[#008b80] transition shrink-0">
+                <div class="relative flex-1"
+                     x-data="{
+                         open: false,
+                         selectedValue: '{{ $priority }}',
+                         selectedLabel: '{{ addslashes($currentFbPriorityLabel) }}',
+                         options: [
+                             { value: 'all', label: 'Tất cả mức ưu tiên' },
+                             { value: 'high', label: 'Cao' },
+                             { value: 'medium', label: 'Trung bình' },
+                             { value: 'low', label: 'Thấp' },
+                         ],
+                         select(val, label) {
+                             this.selectedValue = val;
+                             this.selectedLabel = label;
+                             this.open = false;
+                         }
+                     }">
+                    <input type="hidden" name="priority" :value="selectedValue">
+                    <button type="button" @click="open = !open" data-slot="combobox-trigger"
+                            class="w-full h-10 px-3.5 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-lg text-sm text-gray-700 dark:text-neutral-200 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                        <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-neutral-200"></span>
+                        <svg class="w-4 h-4 text-gray-400 dark:text-neutral-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-neutral-300 shrink-0 pointer-events-none"
+                             :class="open ? 'rotate-180 text-gray-700 dark:text-neutral-200' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" x-cloak @click.outside="open = false" @keydown.escape.window="open = false"
+                         x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1 scale-98" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         data-slot="combobox-content" class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                        <template x-for="item in options" :key="item.value">
+                            <button type="button" @click="select(item.value, item.label)" data-slot="combobox-item"
+                                    class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                    :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'">
+                                <span x-text="item.label"></span>
+                                <svg x-show="selectedValue === item.value" class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+                <button type="submit" class="px-4 py-2 bg-[#019D91] text-white text-sm font-medium rounded-lg hover:bg-[#008b80] transition shrink-0 h-10">
                     Lọc
                 </button>
             </div>
-        </form>
-    </div>
+    </form>
 
     {{-- Feedback Table --}}
-    <div class="glass-card overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
-                <thead>
-                    <tr class="border-b border-gray-100 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-800/30 text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="border-b border-gray-100 dark:border-neutral-800 text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">
                         <th class="py-3.5 px-4">#</th>
                         <th class="py-3.5 px-4">Người gửi</th>
                         <th class="py-3.5 px-4">Tiêu đề & Loại</th>
@@ -206,7 +319,7 @@
         </div>
 
         @if($feedbacks->hasPages())
-            <div class="p-4 border-t border-gray-100 dark:border-neutral-800">
+            <div class="pt-6 border-t border-gray-100 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3">
                 {{ $feedbacks->links() }}
             </div>
         @endif

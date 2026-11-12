@@ -92,15 +92,43 @@
                     <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">Theo tháng trong năm đã chọn</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
-                    <div class="relative inline-block">
-                        <select name="year" onchange="this.form.submit()"
-                                class="text-sm border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 rounded-lg pl-3 pr-8 py-1.5 font-medium text-gray-700 dark:text-neutral-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] cursor-pointer">
-                            @forelse($availableYears as $year)
-                                <option value="{{ $year }}" @selected($year === $selectedYear)>{{ $year }}</option>
-                            @empty
-                                <option value="{{ $selectedYear }}">{{ $selectedYear }}</option>
-                            @endforelse
-                        </select>
+                    <div class="relative inline-block"
+                         x-data="{
+                             open: false,
+                             selectedValue: '{{ $selectedYear }}',
+                             selectedLabel: 'Năm {{ $selectedYear }}',
+                             options: [
+                                 @forelse($availableYears as $year)
+                                     { value: '{{ $year }}', label: 'Năm {{ $year }}' },
+                                 @empty
+                                     { value: '{{ $selectedYear }}', label: 'Năm {{ $selectedYear }}' },
+                                 @endforelse
+                             ],
+                             select(val, label) {
+                                 if (this.selectedValue === val) { this.open = false; return; }
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                                 this.$nextTick(() => { this.$el.closest('form').submit(); });
+                             }
+                         }">
+                        <input type="hidden" name="year" :value="selectedValue">
+                        <button type="button" @click="open = !open"
+                                class="text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-neutral-800 py-1.5 pl-3 pr-2.5 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
+                            <span x-text="selectedLabel" class="font-semibold text-gray-800 dark:text-neutral-200"></span>
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 dark:text-neutral-500 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                        </button>
+                        <div x-show="open" x-cloak @click.outside="open = false"
+                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button" @click="select(item.value, item.label)"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/40 text-left transition-colors cursor-pointer"
+                                        :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 font-semibold text-neutral-900 dark:text-white' : 'text-neutral-700 dark:text-neutral-300'">
+                                    <span x-text="item.label"></span>
+                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900 dark:text-white"></iconify-icon>
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -117,15 +145,43 @@
                     <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">Theo tháng trong năm {{ $selectedYear }}</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
-                    <div class="relative inline-block">
-                        <select name="year" onchange="this.form.submit()"
-                                class="text-sm border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 rounded-lg pl-3 pr-8 py-1.5 font-medium text-gray-700 dark:text-neutral-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] cursor-pointer">
-                            @forelse($availableYears as $year)
-                                <option value="{{ $year }}" @selected($year === $selectedYear)>{{ $year }}</option>
-                            @empty
-                                <option value="{{ $selectedYear }}">{{ $selectedYear }}</option>
-                            @endforelse
-                        </select>
+                    <div class="relative inline-block"
+                         x-data="{
+                             open: false,
+                             selectedValue: '{{ $selectedYear }}',
+                             selectedLabel: 'Năm {{ $selectedYear }}',
+                             options: [
+                                 @forelse($availableYears as $year)
+                                     { value: '{{ $year }}', label: 'Năm {{ $year }}' },
+                                 @empty
+                                     { value: '{{ $selectedYear }}', label: 'Năm {{ $selectedYear }}' },
+                                 @endforelse
+                             ],
+                             select(val, label) {
+                                 if (this.selectedValue === val) { this.open = false; return; }
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                                 this.$nextTick(() => { this.$el.closest('form').submit(); });
+                             }
+                         }">
+                        <input type="hidden" name="year" :value="selectedValue">
+                        <button type="button" @click="open = !open"
+                                class="text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-neutral-800 py-1.5 pl-3 pr-2.5 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
+                            <span x-text="selectedLabel" class="font-semibold text-gray-800 dark:text-neutral-200"></span>
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 dark:text-neutral-500 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                        </button>
+                        <div x-show="open" x-cloak @click.outside="open = false"
+                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button" @click="select(item.value, item.label)"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/40 text-left transition-colors cursor-pointer"
+                                        :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 font-semibold text-neutral-900 dark:text-white' : 'text-neutral-700 dark:text-neutral-300'">
+                                    <span x-text="item.label"></span>
+                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900 dark:text-white"></iconify-icon>
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </form>
             </div>

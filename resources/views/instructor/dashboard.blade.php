@@ -4,9 +4,9 @@
 @section('page_title', 'Bảng điều khiển Giảng viên')
 
 @section('content')
-<div class="space-y-6">
+<div class="min-w-0 space-y-6">
     <!-- Thu nhập & Ví banner -->
-    <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="p-5 sm:p-6 rounded-2xl bg-brand-700 text-white shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <span class="text-xs font-semibold uppercase tracking-wider text-brand-200">Ví Giảng Viên</span>
             <div class="mt-1 flex items-baseline gap-3">
@@ -22,8 +22,8 @@
     </div>
 
     <!-- Thẻ thống kê -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+    <div class="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Tổng số khóa học</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ $stats['total_courses'] }}</p>
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Học viên</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ $stats['total_students'] }}</p>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Lượt ghi danh</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ $stats['total_enrollments'] }}</p>
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Đánh giá trung bình</p>
                 <p class="text-2xl font-bold text-amber-500 mt-1">{{ $stats['total_reviews'] > 0 ? number_format($stats['average_rating'], 1) : '—' }} ★</p>
@@ -68,9 +68,9 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Biểu đồ ghi danh -->
-        <div class="lg:col-span-2 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
+        <div class="min-w-0 lg:col-span-2 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
             <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 uppercase tracking-wide">Lượt ghi danh 6 tháng gần nhất</h3>
             <div class="h-72 w-full">
                 <canvas id="instructorEnrollmentChart"></canvas>
@@ -78,7 +78,7 @@
         </div>
 
         <!-- Ghi danh gần đây -->
-        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Ghi danh gần đây</h3>
                 <a href="{{ route('instructor.students.index') }}" class="text-xs font-semibold text-brand-700 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300">Xem tất cả</a>
@@ -107,9 +107,9 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Thống kê theo khóa học -->
-        <div class="lg:col-span-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
+        <div class="min-w-0 lg:col-span-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between">
                 <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Thống kê theo khóa học</h3>
                 <a href="{{ route('instructor.courses.create') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-brand-700 text-white text-xs font-semibold hover:bg-brand-800">+ Tạo khóa học</a>
@@ -152,7 +152,7 @@
         </div>
 
         <!-- Đánh giá mới -->
-        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
             <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 uppercase tracking-wide">Đánh giá mới nhất</h3>
             <ul class="space-y-4">
                 @forelse($recentReviews as $review)

@@ -11,7 +11,9 @@ class InstructorEarning extends Model
     use HasFactory;
 
     public const STATUS_AVAILABLE = 'available';
+
     public const STATUS_PAID = 'paid';
+
     public const STATUS_REFUNDED = 'refunded';
 
     protected $fillable = [
