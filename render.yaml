@@ -65,9 +65,7 @@ services:
       - key: RUN_SEEDERS
         value: "true"
 
-    # File upload (avatar, ảnh khóa học, tài liệu) nằm trên ổ đĩa tạm của container
-    # và sẽ mất khi redeploy/restart. Muốn giữ lại cần gói trả phí + persistent disk:
-    # disk:
-    #   name: uploads
-    #   mountPath: /var/www/html/storage/app/public
-    #   sizeGB: 1
+      # File upload (avatar, ảnh khóa học, tài liệu) lưu lên Cloudinary để không bị mất khi restart.
+      # Lấy ở Cloudinary Console > API Keys > "API environment variable".
+      - key: CLOUDINARY_URL
+        sync: false

@@ -103,7 +103,7 @@
                                 <div class="flex items-start gap-3">
                                     <div class="w-16 h-11 rounded-lg bg-gray-100 overflow-hidden shrink-0 border border-gray-200">
                                         @if($course->thumbnail)
-                                            <img src="{{ asset('storage/'.$course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+                                            <img src="{{ Storage::disk('public')->url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
                                                 <iconify-icon icon="lucide:book-open" class="text-gray-400 text-xl"></iconify-icon>

@@ -68,7 +68,7 @@
                     </template>
                     <template x-if="!thumbPreview">
                         @if($course->thumbnail)
-                            <img src="{{ asset('storage/'.$course->thumbnail) }}" class="w-full h-full object-cover" alt="{{ $course->title }}">
+                            <img src="{{ Storage::disk('public')->url($course->thumbnail) }}" class="w-full h-full object-cover" alt="{{ $course->title }}">
                         @else
                             <span class="text-sm text-gray-400 dark:text-neutral-500">Chưa có ảnh</span>
                         @endif

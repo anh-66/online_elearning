@@ -9,7 +9,7 @@
     <a href="{{ route('courses.show', $course->slug) }}"
        class="h-44 w-full flex items-center justify-center bg-gray-100 dark:bg-[#0d1117] text-gray-400 overflow-hidden relative block">
         @if($course->thumbnail)
-            <img src="{{ asset('storage/' . $course->thumbnail) }}"
+            <img src="{{ Storage::disk('public')->url($course->thumbnail) }}"
                  alt="{{ $course->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
         @else

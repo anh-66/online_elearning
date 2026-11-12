@@ -93,6 +93,10 @@ class User extends Authenticatable
                     return $this->avatar;
                 }
 
+                if (config('filesystems.disks.public.driver') !== 'local') {
+                    return Storage::disk('public')->url($this->avatar);
+                }
+
                 if (! Storage::disk('public')->exists($this->avatar)) {
                     return null;
                 }

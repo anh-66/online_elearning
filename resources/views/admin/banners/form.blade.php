@@ -73,7 +73,7 @@
 <div class="max-w-4xl space-y-6" x-data="bannerForm({
     initialMode: '{{ $hasImage ? 'image' : 'color' }}',
     initialBgColor: '{{ $defaultColor }}',
-    initialImage: '{{ $hasImage ? asset('storage/' . $banner->image_path) : '' }}',
+    initialImage: '{{ $hasImage ? Storage::disk('public')->url($banner->image_path) : '' }}',
     initialTitle: '{{ addslashes($banner->title ?? 'Tiêu đề banner mẫu') }}',
     initialShowText: {{ $showText ? 'true' : 'false' }},
     initialUrl: '{{ addslashes($banner->link_url ?? '/courses') }}'

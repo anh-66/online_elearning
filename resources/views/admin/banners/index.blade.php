@@ -41,7 +41,7 @@
                                     <div class="w-28 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center"
                                          @if(!$banner->image_path && $banner->bg_color) style="background: {{ $banner->bg_color }};" @endif>
                                         @if($banner->image_path)
-                                            <img src="{{ asset('storage/'.$banner->image_path) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover"
+                                            <img src="{{ Storage::disk('public')->url($banner->image_path) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover"
                                                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                                             <div class="hidden w-full h-full flex items-center justify-center text-gray-400">
                                                 <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>

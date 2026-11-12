@@ -96,7 +96,7 @@
                 @if($banner->image_path)
                     <a href="{{ $banner->link_url ? url($banner->link_url) : 'javascript:void(0)' }}" 
                        class="block w-full h-full relative group">
-                        <img src="{{ asset('storage/'.$banner->image_path) }}"
+                        <img src="{{ Storage::disk('public')->url($banner->image_path) }}"
                              alt="{{ $banner->title }}"
                              class="w-full h-full object-cover object-center"
                              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
