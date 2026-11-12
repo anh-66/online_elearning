@@ -286,22 +286,116 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-neutral-800">
-                    <div class="space-y-2">
+                    <div class="space-y-2 relative"
+                         x-data="{
+                             open: false,
+                             selectedValue: 'vi',
+                             selectedLabel: 'Tiếng Việt',
+                             options: [
+                                 { value: 'vi', label: 'Tiếng Việt' },
+                                 { value: 'en', label: 'English' },
+                                 { value: 'ja', label: '日本語' }
+                             ],
+                             select(val, label) {
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                             }
+                         }">
                         <label class="text-sm font-medium text-gray-900 dark:text-white">Ngôn ngữ</label>
-                        <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-[#0d1117] focus:border-black dark:focus:border-white focus:outline-none">
-                            <option value="vi">Tiếng Việt</option>
-                            <option value="en">English</option>
-                            <option value="ja">日本語</option>
-                        </select>
+                        <button type="button"
+                                @click="open = !open"
+                                :aria-expanded="open"
+                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white flex items-center justify-between text-left focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all cursor-pointer select-none">
+                            <span x-text="selectedLabel" class="truncate font-medium"></span>
+                            <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200"
+                                 :class="open ? 'rotate-180 text-gray-700 dark:text-gray-300' : ''"
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open"
+                             x-cloak
+                             @click.outside="open = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                             class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 overflow-hidden space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button"
+                                        @click="select(item.value, item.label)"
+                                        class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                        :class="selectedValue === item.value 
+                                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                            : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'">
+                                    <span x-text="item.label"></span>
+                                    <svg x-show="selectedValue === item.value"
+                                         class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none transition-transform duration-200"
+                                         fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </template>
+                        </div>
                     </div>
 
-                    <div class="space-y-2">
+                    <div class="space-y-2 relative"
+                         x-data="{
+                             open: false,
+                             selectedValue: 'normal',
+                             selectedLabel: 'Mặc định',
+                             options: [
+                                 { value: 'normal', label: 'Mặc định' },
+                                 { value: 'small', label: 'Nhỏ' },
+                                 { value: 'large', label: 'Lớn' }
+                             ],
+                             select(val, label) {
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                             }
+                         }">
                         <label class="text-sm font-medium text-gray-900 dark:text-white">Cỡ chữ</label>
-                        <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white focus:bg-white dark:focus:bg-[#0d1117] focus:border-black dark:focus:border-white focus:outline-none">
-                            <option value="normal">Mặc định</option>
-                            <option value="small">Nhỏ</option>
-                            <option value="large">Lớn</option>
-                        </select>
+                        <button type="button"
+                                @click="open = !open"
+                                :aria-expanded="open"
+                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white flex items-center justify-between text-left focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all cursor-pointer select-none">
+                            <span x-text="selectedLabel" class="truncate font-medium"></span>
+                            <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200"
+                                 :class="open ? 'rotate-180 text-gray-700 dark:text-gray-300' : ''"
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open"
+                             x-cloak
+                             @click.outside="open = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                             class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 overflow-hidden space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button"
+                                        @click="select(item.value, item.label)"
+                                        class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                        :class="selectedValue === item.value 
+                                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                            : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'">
+                                    <span x-text="item.label"></span>
+                                    <svg x-show="selectedValue === item.value"
+                                         class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none transition-transform duration-200"
+                                         fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -379,7 +473,6 @@
                         <div class="border border-dashed border-gray-200 dark:border-neutral-800 rounded-xl p-6 text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-neutral-900/30">
                             <iconify-icon icon="lucide:credit-card" class="text-2xl text-gray-400 mb-1.5"></iconify-icon>
                             <p class="font-medium text-gray-700 dark:text-gray-300">Chưa lưu phương thức thanh toán</p>
-                            <p class="text-xs text-gray-400 mt-0.5">Phương thức thanh toán (Visa, MoMo...) sẽ tự động được lưu và hiển thị tại đây khi bạn đăng ký/mua khóa học.</p>
                         </div>
                     @endforelse
 

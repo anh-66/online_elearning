@@ -351,6 +351,16 @@
                                                    @change="selectedPayment = 'saved'"
                                                    :checked="selectedPayment === 'saved'"
                                                    class="sr-only">
+                                            <span data-slot="radio-group-item"
+                                                  class="relative size-4 rounded-full border flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200"
+                                                  :class="selectedPayment === 'saved' 
+                                                        ? 'border-[#0071e3] bg-[#0071e3]' 
+                                                        : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50'">
+                                                <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                                    <span class="size-2 rounded-full bg-white transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"
+                                                          :class="selectedPayment === 'saved' ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"></span>
+                                                </span>
+                                            </span>
                                             <div class="flex items-center gap-1.5 shrink-0 py-0.5">
                                                 @if($savedPaymentMethod->type === 'momo')
                                                     <iconify-icon icon="logos:momo" class="text-2xl"></iconify-icon>
@@ -384,14 +394,26 @@
                             <div x-show="showOtherMethods" x-transition class="space-y-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {{-- Option 1: Credit / Debit Card --}}
-                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all"
-                                           :class="selectedPayment === 'card' ? 'border-gray-900 dark:border-white bg-gray-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
+                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all group"
+                                           :class="selectedPayment === 'card' ? 'border-neutral-900 dark:border-white bg-neutral-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
                                         <input type="radio" name="payment_type_radio" value="card"
                                                @change="selectedPayment = 'card'"
                                                :checked="selectedPayment === 'card'"
                                                class="absolute opacity-0">
                                         <div class="flex items-center justify-between mb-3">
-                                            <iconify-icon icon="lucide:credit-card" class="text-2xl text-gray-900 dark:text-white"></iconify-icon>
+                                            <div class="flex items-center gap-2.5">
+                                                <span data-slot="radio-group-item"
+                                                      class="relative size-4 rounded-full border flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400"
+                                                      :class="selectedPayment === 'card' 
+                                                            ? 'border-neutral-900 dark:border-white bg-neutral-900 dark:bg-white' 
+                                                            : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50'">
+                                                    <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                                        <span class="size-2 rounded-full bg-white dark:bg-neutral-950 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"
+                                                              :class="selectedPayment === 'card' ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"></span>
+                                                    </span>
+                                                </span>
+                                                <iconify-icon icon="lucide:credit-card" class="text-2xl text-gray-900 dark:text-white"></iconify-icon>
+                                            </div>
                                             <div class="flex gap-1">
                                                 <iconify-icon icon="logos:visa" class="text-xl"></iconify-icon>
                                                 <iconify-icon icon="logos:mastercard" class="text-xl"></iconify-icon>
@@ -402,14 +424,26 @@
                                     </label>
 
                                     {{-- Option 2: E-Wallet MoMo --}}
-                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all"
-                                           :class="selectedPayment === 'momo' ? 'border-gray-900 dark:border-white bg-gray-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
+                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all group"
+                                           :class="selectedPayment === 'momo' ? 'border-neutral-900 dark:border-white bg-neutral-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
                                         <input type="radio" name="payment_type_radio" value="momo"
                                                @change="selectedPayment = 'momo'"
                                                :checked="selectedPayment === 'momo'"
                                                class="absolute opacity-0">
                                         <div class="flex items-center justify-between mb-3">
-                                            <iconify-icon icon="lucide:wallet" class="text-2xl text-[#A50064]"></iconify-icon>
+                                            <div class="flex items-center gap-2.5">
+                                                <span data-slot="radio-group-item"
+                                                      class="relative size-4 rounded-full border flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400"
+                                                      :class="selectedPayment === 'momo' 
+                                                            ? 'border-neutral-900 dark:border-white bg-neutral-900 dark:bg-white' 
+                                                            : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50'">
+                                                    <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                                        <span class="size-2 rounded-full bg-white dark:bg-neutral-950 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"
+                                                              :class="selectedPayment === 'momo' ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"></span>
+                                                    </span>
+                                                </span>
+                                                <iconify-icon icon="lucide:wallet" class="text-2xl text-[#A50064]"></iconify-icon>
+                                            </div>
                                             <div class="flex gap-1.5 items-center">
                                                 <iconify-icon icon="simple-icons:momo" class="text-xl text-[#A50064]"></iconify-icon>
                                             </div>
@@ -419,14 +453,26 @@
                                     </label>
 
                                     {{-- Option 3: Bank Transfer VietQR --}}
-                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all"
-                                           :class="selectedPayment === 'bank' ? 'border-gray-900 dark:border-white bg-gray-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
+                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all group"
+                                           :class="selectedPayment === 'bank' ? 'border-neutral-900 dark:border-white bg-neutral-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
                                         <input type="radio" name="payment_type_radio" value="bank"
                                                @change="selectedPayment = 'bank'"
                                                :checked="selectedPayment === 'bank'"
                                                class="absolute opacity-0">
                                         <div class="flex items-center justify-between mb-3">
-                                            <iconify-icon icon="lucide:landmark" class="text-2xl text-blue-600"></iconify-icon>
+                                            <div class="flex items-center gap-2.5">
+                                                <span data-slot="radio-group-item"
+                                                      class="relative size-4 rounded-full border flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400"
+                                                      :class="selectedPayment === 'bank' 
+                                                            ? 'border-neutral-900 dark:border-white bg-neutral-900 dark:bg-white' 
+                                                            : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50'">
+                                                    <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                                        <span class="size-2 rounded-full bg-white dark:bg-neutral-950 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"
+                                                              :class="selectedPayment === 'bank' ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"></span>
+                                                    </span>
+                                                </span>
+                                                <iconify-icon icon="lucide:landmark" class="text-2xl text-blue-600"></iconify-icon>
+                                            </div>
                                             <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">VietQR</span>
                                         </div>
                                         <span class="font-bold text-gray-900 dark:text-white text-sm">Chuyển khoản ngân hàng</span>
@@ -434,15 +480,28 @@
                                     </label>
 
                                     {{-- Option 4: COD --}}
-                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all"
-                                           :class="selectedPayment === 'cod' ? 'border-gray-900 dark:border-white bg-gray-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
+                                    <label class="relative flex flex-col p-5 cursor-pointer rounded-xl border-2 transition-all group"
+                                           :class="selectedPayment === 'cod' ? 'border-neutral-900 dark:border-white bg-neutral-50/80 dark:bg-neutral-800 shadow-sm' : 'border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700'">
                                         <input type="radio" name="payment_type_radio" value="cod"
                                                @change="selectedPayment = 'cod'"
                                                :checked="selectedPayment === 'cod'"
                                                class="absolute opacity-0">
                                         <div class="flex items-center justify-between mb-3">
-                                            <iconify-icon icon="lucide:truck" class="text-2xl text-gray-400"></iconify-icon>
+                                            <div class="flex items-center gap-2.5">
+                                                <span data-slot="radio-group-item"
+                                                      class="relative size-4 rounded-full border flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400"
+                                                      :class="selectedPayment === 'cod' 
+                                                            ? 'border-neutral-900 dark:border-white bg-neutral-900 dark:bg-white' 
+                                                            : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50'">
+                                                    <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                                        <span class="size-2 rounded-full bg-white dark:bg-neutral-950 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"
+                                                              :class="selectedPayment === 'cod' ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"></span>
+                                                    </span>
+                                                </span>
+                                                <iconify-icon icon="lucide:truck" class="text-2xl text-gray-400"></iconify-icon>
+                                            </div>
                                             <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-gray-400">Tư vấn</span>
+                                        </div>
                                         </div>
                                         <span class="font-bold text-gray-900 dark:text-white text-sm">Thanh toán sau (COD)</span>
                                         <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">Nhận tài liệu & tư vấn trực tiếp</span>

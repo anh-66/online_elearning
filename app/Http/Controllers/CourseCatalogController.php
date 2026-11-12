@@ -53,7 +53,7 @@ class CourseCatalogController extends Controller
             default => $query->orderByDesc('created_at'),
         };
 
-        $courses = $query->paginate(12)->withQueryString();
+        $courses = $query->paginate(6)->withQueryString();
         $categories = Category::withCount(['courses' => function ($q) {
             $q->where('status', Course::STATUS_PUBLISHED);
         }])->whereHas('courses', fn ($q) => $q->where('status', Course::STATUS_PUBLISHED))->orderBy('name')->get();

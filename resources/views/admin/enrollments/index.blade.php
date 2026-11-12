@@ -14,22 +14,87 @@
         </div>
     </div>
 
-    {{-- Filters --}}
-    <div class="glass-card p-4">
-        <form method="GET" action="{{ route('admin.enrollments.index') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="sm:col-span-2 relative">
+    {{-- Filters Toolbar (Minimalist, gray inputs, horizontal divider) --}}
+    <form method="GET" action="{{ route('admin.enrollments.index') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-6 border-b border-gray-100">
+        <div class="sm:col-span-2 relative">
                 <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
                 <input type="text" name="keyword" value="{{ request('keyword') }}"
                        placeholder="Tên học viên, email hoặc tên khóa học..."
                        class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
             </div>
 
-            <select name="status"
-                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] text-gray-600 transition-all">
-                <option value="">Tất cả (Miễn phí & Trả phí)</option>
-                <option value="{{ \App\Models\Enrollment::STATUS_FREE }}" @selected(request('status') === \App\Models\Enrollment::STATUS_FREE)>Miễn phí</option>
-                <option value="{{ \App\Models\Enrollment::STATUS_PAID }}" @selected(request('status') === \App\Models\Enrollment::STATUS_PAID)>Đã thanh toán</option>
-            </select>
+            @php
+                $statusLabels = [
+                    '' => 'Tất cả (Miễn phí & Trả phí)',
+                    \App\Models\Enrollment::STATUS_FREE => 'Miễn phí',
+                    \App\Models\Enrollment::STATUS_PAID => 'Đã thanh toán',
+                ];
+                $currentStatusVal = (string) request('status', '');
+                $currentStatusLabel = $statusLabels[$currentStatusVal] ?? 'Tất cả (Miễn phí & Trả phí)';
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     selectedValue: '{{ $currentStatusVal }}',
+                     selectedLabel: '{{ addslashes($currentStatusLabel) }}',
+                     options: [
+                         { value: '', label: 'Tất cả (Miễn phí & Trả phí)' },
+                         { value: '{{ \App\Models\Enrollment::STATUS_FREE }}', label: 'Miễn phí' },
+                         { value: '{{ \App\Models\Enrollment::STATUS_PAID }}', label: 'Đã thanh toán' },
+                     ],
+                     select(val, label) {
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <input type="hidden" name="status" :value="selectedValue">
+
+                <!-- Combobox Trigger Button -->
+                <button type="button"
+                        @click="open = !open"
+                        :aria-expanded="open"
+                        data-slot="combobox-trigger"
+                        class="w-full h-11 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Combobox Content Popup -->
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                     data-slot="combobox-content"
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button"
+                                @click="select(item.value, item.label)"
+                                data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value 
+                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value"
+                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+            </div>
 
             <div class="sm:col-span-3 flex justify-end gap-2">
                 <button type="submit"
@@ -44,78 +109,75 @@
                     </a>
                 @endif
             </div>
-        </form>
-    </div>
+    </form>
 
     {{-- Table --}}
-    <div class="glass-card overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50/50 text-gray-500 text-xs font-semibold uppercase tracking-wider">
-                    <tr>
-                        <th class="px-6 py-4">Học viên</th>
-                        <th class="px-4 py-4">Khóa học</th>
-                        <th class="px-4 py-4">Hình thức</th>
-                        <th class="px-4 py-4">Ngày ghi danh</th>
-                        <th class="px-6 py-4 text-right">Thao tác</th>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <tr>
+                    <th class="px-6 py-4">Học viên</th>
+                    <th class="px-4 py-4">Khóa học</th>
+                    <th class="px-4 py-4">Hình thức</th>
+                    <th class="px-4 py-4">Ngày ghi danh</th>
+                    <th class="px-6 py-4 text-right">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($enrollments as $enrollment)
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <p class="text-sm font-semibold text-gray-900">{{ $enrollment->user->name ?? 'Người dùng đã xóa' }}</p>
+                            <p class="text-xs text-gray-400">{{ $enrollment->user->email ?? '' }}</p>
+                        </td>
+                        <td class="px-4 py-4 max-w-xs">
+                            <p class="text-sm font-medium text-gray-800 truncate">{{ $enrollment->course->title ?? 'Khóa học đã xóa' }}</p>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            @if($enrollment->status === \App\Models\Enrollment::STATUS_PAID)
+                                <span class="status-badge bg-emerald-50 text-emerald-600">Đã thanh toán</span>
+                            @else
+                                <span class="status-badge bg-[#019D91]/10 text-[#019D91]">Miễn phí</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-4 text-xs text-gray-500 whitespace-nowrap">
+                            {{ $enrollment->enrolled_at ? $enrollment->enrolled_at->format('d/m/Y H:i') : ($enrollment->created_at?->format('d/m/Y H:i') ?? '—') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center justify-end">
+                                <form method="POST" action="{{ route('admin.enrollments.destroy', $enrollment) }}"
+                                      data-confirm-message="Bạn có chắc muốn hủy lượt ghi danh này?">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" title="Hủy ghi danh"
+                                            class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                        <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($enrollments as $enrollment)
-                        <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <p class="text-sm font-semibold text-gray-900">{{ $enrollment->user->name ?? 'Người dùng đã xóa' }}</p>
-                                <p class="text-xs text-gray-400">{{ $enrollment->user->email ?? '' }}</p>
-                            </td>
-                            <td class="px-4 py-4 max-w-xs">
-                                <p class="text-sm font-medium text-gray-800 truncate">{{ $enrollment->course->title ?? 'Khóa học đã xóa' }}</p>
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                @if($enrollment->status === \App\Models\Enrollment::STATUS_PAID)
-                                    <span class="status-badge bg-emerald-50 text-emerald-600">Đã thanh toán</span>
-                                @else
-                                    <span class="status-badge bg-[#019D91]/10 text-[#019D91]">Miễn phí</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 text-xs text-gray-500 whitespace-nowrap">
-                                {{ $enrollment->enrolled_at ? $enrollment->enrolled_at->format('d/m/Y H:i') : ($enrollment->created_at?->format('d/m/Y H:i') ?? '—') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center justify-end">
-                                    <form method="POST" action="{{ route('admin.enrollments.destroy', $enrollment) }}"
-                                          data-confirm-message="Bạn có chắc muốn hủy lượt ghi danh này?">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" title="Hủy ghi danh"
-                                                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                            <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-16 text-center">
-                                <div class="flex flex-col items-center gap-2">
-                                    <iconify-icon icon="lucide:clipboard-list" class="text-gray-300 text-4xl"></iconify-icon>
-                                    <p class="text-sm text-gray-500">Chưa có lượt ghi danh nào</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        @if($enrollments->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p class="text-xs text-gray-500">
-                    Hiển thị {{ $enrollments->firstItem() }}–{{ $enrollments->lastItem() }} trong {{ $enrollments->total() }} ghi danh
-                </p>
-                {{ $enrollments->links() }}
-            </div>
-        @endif
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-16 text-center">
+                            <div class="flex flex-col items-center gap-2">
+                                <iconify-icon icon="lucide:clipboard-list" class="text-gray-300 text-4xl"></iconify-icon>
+                                <p class="text-sm text-gray-500">Chưa có lượt ghi danh nào</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+
+    @if($enrollments->hasPages())
+        <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-gray-500">
+                Hiển thị {{ $enrollments->firstItem() }}–{{ $enrollments->lastItem() }} trong {{ $enrollments->total() }} ghi danh
+            </p>
+            {{ $enrollments->links() }}
+        </div>
+    @endif
 </div>
 @endsection

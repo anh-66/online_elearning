@@ -43,6 +43,7 @@ class GoogleController extends Controller
                 }
             }
 
+            $isNewUser = false;
             if (! $user) {
                 $user = User::create([
                     'name' => $googleUser->getName(),
@@ -52,7 +53,9 @@ class GoogleController extends Controller
                     'role' => User::ROLE_STUDENT,
                     'status' => User::STATUS_ACTIVE,
                     'email_verified_at' => now(),
+                    'onboarding_completed' => false,
                 ]);
+                $isNewUser = true;
             }
 
             if (! $user->isActive()) {
@@ -61,6 +64,19 @@ class GoogleController extends Controller
 
             Auth::login($user);
             $request->session()->regenerate();
+
+            if ($isNewUser) {
+                return redirect()->route('onboarding.welcome');
+            }
+
+            if ($user->isAdmin()) {
+                $intended = $request->session()->pull('url.intended');
+                if ($intended && str_contains($intended, '/admin')) {
+                    return redirect()->to($intended);
+                }
+
+                return redirect()->route('admin.dashboard');
+            }
 
             return redirect()->intended(route($user->dashboardRouteName(), absolute: false));
 

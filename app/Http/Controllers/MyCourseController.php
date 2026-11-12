@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class MyCourseController extends Controller
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
         $user = Auth::user();
+
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
         $enrolledCourses = $user->enrolledCourses()
             ->with(['instructor', 'category', 'reviews'])
             ->withCount('enrollments')

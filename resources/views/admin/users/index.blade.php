@@ -21,30 +21,162 @@
         </div>
     </div>
 
-    {{-- Filters --}}
-    <div class="glass-card p-4">
-        <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="relative">
-                <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
-                <input type="text" name="keyword" value="{{ request('keyword') }}"
-                       placeholder="Tên hoặc email..."
-                       class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
+    {{-- Filters Toolbar (Minimalist, gray inputs, separated by a thin horizontal line) --}}
+    <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 border-b border-gray-100">
+        <div class="relative">
+            <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
+            <input type="text" name="keyword" value="{{ request('keyword') }}"
+                   placeholder="Tên hoặc email..."
+                   class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
+        </div>
+
+            @php
+                $roleLabels = [
+                    '' => 'Tất cả vai trò',
+                    'admin' => 'Quản trị viên',
+                    'instructor' => 'Giảng viên',
+                    'student' => 'Học viên',
+                ];
+                $currentRoleVal = (string) request('role', '');
+                $currentRoleLabel = $roleLabels[$currentRoleVal] ?? 'Tất cả vai trò';
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     selectedValue: '{{ $currentRoleVal }}',
+                     selectedLabel: '{{ addslashes($currentRoleLabel) }}',
+                     options: [
+                         { value: '', label: 'Tất cả vai trò' },
+                         { value: 'admin', label: 'Quản trị viên' },
+                         { value: 'instructor', label: 'Giảng viên' },
+                         { value: 'student', label: 'Học viên' },
+                     ],
+                     select(val, label) {
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <input type="hidden" name="role" :value="selectedValue">
+
+                <!-- Combobox Trigger Button -->
+                <button type="button"
+                        @click="open = !open"
+                        :aria-expanded="open"
+                        data-slot="combobox-trigger"
+                        class="w-full h-11 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Combobox Content Popup -->
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                     data-slot="combobox-content"
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button"
+                                @click="select(item.value, item.label)"
+                                data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value 
+                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value"
+                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
             </div>
 
-            <select name="role"
-                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] text-gray-600 transition-all">
-                <option value="">Tất cả vai trò</option>
-                <option value="admin" @selected(request('role') === 'admin')>Quản trị viên</option>
-                <option value="instructor" @selected(request('role') === 'instructor')>Giảng viên</option>
-                <option value="student" @selected(request('role') === 'student')>Học viên</option>
-            </select>
+            @php
+                $statusLabels = [
+                    '' => 'Tất cả trạng thái',
+                    'active' => 'Hoạt động',
+                    'blocked' => 'Đã khóa',
+                ];
+                $currentStatusVal = (string) request('status', '');
+                $currentStatusLabel = $statusLabels[$currentStatusVal] ?? 'Tất cả trạng thái';
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     selectedValue: '{{ $currentStatusVal }}',
+                     selectedLabel: '{{ addslashes($currentStatusLabel) }}',
+                     options: [
+                         { value: '', label: 'Tất cả trạng thái' },
+                         { value: 'active', label: 'Hoạt động' },
+                         { value: 'blocked', label: 'Đã khóa' },
+                     ],
+                     select(val, label) {
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <input type="hidden" name="status" :value="selectedValue">
 
-            <select name="status"
-                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] text-gray-600 transition-all">
-                <option value="">Tất cả trạng thái</option>
-                <option value="active" @selected(request('status') === 'active')>Hoạt động</option>
-                <option value="blocked" @selected(request('status') === 'blocked')>Đã khóa</option>
-            </select>
+                <!-- Combobox Trigger Button -->
+                <button type="button"
+                        @click="open = !open"
+                        :aria-expanded="open"
+                        data-slot="combobox-trigger"
+                        class="w-full h-11 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Combobox Content Popup -->
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                     data-slot="combobox-content"
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button"
+                                @click="select(item.value, item.label)"
+                                data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value 
+                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value"
+                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+            </div>
 
             <div class="flex items-center gap-2">
                 <button type="submit"
@@ -59,14 +191,12 @@
                     </a>
                 @endif
             </div>
-        </form>
-    </div>
+    </form>
 
     {{-- Users Table --}}
-    <div class="glass-card overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50/50 text-gray-500 text-xs font-semibold uppercase tracking-wider">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
                     <tr>
                         <th class="px-6 py-4">Người dùng</th>
                         <th class="px-4 py-4">Vai trò</th>
@@ -135,12 +265,45 @@
                                     <form method="POST" action="{{ route('admin.users.update-role', $user) }}" class="inline">
                                         @csrf
                                         @method('PATCH')
-                                        <select name="role" onchange="this.form.submit()"
-                                                class="text-xs rounded-lg border-gray-200 py-1.5 pl-2 pr-6 bg-gray-50 focus:border-[#019D91] focus:ring-[#019D91]/20 cursor-pointer">
-                                            <option value="admin" @selected($user->role === 'admin')>Admin</option>
-                                            <option value="instructor" @selected($user->role === 'instructor')>Giảng viên</option>
-                                            <option value="student" @selected($user->role === 'student')>Học viên</option>
-                                        </select>
+                                        <div class="relative inline-block"
+                                             x-data="{
+                                                 open: false,
+                                                 selectedValue: '{{ $user->role }}',
+                                                 selectedLabel: '{{ $user->role === 'admin' ? 'Admin' : ($user->role === 'instructor' ? 'Giảng viên' : 'Học viên') }}',
+                                                 options: [
+                                                     { value: 'admin', label: 'Admin' },
+                                                     { value: 'instructor', label: 'Giảng viên' },
+                                                     { value: 'student', label: 'Học viên' }
+                                                 ],
+                                                 select(val, label) {
+                                                     if (this.selectedValue === val) { this.open = false; return; }
+                                                     this.selectedValue = val;
+                                                     this.selectedLabel = label;
+                                                     this.open = false;
+                                                     this.$nextTick(() => { this.$el.closest('form').submit(); });
+                                                 }
+                                             }">
+                                            <input type="hidden" name="role" :value="selectedValue">
+                                            <button type="button" @click="open = !open"
+                                                    class="text-xs rounded-lg border border-gray-200 py-1.5 pl-2.5 pr-2 bg-gray-50 hover:bg-gray-100 flex items-center gap-1.5 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer">
+                                                <span x-text="selectedLabel" class="font-medium text-gray-800"></span>
+                                                <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                                            </button>
+                                            <div x-show="open" x-cloak @click.outside="open = false"
+                                                 x-transition:enter="transition ease-out duration-100"
+                                                 x-transition:enter-start="opacity-0 scale-95"
+                                                 x-transition:enter-end="opacity-100 scale-100"
+                                                 class="absolute left-0 mt-1 z-50 rounded-xl border border-gray-200 bg-white shadow-xl p-1 min-w-[125px] text-xs space-y-0.5">
+                                                <template x-for="item in options" :key="item.value">
+                                                    <button type="button" @click="select(item.value, item.label)"
+                                                            class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-neutral-50 text-left transition-colors cursor-pointer"
+                                                            :class="selectedValue === item.value ? 'bg-neutral-100 font-semibold text-neutral-900' : 'text-neutral-700'">
+                                                        <span x-text="item.label"></span>
+                                                        <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900"></iconify-icon>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </form>
                                 @endif
                             </td>
@@ -175,11 +338,11 @@
 
                             {{-- Actions --}}
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center justify-end gap-1.5">
+                                <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('admin.users.edit', $user) }}"
                                        title="Chỉnh sửa"
-                                       class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all">
-                                        <iconify-icon icon="lucide:edit-3" class="text-lg"></iconify-icon>
+                                       class="text-gray-400 hover:text-gray-900 transition-colors">
+                                        <iconify-icon icon="lucide:edit-3" class="text-base"></iconify-icon>
                                     </a>
                                     @if($user->id !== auth()->id())
                                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
@@ -187,8 +350,8 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Xóa"
-                                                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                                <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                                                    class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                                <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
                                     @endif
@@ -211,13 +374,12 @@
 
         {{-- Pagination --}}
         @if($users->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <p class="text-xs text-gray-500">
                     Hiển thị {{ $users->firstItem() }}–{{ $users->lastItem() }} trong tổng số {{ $users->total() }} người dùng
                 </p>
                 {{ $users->links() }}
             </div>
         @endif
-    </div>
 </div>
 @endsection

@@ -53,8 +53,33 @@
 
         {{-- Remember me & Forgot Password --}}
         <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-            <label for="remember_me" class="inline-flex items-center gap-2 text-xs sm:text-sm text-neutral-700 cursor-pointer select-none">
-                <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded-md border-neutral-300 text-[#019D91] focus:ring-[#019D91]">
+            <label for="remember_me"
+                   x-data="{ checked: {{ old('remember') ? 'true' : 'false' }} }"
+                   class="group/field inline-flex items-center gap-2.5 text-xs sm:text-sm text-neutral-700 hover:text-neutral-900 cursor-pointer select-none">
+                <div class="relative flex size-4 items-center justify-center shrink-0">
+                    <input id="remember_me"
+                           type="checkbox"
+                           name="remember"
+                           x-model="checked"
+                           class="sr-only peer">
+                    <!-- Checkbox Box with Animate-UI Pop Effect (Vuông sắc nét theo mẫu) -->
+                    <div class="size-4 rounded-[3px] border transition-colors duration-300 flex items-center justify-center relative overflow-hidden peer-focus-visible:ring-2 peer-focus-visible:ring-[#019D91]/40 peer-focus-visible:border-[#019D91]"
+                         :class="checked ? 'border-[#019D91] bg-[#019D91]' : 'border-neutral-300 bg-white hover:border-neutral-400'">
+                        <!-- Pop Effect Background (scale-70 -> scale-100, opacity-0 -> opacity-100) -->
+                        <div class="absolute inset-0 bg-[#019D91] rounded-[inherit] transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)]"
+                             :class="checked ? 'opacity-100 scale-100' : 'opacity-0 scale-70'"></div>
+                        <!-- Checkmark SVG Icon (Tick02) with Pop & Scale Animation -->
+                        <svg class="size-3 text-white relative z-10 transition-[transform,opacity] duration-250 ease-out"
+                             :class="checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50'"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2.5"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                </div>
                 <span>Ghi nhớ đăng nhập</span>
             </label>
 

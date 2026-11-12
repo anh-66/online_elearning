@@ -43,10 +43,9 @@
         </a>
     </div>
 
-    {{-- Filters --}}
-    <div class="glass-card p-4">
-        <form method="GET" action="{{ route('admin.courses.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <input type="hidden" name="status" value="{{ $status ?? 'all' }}">
+    {{-- Filters Toolbar (Minimalist, gray inputs, horizontal divider) --}}
+    <form method="GET" action="{{ route('admin.courses.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 border-b border-gray-100">
+        <input type="hidden" name="status" value="{{ $status ?? 'all' }}">
 
             <div class="sm:col-span-2 relative">
                 <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
@@ -55,15 +54,75 @@
                        class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
             </div>
 
-            <select name="category_id"
-                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] text-gray-600 transition-all">
-                <option value="">Tất cả danh mục</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" @selected((string)request('category_id') === (string)$cat->id)>
-                        {{ $cat->name }}
-                    </option>
-                @endforeach
-            </select>
+            @php
+                $currentAdminCatId = (string) request('category_id', '');
+                $selectedAdminCat = $categories->firstWhere('id', $currentAdminCatId);
+                $adminCatFilterLabel = $selectedAdminCat ? $selectedAdminCat->name : 'Tất cả danh mục';
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     selectedValue: '{{ $currentAdminCatId }}',
+                     selectedLabel: '{{ addslashes($adminCatFilterLabel) }}',
+                     options: [
+                         { value: '', label: 'Tất cả danh mục' },
+                         @foreach($categories as $cat)
+                             { value: '{{ $cat->id }}', label: '{{ addslashes($cat->name) }}' },
+                         @endforeach
+                     ],
+                     select(val, label) {
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <input type="hidden" name="category_id" :value="selectedValue">
+
+                <!-- Combobox Trigger Button -->
+                <button type="button"
+                        @click="open = !open"
+                        :aria-expanded="open"
+                        data-slot="combobox-trigger"
+                        class="w-full h-11 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Combobox Content Popup -->
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                     data-slot="combobox-content"
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button"
+                                @click="select(item.value, item.label)"
+                                data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value 
+                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value"
+                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+            </div>
 
             <div class="flex items-center gap-2">
                 <button type="submit"
@@ -78,14 +137,12 @@
                     </a>
                 @endif
             </div>
-        </form>
-    </div>
+    </form>
 
     {{-- Courses Table --}}
-    <div class="glass-card overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50/50 text-gray-500 text-xs font-semibold uppercase tracking-wider">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
                     <tr>
                         <th class="px-6 py-4">Khóa học</th>
                         <th class="px-4 py-4">Giảng viên</th>
@@ -165,8 +222,8 @@
                                             @method('PATCH')
                                             <button type="submit"
                                                     title="Duyệt"
-                                                    class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
-                                                <iconify-icon icon="lucide:check-circle" class="text-lg"></iconify-icon>
+                                                    class="text-gray-400 hover:text-emerald-600 transition-colors flex items-center">
+                                                <iconify-icon icon="lucide:check-circle" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
                                     @endif
@@ -176,8 +233,8 @@
                                         <button type="button"
                                                 @click="rejectCourseId = {{ $course->id }}; rejectCourseTitle = '{{ addslashes($course->title) }}'; rejectActionUrl = '{{ route('admin.courses.reject', $course) }}'; rejectModalOpen = true"
                                                 title="{{ $course->isPublished() ? 'Từ chối (Vi phạm)' : 'Từ chối' }}"
-                                                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                            <iconify-icon icon="lucide:x-circle" class="text-lg"></iconify-icon>
+                                                class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                            <iconify-icon icon="lucide:x-circle" class="text-base"></iconify-icon>
                                         </button>
                                     @endif
 
@@ -188,8 +245,8 @@
                                             @method('PATCH')
                                             <button type="submit"
                                                     title="Ẩn khóa học"
-                                                    class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all">
-                                                <iconify-icon icon="lucide:eye-off" class="text-lg"></iconify-icon>
+                                                    class="text-gray-400 hover:text-amber-600 transition-colors flex items-center">
+                                                <iconify-icon icon="lucide:eye-off" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
                                     @endif
@@ -198,8 +255,8 @@
                                     @if($course->isPublished())
                                         <a href="{{ route('courses.show', $course->slug) }}" target="_blank"
                                            title="Xem trang công khai"
-                                           class="p-2 text-gray-400 hover:text-[#019D91] hover:bg-[#019D91]/10 rounded-lg transition-all">
-                                            <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
+                                           class="text-gray-400 hover:text-gray-900 transition-colors flex items-center">
+                                            <iconify-icon icon="lucide:eye" class="text-base"></iconify-icon>
                                         </a>
                                     @endif
 
@@ -209,8 +266,8 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Xóa"
-                                                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                            <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                                                class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                            <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
                                         </button>
                                     </form>
                                 </div>
@@ -232,14 +289,13 @@
 
         {{-- Pagination --}}
         @if($courses->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <p class="text-xs text-gray-500">
                     Hiển thị {{ $courses->firstItem() }}–{{ $courses->lastItem() }} trong tổng số {{ $courses->total() }} khóa học
                 </p>
                 {{ $courses->links() }}
             </div>
         @endif
-    </div>
 
     {{-- Reject Modal --}}
     <div x-show="rejectModalOpen" x-cloak

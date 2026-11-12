@@ -1,50 +1,137 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex items-center justify-center gap-3 sm:gap-4 select-none">
-        {{-- Previous Page Link --}}
-        @if ($paginator->onFirstPage())
-            <span class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 dark:border-neutral-800/80 text-gray-300 dark:text-neutral-700 cursor-not-allowed bg-gray-50/50 dark:bg-neutral-900/40 transition-colors" aria-disabled="true">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            </span>
-        @else
-            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#161b22] text-gray-500 dark:text-gray-400 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:border-[#019D91]/40 dark:hover:border-[#02b3a5]/40 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all shadow-sm" aria-label="{{ __('pagination.previous') }}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            </a>
-        @endif
+    <nav role="navigation"
+         aria-label="{{ __('pagination.navigation') ?? 'Pagination' }}"
+         data-slot="pagination"
+         class="mx-auto flex w-full justify-center select-none"
+         x-data="{
+             hover: { left: '0px', top: '0px', width: '0px', height: '0px', opacity: 0 },
+             setHover(el) {
+                 if (!el) return;
+                 this.hover = {
+                     left: el.offsetLeft + 'px',
+                     top: el.offsetTop + 'px',
+                     width: el.offsetWidth + 'px',
+                     height: el.offsetHeight + 'px',
+                     opacity: 1
+                 };
+             },
+             clearHover() {
+                 this.hover.opacity = 0;
+             }
+         }">
 
-        {{-- Pagination Elements --}}
-        <div class="flex items-center gap-1.5 sm:gap-2">
+        <ul data-slot="pagination-content"
+            class="relative flex items-center gap-1 p-1 rounded-xl"
+            @mouseleave="clearHover()">
+
+            {{-- Smooth Gliding Hover Pill (Animate UI Fluid Motion) --}}
+            <div class="absolute rounded-lg bg-black/[0.06] dark:bg-white/15 pointer-events-none transition-all duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] z-0"
+                 :style="`left: ${hover.left}; top: ${hover.top}; width: ${hover.width}; height: ${hover.height}; opacity: ${hover.opacity};`"
+                 x-cloak>
+            </div>
+
+            {{-- Previous Page Link --}}
+            @if ($paginator->onFirstPage())
+                <li data-slot="pagination-item">
+                    <span aria-disabled="true"
+                          data-slot="pagination-link"
+                          class="h-9 pl-2 pr-3 gap-1.5 text-sm font-medium rounded-lg inline-flex items-center justify-center text-neutral-300 dark:text-neutral-600 cursor-not-allowed select-none opacity-50">
+                        <svg class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="hidden sm:inline">Trước</span>
+                    </span>
+                </li>
+            @else
+                <li data-slot="pagination-item">
+                    <a href="{{ $paginator->previousPageUrl() }}"
+                       rel="prev"
+                       data-slot="pagination-link"
+                       @mouseenter="setHover($el)"
+                       class="relative z-10 h-9 pl-2 pr-3 gap-1.5 text-sm font-medium rounded-lg inline-flex items-center justify-center text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-colors active:scale-95"
+                       aria-label="{{ __('pagination.previous') }}">
+                        <svg class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="hidden sm:inline">Trước</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Pagination Elements --}}
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <span class="w-8 h-10 flex items-center justify-center text-gray-300 dark:text-neutral-600 font-bold text-sm tracking-widest">{{ $element }}</span>
+                    <li data-slot="pagination-item">
+                        <span aria-hidden="true"
+                              data-slot="pagination-ellipsis"
+                              class="size-9 flex items-center justify-center text-neutral-400 dark:text-neutral-500">
+                            <svg class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <circle cx="8" cy="12" r="0.75" fill="currentColor"/>
+                                <circle cx="12" cy="12" r="0.75" fill="currentColor"/>
+                                <circle cx="16" cy="12" r="0.75" fill="currentColor"/>
+                            </svg>
+                            <span class="sr-only">More pages</span>
+                        </span>
+                    </li>
                 @endif
 
                 {{-- Array Of Links --}}
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
-                            <span aria-current="page" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#019D91] text-white font-bold text-sm shadow-md shadow-[#019D91]/25">
-                                {{ $page }}
-                            </span>
+                            <li data-slot="pagination-item">
+                                <span aria-current="page"
+                                      data-slot="pagination-link"
+                                      data-active="true"
+                                      class="relative z-10 size-9 inline-flex items-center justify-center rounded-lg text-sm font-bold bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-sm transition-all select-none">
+                                    {{ $page }}
+                                </span>
+                            </li>
                         @else
-                            <a href="{{ $url }}" class="w-10 h-10 flex items-center justify-center rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 font-medium text-sm transition-all" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
-                                {{ $page }}
-                            </a>
+                            <li data-slot="pagination-item">
+                                <a href="{{ $url }}"
+                                   data-slot="pagination-link"
+                                   @mouseenter="setHover($el)"
+                                   class="relative z-10 size-9 inline-flex items-center justify-center rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors active:scale-95"
+                                   aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                    {{ $page }}
+                                </a>
+                            </li>
                         @endif
                     @endforeach
                 @endif
             @endforeach
-        </div>
 
-        {{-- Next Page Link --}}
-        @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#161b22] text-gray-500 dark:text-gray-400 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:border-[#019D91]/40 dark:hover:border-[#02b3a5]/40 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-all shadow-sm" aria-label="{{ __('pagination.next') }}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </a>
-        @else
-            <span class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 dark:border-neutral-800/80 text-gray-300 dark:text-neutral-700 cursor-not-allowed bg-gray-50/50 dark:bg-neutral-900/40 transition-colors" aria-disabled="true">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </span>
-        @endif
+            {{-- Next Page Link --}}
+            @if ($paginator->hasMorePages())
+                <li data-slot="pagination-item">
+                    <a href="{{ $paginator->nextPageUrl() }}"
+                       rel="next"
+                       data-slot="pagination-link"
+                       @mouseenter="setHover($el)"
+                       class="relative z-10 h-9 pl-3 pr-2 gap-1.5 text-sm font-medium rounded-lg inline-flex items-center justify-center text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-colors active:scale-95"
+                       aria-label="{{ __('pagination.next') }}">
+                        <span class="hidden sm:inline">Sau</span>
+                        <svg class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </li>
+            @else
+                <li data-slot="pagination-item">
+                    <span aria-disabled="true"
+                          data-slot="pagination-link"
+                          class="h-9 pl-3 pr-2 gap-1.5 text-sm font-medium rounded-lg inline-flex items-center justify-center text-neutral-300 dark:text-neutral-600 cursor-not-allowed select-none opacity-50">
+                        <span class="hidden sm:inline">Sau</span>
+                        <svg class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </li>
+            @endif
+
+        </ul>
     </nav>
 @endif

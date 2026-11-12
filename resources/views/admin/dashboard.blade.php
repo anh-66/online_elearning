@@ -92,15 +92,43 @@
                     <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm đã chọn</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
-                    <div class="relative inline-block">
-                        <select name="year" onchange="this.form.submit()"
-                                class="text-sm border border-gray-200 bg-white rounded-lg pl-3 pr-8 py-1.5 font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] cursor-pointer">
-                            @forelse($availableYears as $year)
-                                <option value="{{ $year }}" @selected($year === $selectedYear)>{{ $year }}</option>
-                            @empty
-                                <option value="{{ $selectedYear }}">{{ $selectedYear }}</option>
-                            @endforelse
-                        </select>
+                    <div class="relative inline-block"
+                         x-data="{
+                             open: false,
+                             selectedValue: '{{ $selectedYear }}',
+                             selectedLabel: 'Năm {{ $selectedYear }}',
+                             options: [
+                                 @forelse($availableYears as $year)
+                                     { value: '{{ $year }}', label: 'Năm {{ $year }}' },
+                                 @empty
+                                     { value: '{{ $selectedYear }}', label: 'Năm {{ $selectedYear }}' },
+                                 @endforelse
+                             ],
+                             select(val, label) {
+                                 if (this.selectedValue === val) { this.open = false; return; }
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                                 this.$nextTick(() => { this.$el.closest('form').submit(); });
+                             }
+                         }">
+                        <input type="hidden" name="year" :value="selectedValue">
+                        <button type="button" @click="open = !open"
+                                class="text-xs sm:text-sm rounded-xl border border-gray-200 py-1.5 pl-3 pr-2.5 bg-white hover:bg-gray-50 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
+                            <span x-text="selectedLabel" class="font-semibold text-gray-800"></span>
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                        </button>
+                        <div x-show="open" x-cloak @click.outside="open = false"
+                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 bg-white shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button" @click="select(item.value, item.label)"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 text-left transition-colors cursor-pointer"
+                                        :class="selectedValue === item.value ? 'bg-neutral-100 font-semibold text-neutral-900' : 'text-neutral-700'">
+                                    <span x-text="item.label"></span>
+                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900"></iconify-icon>
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -117,15 +145,43 @@
                     <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm {{ $selectedYear }}</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
-                    <div class="relative inline-block">
-                        <select name="year" onchange="this.form.submit()"
-                                class="text-sm border border-gray-200 bg-white rounded-lg pl-3 pr-8 py-1.5 font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] cursor-pointer">
-                            @forelse($availableYears as $year)
-                                <option value="{{ $year }}" @selected($year === $selectedYear)>{{ $year }}</option>
-                            @empty
-                                <option value="{{ $selectedYear }}">{{ $selectedYear }}</option>
-                            @endforelse
-                        </select>
+                    <div class="relative inline-block"
+                         x-data="{
+                             open: false,
+                             selectedValue: '{{ $selectedYear }}',
+                             selectedLabel: 'Năm {{ $selectedYear }}',
+                             options: [
+                                 @forelse($availableYears as $year)
+                                     { value: '{{ $year }}', label: 'Năm {{ $year }}' },
+                                 @empty
+                                     { value: '{{ $selectedYear }}', label: 'Năm {{ $selectedYear }}' },
+                                 @endforelse
+                             ],
+                             select(val, label) {
+                                 if (this.selectedValue === val) { this.open = false; return; }
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                                 this.$nextTick(() => { this.$el.closest('form').submit(); });
+                             }
+                         }">
+                        <input type="hidden" name="year" :value="selectedValue">
+                        <button type="button" @click="open = !open"
+                                class="text-xs sm:text-sm rounded-xl border border-gray-200 py-1.5 pl-3 pr-2.5 bg-white hover:bg-gray-50 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
+                            <span x-text="selectedLabel" class="font-semibold text-gray-800"></span>
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                        </button>
+                        <div x-show="open" x-cloak @click.outside="open = false"
+                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 bg-white shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button" @click="select(item.value, item.label)"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 text-left transition-colors cursor-pointer"
+                                        :class="selectedValue === item.value ? 'bg-neutral-100 font-semibold text-neutral-900' : 'text-neutral-700'">
+                                    <span x-text="item.label"></span>
+                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900"></iconify-icon>
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </form>
             </div>

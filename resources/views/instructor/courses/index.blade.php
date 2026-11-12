@@ -16,7 +16,7 @@
 @endphp
 
 <div class="space-y-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-100 dark:border-neutral-800">
         <!-- Tab trạng thái -->
         <div class="flex flex-wrap gap-2">
             @foreach($statusTabs as $value => $label)
@@ -34,7 +34,7 @@
                     <input type="hidden" name="status" value="{{ request('status') }}">
                 @endif
                 <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm theo tên khóa học..."
-                       class="w-56 rounded-l-xl border-gray-300 dark:border-neutral-700 text-sm focus:border-brand-600 focus:ring-brand-600">
+                       class="w-56 rounded-l-xl border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 text-sm focus:border-brand-600 focus:ring-brand-600">
                 <button type="submit" class="px-4 rounded-r-xl bg-brand-700 text-white text-sm font-medium hover:bg-brand-800">Tìm</button>
             </form>
             <a href="{{ route('instructor.courses.create') }}" class="inline-flex items-center px-4 py-2 rounded-xl bg-brand-700 text-white text-sm font-semibold shadow-sm hover:bg-brand-800 whitespace-nowrap">
@@ -43,21 +43,21 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-neutral-800/40 text-xs uppercase text-gray-500 dark:text-neutral-400">
-                    <tr>
-                        <th class="px-6 py-3 text-left font-semibold">Khóa học</th>
-                        <th class="px-4 py-3 text-left font-semibold">Trạng thái</th>
-                        <th class="px-4 py-3 text-center font-semibold">Nội dung</th>
-                        <th class="px-4 py-3 text-center font-semibold">Học viên</th>
-                        <th class="px-4 py-3 text-center font-semibold">Đánh giá</th>
-                        <th class="px-4 py-3 text-right font-semibold">Học phí</th>
-                        <th class="px-6 py-3 text-right font-semibold">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-neutral-800">
+    {{-- Courses Table --}}
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead class="border-b border-gray-100 dark:border-neutral-800 text-xs uppercase text-gray-400 dark:text-neutral-500">
+                <tr>
+                    <th class="py-3 text-left font-semibold">Khóa học</th>
+                    <th class="px-4 py-3 text-left font-semibold">Trạng thái</th>
+                    <th class="px-4 py-3 text-center font-semibold">Nội dung</th>
+                    <th class="px-4 py-3 text-center font-semibold">Học viên</th>
+                    <th class="px-4 py-3 text-center font-semibold">Đánh giá</th>
+                    <th class="px-4 py-3 text-right font-semibold">Học phí</th>
+                    <th class="px-6 py-3 text-right font-semibold">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-neutral-800">
                     @forelse($courses as $course)
                         <tr class="hover:bg-gray-50 dark:hover:bg-neutral-800 align-top">
                             <td class="px-6 py-4">
@@ -116,8 +116,9 @@
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <div>{{ $courses->links() }}</div>
+    @if($courses->hasPages())
+        <div class="pt-6 border-t border-gray-100 dark:border-neutral-800">{{ $courses->links() }}</div>
+    @endif
 </div>
 @endsection

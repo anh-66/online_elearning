@@ -7,10 +7,6 @@
 <form method="POST" action="{{ route('instructor.courses.store') }}" enctype="multipart/form-data" class="space-y-6">
     @csrf
 
-    <div class="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/30 text-sm text-brand-900 dark:text-brand-300">
-        Khóa học mới sẽ được lưu ở trạng thái <strong>Bản nháp</strong>. Sau khi thêm chương và bài học, bạn có thể gửi cho quản trị viên duyệt.
-    </div>
-
     @include('instructor.courses.partials.form')
 
     <div class="flex items-center justify-end gap-3">

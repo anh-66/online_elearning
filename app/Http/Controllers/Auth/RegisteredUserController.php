@@ -42,12 +42,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => User::ROLE_STUDENT,
             'status' => User::STATUS_ACTIVE,
+            'onboarding_completed' => false,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route($user->dashboardRouteName(), absolute: false));
+        return redirect()->route('onboarding.welcome');
     }
 }

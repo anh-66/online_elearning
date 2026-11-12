@@ -325,89 +325,92 @@
     {{-- ======================================================== --}}
     {{-- MODAL CẮT ẢNH BANNER (KÉO RA KÉO VÀO TỰ DO NHƯ THIẾT KẾ) --}}
     {{-- ======================================================== --}}
-    <div x-show="cropModalOpen" x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
-        <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl space-y-4" @click.outside="closeCropModal()">
-            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                <div class="flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-[#7c3aed]/10 text-[#7c3aed] flex items-center justify-center">
-                        <iconify-icon icon="lucide:crop" class="text-lg"></iconify-icon>
-                    </span>
-                    <div>
-                        <h3 class="text-base font-bold text-gray-900">Kéo các góc & cạnh để chọn vùng hiển thị banner</h3>
-                        <p class="text-xs text-gray-400">Bạn có thể bấm giữ và kéo các góc màu tím để mở rộng hoặc thu nhỏ vùng cắt tự do.</p>
+    <template x-teleport="body">
+        <div x-show="cropModalOpen" x-cloak
+             class="fixed inset-0 z-[9999] overflow-y-auto bg-black/85 backdrop-blur-sm flex min-h-full items-start sm:items-center justify-center p-3 sm:p-5"
+             @keydown.escape.window="closeCropModal()">
+            <div class="my-auto bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-gray-100" @click.outside="closeCropModal()">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-[#7c3aed]/10 text-[#7c3aed] flex items-center justify-center">
+                            <iconify-icon icon="lucide:crop" class="text-lg"></iconify-icon>
+                        </span>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900">Kéo các góc & cạnh để chọn vùng hiển thị banner</h3>
+                            <p class="text-xs text-gray-400">Bạn có thể bấm giữ và kéo các góc màu tím để mở rộng hoặc thu nhỏ vùng cắt tự do.</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="closeCropModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition">
+                        <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
+                    </button>
+                </div>
+
+                {{-- Cropper Container --}}
+                <div class="w-full h-72 sm:h-[380px] max-h-[50vh] bg-neutral-900 rounded-2xl overflow-hidden flex items-center justify-center relative">
+                    <img id="cropper_image_el" src="" alt="To Crop" class="max-w-full max-h-full block">
+                </div>
+
+                {{-- Cropper Controls Bar --}}
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    {{-- Aspect Ratio options --}}
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-semibold text-gray-500 mr-1">Chế độ cắt:</span>
+                        <button type="button" @click="setAspectRatio(NaN)" 
+                                :class="isNaN(aspectRatio) ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                            <iconify-icon icon="lucide:move" class="text-xs"></iconify-icon>
+                            Tự do kéo thả
+                        </button>
+                        <button type="button" @click="setAspectRatio(3 / 1)" 
+                                :class="aspectRatio === 3 ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                            3:1 (Banner ngang)
+                        </button>
+                        <button type="button" @click="setAspectRatio(16 / 9)" 
+                                :class="aspectRatio === 16/9 ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                            16:9
+                        </button>
+                    </div>
+
+                    {{-- Action tools: Zoom, Rotate, Reset --}}
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="cropper?.zoom(0.1)" title="Phóng to ảnh"
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
+                            <iconify-icon icon="lucide:zoom-in" class="text-base"></iconify-icon>
+                            <span class="hidden sm:inline">Phóng to</span>
+                        </button>
+                        <button type="button" @click="cropper?.zoom(-0.1)" title="Thu nhỏ ảnh"
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
+                            <iconify-icon icon="lucide:zoom-out" class="text-base"></iconify-icon>
+                            <span class="hidden sm:inline">Thu nhỏ</span>
+                        </button>
+                        <button type="button" @click="cropper?.rotate(90)" title="Xoay 90 độ"
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
+                            <iconify-icon icon="lucide:rotate-cw" class="text-base"></iconify-icon>
+                            <span class="hidden sm:inline">Xoay</span>
+                        </button>
+                        <button type="button" @click="cropper?.reset()" title="Đặt lại ban đầu"
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
+                            <iconify-icon icon="lucide:refresh-cw" class="text-base"></iconify-icon>
+                            <span class="hidden sm:inline">Đặt lại</span>
+                        </button>
                     </div>
                 </div>
-                <button type="button" @click="closeCropModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition">
-                    <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
-                </button>
-            </div>
 
-            {{-- Cropper Container --}}
-            <div class="w-full h-80 sm:h-[420px] bg-neutral-900 rounded-2xl overflow-hidden flex items-center justify-center relative">
-                <img id="cropper_image_el" src="" alt="To Crop" class="max-w-full max-h-full block">
-            </div>
-
-            {{-- Cropper Controls Bar --}}
-            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-                {{-- Aspect Ratio options --}}
-                <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-semibold text-gray-500 mr-1">Chế độ cắt:</span>
-                    <button type="button" @click="setAspectRatio(NaN)" 
-                            :class="isNaN(aspectRatio) ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                        <iconify-icon icon="lucide:move" class="text-xs"></iconify-icon>
-                        Tự do kéo thả
+                {{-- Modal Action Buttons --}}
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+                    <button type="button" @click="closeCropModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 transition">
+                        Hủy bỏ
                     </button>
-                    <button type="button" @click="setAspectRatio(3 / 1)" 
-                            :class="aspectRatio === 3 ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                        3:1 (Banner ngang)
-                    </button>
-                    <button type="button" @click="setAspectRatio(16 / 9)" 
-                            :class="aspectRatio === 16/9 ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                        16:9
+                    <button type="button" @click="applyCrop()" class="px-6 py-2.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold shadow-lg transition active:scale-95 flex items-center gap-1.5">
+                        <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
+                        Cắt & Dùng vùng này
                     </button>
                 </div>
-
-                {{-- Action tools: Zoom, Rotate, Reset --}}
-                <div class="flex items-center gap-2">
-                    <button type="button" @click="cropper?.zoom(0.1)" title="Phóng to ảnh"
-                            class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
-                        <iconify-icon icon="lucide:zoom-in" class="text-base"></iconify-icon>
-                        <span class="hidden sm:inline">Phóng to</span>
-                    </button>
-                    <button type="button" @click="cropper?.zoom(-0.1)" title="Thu nhỏ ảnh"
-                            class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
-                        <iconify-icon icon="lucide:zoom-out" class="text-base"></iconify-icon>
-                        <span class="hidden sm:inline">Thu nhỏ</span>
-                    </button>
-                    <button type="button" @click="cropper?.rotate(90)" title="Xoay 90 độ"
-                            class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
-                        <iconify-icon icon="lucide:rotate-cw" class="text-base"></iconify-icon>
-                        <span class="hidden sm:inline">Xoay</span>
-                    </button>
-                    <button type="button" @click="cropper?.reset()" title="Đặt lại ban đầu"
-                            class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1">
-                        <iconify-icon icon="lucide:refresh-cw" class="text-base"></iconify-icon>
-                        <span class="hidden sm:inline">Đặt lại</span>
-                    </button>
-                </div>
-            </div>
-
-            {{-- Modal Action Buttons --}}
-            <div class="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
-                <button type="button" @click="closeCropModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 transition">
-                    Hủy bỏ
-                </button>
-                <button type="button" @click="applyCrop()" class="px-6 py-2.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold shadow-lg transition active:scale-95 flex items-center gap-1.5">
-                    <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
-                    Cắt & Dùng vùng này
-                </button>
             </div>
         </div>
-    </div>
+    </template>
 </div>
 @endsection
 
@@ -472,26 +475,39 @@ document.addEventListener('alpine:init', () => {
             this.cropModalOpen = true;
             this.$nextTick(() => {
                 const imgEl = document.getElementById('cropper_image_el');
-                imgEl.src = imageSrc;
+                if (!imgEl) return;
 
                 if (this.cropper) {
                     this.cropper.destroy();
+                    this.cropper = null;
                 }
 
-                // Initialize with free aspect ratio and full movable/resizable handles
-                this.cropper = new Cropper(imgEl, {
-                    aspectRatio: this.aspectRatio, // NaN cho phép kéo thả tự do mọi góc
-                    viewMode: 1,
-                    dragMode: 'crop',
-                    autoCropArea: 0.9,
-                    cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false,
-                    responsive: true,
-                    guides: true,
-                    center: true,
-                    background: true,
-                });
+                const initCropper = () => {
+                    if (this.cropper) {
+                        this.cropper.destroy();
+                    }
+                    this.cropper = new Cropper(imgEl, {
+                        aspectRatio: this.aspectRatio, // NaN cho phép kéo thả tự do mọi góc
+                        viewMode: 1,
+                        dragMode: 'crop',
+                        autoCropArea: 0.9,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                        responsive: true,
+                        guides: true,
+                        center: true,
+                        background: true,
+                    });
+                };
+
+                imgEl.onload = () => {
+                    initCropper();
+                };
+                imgEl.src = imageSrc;
+                if (imgEl.complete && imgEl.naturalWidth > 0) {
+                    initCropper();
+                }
             });
         },
 

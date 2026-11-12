@@ -9,20 +9,23 @@
 
     @include('partials.theme-script')
 
-    <!-- Preconnect Fonts: Be Vietnam Pro -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <!-- Preconnect Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
     <style>
-        body {
-            font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        body, button, input, textarea, select {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
@@ -42,54 +45,51 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col bg-[#F9FAFB] text-[#111827] dark:bg-[#0d1117] dark:text-[#e6edf3] font-sans antialiased selection:bg-[#10B981] selection:text-white transition-colors">
-    <!-- Navigation Bar (Minimal Modern Learning Dashboard) -->
-    <header class="sticky top-0 z-50 bg-white dark:bg-[#161b22] border-b border-gray-100 dark:border-neutral-800 transition-colors shadow-sm" data-sd-id="2">
-        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between" data-sd-id="3">
-            <!-- Left: Back link + Course Title -->
-            <div class="flex items-center gap-4 sm:gap-6 min-w-0" data-sd-id="4">
-                <a href="@yield('back_url', url('/my-courses'))" id="nav-back-link" class="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors group shrink-0" data-sd-id="5">
-                    <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
-                    <span class="ml-2 text-sm font-semibold" data-sd-id="6">Quay lại khóa học</span>
-                </a>
-                <div class="h-4 w-[1px] bg-gray-200 dark:bg-neutral-700 shrink-0" data-sd-id="7"></div>
-                <h1 class="text-sm sm:text-base font-bold tracking-tight text-gray-900 dark:text-white truncate max-w-xs md:max-w-md lg:max-w-xl" data-sd-id="8">
-                    @yield('course_title', 'Tên khóa học')
-                </h1>
-            </div>
-            
-            <!-- Right: Progress + Theme toggle + User Avatar -->
-            <div class="flex items-center gap-4 sm:gap-8 shrink-0" data-sd-id="9">
-                <div class="flex flex-col items-end">
-                    <div class="flex items-center gap-2.5 mb-1">
-                        <span class="text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">Tiến độ học tập</span>
-                        <span class="text-xs sm:text-sm font-extrabold text-[#059669] dark:text-[#34D399]">@yield('progress_text', '0%')</span>
-                    </div>
-                    <div class="w-36 sm:w-48 h-2 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#10B981] rounded-full transition-all duration-300" style="width: @yield('progress_percent', '0')%"></div>
-                    </div>
+<body x-data="{ sidebarOpen: true }" class="min-h-screen flex flex-col bg-[#fafafa] text-[#1a1a1a] dark:bg-[#0d1117] dark:text-[#e6edf3] antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors">
+    <!-- Header (Matching Minimal Modern LMS Header) -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-[#161b22] border-b border-gray-100 dark:border-neutral-800 px-6 py-4 flex items-center justify-between transition-colors shadow-2xs">
+        <div class="flex items-center gap-6 min-w-0">
+            <a href="@yield('back_url', url('/my-courses'))" id="nav-back-link" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors shrink-0">
+                <iconify-icon icon="lucide:arrow-left" class="text-lg"></iconify-icon>
+                <span>Quay lại khóa học</span>
+            </a>
+            <div class="h-4 w-px bg-gray-200 dark:bg-neutral-800 shrink-0"></div>
+            <h1 class="text-[15px] font-medium tracking-tight text-gray-900 dark:text-white truncate">
+                @yield('course_title', 'Tên khóa học')
+            </h1>
+        </div>
+        
+        <div class="flex items-center gap-4 sm:gap-6 shrink-0">
+            <!-- Progress Bar -->
+            <div class="flex items-center gap-3">
+                <div class="w-24 sm:w-32 h-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-black dark:bg-white rounded-full transition-all duration-500" style="width: @yield('progress_percent', '0')%"></div>
                 </div>
-                <div class="h-8 w-[1px] bg-gray-100 dark:bg-neutral-800 shrink-0"></div>
+                <span class="text-[13px] font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">Tiến độ: @yield('progress_percent', '0')%</span>
+            </div>
 
-                <!-- Theme Toggle -->
-                <x-theme-toggle class="!text-gray-600 dark:!text-gray-300 hover:!text-gray-900 dark:hover:!text-white hover:!bg-black/5 dark:hover:!bg-white/10 rounded-full p-2 transition" />
+            <!-- Nút bật/tắt mục lục (Phóng to màn hình) -->
+            <button type="button"
+                    @click="sidebarOpen = !sidebarOpen"
+                    class="p-2 rounded-lg text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                    :title="sidebarOpen ? 'Thu gọn mục lục (Phóng to khung học)' : 'Mở mục lục bài học'">
+                <iconify-icon :icon="sidebarOpen ? 'lucide:panel-right-close' : 'lucide:panel-right-open'" class="text-xl block"></iconify-icon>
+            </button>
 
-                <!-- User Avatar -->
-                <button id="nav-user-menu" class="flex items-center gap-2" data-sd-id="17">
-                    <div class="w-9 h-9 rounded-full bg-gray-900 dark:bg-neutral-800 text-white flex items-center justify-center text-xs font-bold overflow-hidden ring-1 ring-black/5 dark:ring-white/10 shadow-sm" data-sd-id="18">
-                        @auth
-                            @if(Auth::user()->avatar_url)
-                                <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
-                            @else
-                                <span>{{ Auth::user()->initialLetter() }}</span>
-                            @endif
+            <!-- Theme Toggle & User Avatar -->
+            <div class="flex items-center gap-3 sm:gap-4">
+                <x-theme-toggle class="!text-gray-400 hover:!text-black dark:!text-gray-400 dark:hover:!text-white transition-colors p-1" />
+                <div class="w-8 h-8 rounded-full bg-gray-900 text-white dark:bg-white dark:text-black flex items-center justify-center text-xs font-bold overflow-hidden shadow-2xs">
+                    @auth
+                        @if(Auth::user()->avatar_url)
+                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
                         @else
-                            <span>JD</span>
-                        @endauth
-                    </div>
-                </button>
+                            <span>{{ Auth::user()->initialLetter() }}</span>
+                        @endif
+                    @else
+                        <span>U</span>
+                    @endauth
+                </div>
             </div>
         </div>
     </header>
@@ -99,6 +99,7 @@
         @yield('content')
     </main>
 
+    @include('partials.toaster')
     @include('partials.back-to-top')
     @stack('scripts')
 </body>
