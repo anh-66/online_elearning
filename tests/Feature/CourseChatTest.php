@@ -92,6 +92,14 @@ class CourseChatTest extends TestCase
             && $request['contents'][2]['parts'][0]['text'] === "Câu hỏi bị lỗi lúc trước\n\nCòn khóa nào về AI không?");
     }
 
+    public function test_ai_is_told_to_refuse_questions_outside_the_website(): void
+    {
+        $instruction = app(CourseAdvisor::class)->systemInstruction();
+
+        $this->assertStringContainsString('PHẠM VI (BẮT BUỘC)', $instruction);
+        $this->assertStringContainsString('Mình chỉ hỗ trợ tư vấn khóa học trên '.config('app.name').' thôi nha.', $instruction);
+    }
+
     public function test_course_catalog_is_cached_between_messages(): void
     {
         Http::fake([self::GEMINI_URL => $this->geminiReply('Ok')]);
