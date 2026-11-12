@@ -240,6 +240,13 @@
                     <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Banners</span>
                 </a>
 
+                <!-- Ảnh Cloudinary -->
+                <a href="{{ route('admin.cloudinary.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.cloudinary.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:cloud" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Ảnh Cloudinary</span>
+                </a>
+
                 <!-- Thông báo -->
                 <a href="{{ route('admin.notifications.index') }}"
                    class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'is-active' : '' }}">

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CloudinaryController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EnrollmentController;
@@ -63,6 +64,9 @@ Route::resource('notifications', NotificationController::class);
 // Banners
 Route::resource('banners', BannerController::class);
 Route::patch('/banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
+
+// Thư viện ảnh đã lưu trên Cloudinary
+Route::get('/cloudinary', [CloudinaryController::class, 'index'])->name('cloudinary.index');
 
 // Phản hồi & Báo cáo sự cố
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');

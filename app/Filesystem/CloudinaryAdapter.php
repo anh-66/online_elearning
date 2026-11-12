@@ -2,6 +2,7 @@
 
 namespace App\Filesystem;
 
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
@@ -15,6 +16,7 @@ use League\Flysystem\UnableToMoveFile;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Flysystem\UnableToWriteFile;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -59,6 +61,47 @@ class CloudinaryAdapter implements FilesystemAdapter
             rawurldecode($parts['pass']),
             trim($folder, '/'),
         );
+    }
+
+    /**
+     * Thư mục gốc của dự án trên Cloudinary (biến CLOUDINARY_FOLDER).
+     */
+    public function folder(): string
+    {
+        return $this->folder;
+    }
+
+    /**
+     * Liệt kê ảnh trong thư mục của dự án bằng Admin API, tối đa 500 ảnh mỗi lần gọi.
+     *
+     * @return array{resources: array<int, array<string, mixed>>, next_cursor: ?string}
+     *
+     * @throws RuntimeException khi Cloudinary báo lỗi hoặc không kết nối được
+     */
+    public function listImages(?string $nextCursor = null, int $maxResults = 500): array
+    {
+        $response = $this->adminGet('resources/image/upload', array_filter([
+            'prefix' => $this->folder === '' ? null : $this->folder.'/',
+            'max_results' => $maxResults,
+            'next_cursor' => $nextCursor,
+        ]));
+
+        return [
+            'resources' => (array) $response->json('resources', []),
+            'next_cursor' => $response->json('next_cursor'),
+        ];
+    }
+
+    /**
+     * Mức sử dụng của tài khoản Cloudinary (credits, dung lượng, băng thông).
+     *
+     * @return array<string, mixed>
+     *
+     * @throws RuntimeException khi Cloudinary báo lỗi hoặc không kết nối được
+     */
+    public function usage(): array
+    {
+        return (array) $this->adminGet('usage')->json();
     }
 
     /**
@@ -250,6 +293,37 @@ class CloudinaryAdapter implements FilesystemAdapter
         if ($response->failed()) {
             throw UnableToWriteFile::atLocation($path, $this->errorMessage($response));
         }
+    }
+
+    /**
+     * @param  array<string, string|int>  $query
+     */
+    private function adminGet(string $endpoint, array $query = []): Response
+    {
+        try {
+            $response = $this->adminRequest()->get(
+                sprintf('https://api.cloudinary.com/v1_1/%s/%s', $this->cloudName, $endpoint),
+                $query,
+            );
+        } catch (Throwable $exception) {
+            throw new RuntimeException('Không kết nối được Cloudinary: '.$exception->getMessage(), 0, $exception);
+        }
+
+        if ($response->failed()) {
+            throw new RuntimeException('Cloudinary báo lỗi: '.$this->errorMessage($response));
+        }
+
+        return $response;
+    }
+
+    /**
+     * Admin API dùng xác thực Basic bằng API key và API secret.
+     */
+    private function adminRequest(): PendingRequest
+    {
+        return Http::withBasicAuth($this->apiKey, $this->apiSecret)
+            ->acceptJson()
+            ->timeout(20);
     }
 
     private function apiUrl(string $path, string $action): string
