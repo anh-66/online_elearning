@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\CloudinaryImageAssigner;
 use App\Services\CloudinaryImageLibrary;
+use App\Services\CloudinaryTrashBin;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class CloudinaryController extends Controller
     /**
      * Thư viện ảnh mà website đã upload lên Cloudinary.
      */
-    public function index(Request $request, CloudinaryImageAssigner $assigner): View|RedirectResponse
+    public function index(Request $request, CloudinaryImageAssigner $assigner, CloudinaryTrashBin $trash): View|RedirectResponse
     {
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
@@ -46,6 +47,10 @@ class CloudinaryController extends Controller
                 ->with('success', 'Đã tải lại danh sách ảnh mới nhất từ Cloudinary.');
         }
 
+        // Render free không có cron: dọn ảnh hết hạn trong thùng rác mỗi khi admin mở trang này.
+        $trash->purgeExpired();
+        $trashed = array_flip($trash->paths());
+
         try {
             $result = $library->images();
         } catch (RuntimeException $exception) {
@@ -59,13 +64,18 @@ class CloudinaryController extends Controller
         }
 
         // Ghi chú ảnh nào đang được dùng ở đâu, để admin tìm ra ảnh bị mất liên kết.
-        $usage = $assigner->usage();
-        $all = collect($result['images'])->map(function (array $image) use ($usage): array {
-            $image['tracked'] = in_array($image['folder'], CloudinaryImageAssigner::TRACKED_FOLDERS, true);
-            $image['used_by'] = $usage[CloudinaryImageAssigner::key($image['path'])] ?? [];
+        // Ảnh trong thùng rác được ẩn khỏi thư viện.
+        $places = $assigner->places();
+        $all = collect($result['images'])
+            ->reject(fn (array $image): bool => isset($trashed[$image['path']]))
+            ->map(function (array $image) use ($places): array {
+                $image['tracked'] = in_array($image['folder'], CloudinaryImageAssigner::TRACKED_FOLDERS, true);
+                $image['places'] = $places[CloudinaryImageAssigner::key($image['path'])] ?? [];
+                $image['used_by'] = array_column($image['places'], 'label');
 
-            return $image;
-        });
+                return $image;
+            })
+            ->values();
         $unused = $all->filter(fn (array $image): bool => $image['tracked'] && $image['used_by'] === []);
 
         $filtered = $all
@@ -106,6 +116,8 @@ class CloudinaryController extends Controller
             'unusedCount' => $unused->count(),
             'targets' => $assigner->targets($all->pluck('path')->all()),
             'folderDefaultTypes' => CloudinaryImageAssigner::FOLDER_DEFAULT_TYPES,
+            'trashCount' => count($trashed),
+            'trashDays' => CloudinaryTrashBin::DAYS,
             'truncated' => $result['truncated'],
             'fetchedAt' => Carbon::parse($result['fetched_at'])->timezone(config('app.timezone')),
             'stats' => [
@@ -158,5 +170,25 @@ class CloudinaryController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    /**
+     * Tháo ảnh khỏi một chỗ đang dùng (chỗ đó thành trống ảnh), ảnh vẫn giữ trên Cloudinary.
+     */
+    public function unlink(Request $request, CloudinaryImageAssigner $assigner): RedirectResponse
+    {
+        $validated = $request->validate([
+            'path' => ['required', 'string', 'max:500'],
+            'type' => ['required', Rule::in(array_keys(CloudinaryImageAssigner::PLACES))],
+            'id' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $place = $assigner->unlink($validated['type'], (int) $validated['id'], $validated['path']);
+
+        if ($place === null) {
+            return back()->with('error', 'Chỗ này không còn dùng ảnh đó nữa. Bấm "Làm mới" để xem lại.');
+        }
+
+        return back()->with('success', 'Đã tháo ảnh khỏi '.$place['label'].'. Ảnh vẫn còn trên Cloudinary.');
     }
 }

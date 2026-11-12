@@ -56,6 +56,11 @@ case "${RUN_SEEDERS:-false}" in
         ;;
 esac
 
+# Xóa vĩnh viễn trên Cloudinary những ảnh nằm trong thùng rác quá 7 ngày.
+# Render gói free không có cron miễn phí nên dọn mỗi lần khởi động (và khi admin mở trang Ảnh Cloudinary).
+php artisan cloudinary:purge-trash --no-interaction \
+    || echo "[entrypoint] Chưa dọn được thùng rác Cloudinary, sẽ thử lại lần sau." >&2
+
 # Cache config, route, view, event cho production (đọc biến môi trường lúc chạy).
 php artisan optimize --no-interaction
 

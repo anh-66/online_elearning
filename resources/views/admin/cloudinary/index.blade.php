@@ -4,7 +4,7 @@
 @section('page_title', 'Ảnh lưu trên Cloudinary')
 
 @section('content')
-<div x-data="cloudinaryGallery(@js(['targets' => $targets ?? [], 'folderDefaultTypes' => $folderDefaultTypes ?? []]))" @keydown.escape.window="close()">
+<div x-data="cloudinaryGallery(@js(['targets' => $targets ?? [], 'folderDefaultTypes' => $folderDefaultTypes ?? [], 'trashDays' => $trashDays ?? 7]))" @keydown.escape.window="close()">
 <div class="space-y-6">
 
     {{-- Page Header --}}
@@ -33,6 +33,10 @@
             </div>
         @endif
     </div>
+
+    @if($configured)
+        @include('admin.cloudinary.partials.tabs', ['trashCount' => $trashCount ?? 0])
+    @endif
 
     @if(!$configured)
         {{-- Chưa cấu hình Cloudinary --}}
@@ -232,6 +236,19 @@
                                    class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
                                     <iconify-icon icon="lucide:external-link" class="text-base"></iconify-icon>
                                 </a>
+                                @php
+                                    $trashConfirm = (count($image['places']) > 0
+                                        ? 'Ảnh đang dùng ở '.count($image['places']).' chỗ. Xóa sẽ tháo ảnh khỏi các chỗ đó và chuyển vào thùng rác.'
+                                        : 'Chuyển ảnh này vào thùng rác?').' Sau '.$trashDays.' ngày ảnh sẽ bị xóa vĩnh viễn trên Cloudinary.';
+                                @endphp
+                                <form method="POST" action="{{ route('admin.cloudinary.trash.store') }}" onsubmit="return confirm(@js($trashConfirm))">
+                                    @csrf
+                                    <input type="hidden" name="path" value="{{ $image['path'] }}">
+                                    <button type="submit" title="Xóa ảnh (chuyển vào thùng rác)"
+                                            class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
+                                        <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -305,10 +322,24 @@
                          :class="preview.used_by.length ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300'">
                         <template x-if="preview.used_by.length">
                             <div>
-                                <p class="font-semibold mb-1">Đang được dùng cho</p>
-                                <ul class="list-disc pl-4 space-y-0.5">
-                                    <template x-for="place in preview.used_by" :key="place">
-                                        <li x-text="place"></li>
+                                <p class="font-semibold mb-1.5">Đang được dùng cho</p>
+                                <ul class="space-y-1.5">
+                                    <template x-for="place in preview.places" :key="place.type + place.id">
+                                        <li class="flex items-center justify-between gap-2">
+                                            <span class="min-w-0 break-words" x-text="place.label"></span>
+                                            <form method="POST" action="{{ route('admin.cloudinary.unlink') }}"
+                                                  @submit="if (! confirm('Tháo ảnh khỏi ' + place.label + '? Chỗ đó sẽ thành trống ảnh, ảnh vẫn còn trên Cloudinary.')) $event.preventDefault()">
+                                                @csrf
+                                                <input type="hidden" name="path" :value="preview.path">
+                                                <input type="hidden" name="type" :value="place.type">
+                                                <input type="hidden" name="id" :value="place.id">
+                                                <button type="submit" title="Tháo ảnh khỏi chỗ này, vẫn giữ ảnh trên Cloudinary"
+                                                        class="inline-flex items-center gap-1 shrink-0 px-2 py-1 rounded-lg bg-white dark:bg-neutral-900 border border-emerald-200 dark:border-emerald-500/30 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:border-emerald-400 transition-colors">
+                                                    <iconify-icon icon="lucide:unlink" class="text-xs"></iconify-icon>
+                                                    Tháo
+                                                </button>
+                                            </form>
+                                        </li>
                                     </template>
                                 </ul>
                             </div>
@@ -324,7 +355,7 @@
                         <input type="hidden" name="path" :value="preview.path">
                         <div>
                             <p class="text-sm font-bold text-gray-900 dark:text-neutral-100">Gắn ảnh này vào</p>
-                            <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-0.5">Mục đang thiếu ảnh được xếp lên đầu.</p>
+                            <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-0.5">Chỉ hiện những mục chưa có ảnh hoặc ảnh đang lỗi.</p>
                         </div>
                         <select name="type" x-model="assignType" @change="assignId = ''"
                                 class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
@@ -334,8 +365,8 @@
                         </select>
                         <select name="target_id" x-model="assignId" required
                                 class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
-                            <option value="">Chọn nơi gắn ảnh...</option>
-                            <template x-for="item in (targets[assignType]?.items ?? [])" :key="assignType + item.id">
+                            <option value="" x-text="missingTargets().length ? 'Chọn nơi gắn ảnh...' : 'Không còn mục nào thiếu ảnh'">Chọn nơi gắn ảnh...</option>
+                            <template x-for="item in missingTargets()" :key="assignType + item.id">
                                 <option :value="String(item.id)" x-text="optionLabel(item)" :selected="String(item.id) === assignId"></option>
                             </template>
                         </select>
@@ -352,6 +383,17 @@
                         <iconify-icon icon="lucide:external-link" class="text-base"></iconify-icon>
                         Mở ảnh gốc
                     </a>
+
+                    <form method="POST" action="{{ route('admin.cloudinary.trash.store') }}" @submit="if (! confirm(trashMessage(preview))) $event.preventDefault()">
+                        @csrf
+                        <input type="hidden" name="path" :value="preview.path">
+                        <button type="submit"
+                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 text-sm font-semibold rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                            <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                            Xóa ảnh
+                        </button>
+                        <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-1.5 text-center" x-text="'Ảnh vào thùng rác, tự xóa vĩnh viễn trên Cloudinary sau ' + trashDays + ' ngày.'"></p>
+                    </form>
                 </div>
             </div>
         </div>
@@ -367,12 +409,25 @@
             copiedUrl: null,
             targets: config.targets || {},
             folderDefaultTypes: config.folderDefaultTypes || {},
+            trashDays: config.trashDays || 7,
             assignType: 'course',
             assignId: '',
             open(image) {
                 this.assignType = this.folderDefaultTypes[image.folder] || 'course';
                 this.assignId = '';
                 this.preview = image;
+            },
+            // Ẩn những mục đã có ảnh chạy được, chỉ để lại mục đang trống hoặc ảnh lỗi.
+            missingTargets() {
+                return (this.targets[this.assignType]?.items ?? []).filter((item) => item.status !== 'ok');
+            },
+            trashMessage(image) {
+                const count = (image.places || []).length;
+                const intro = count
+                    ? 'Ảnh đang dùng ở ' + count + ' chỗ. Xóa sẽ tháo ảnh khỏi các chỗ đó và chuyển vào thùng rác.'
+                    : 'Chuyển ảnh này vào thùng rác?';
+
+                return intro + ' Sau ' + this.trashDays + ' ngày ảnh sẽ bị xóa vĩnh viễn trên Cloudinary.';
             },
             optionLabel(item) {
                 const notes = { empty: ' (đang trống ảnh)', broken: ' (ảnh đang lỗi)' };
