@@ -1,5 +1,7 @@
 <form method="post" action="{{ route('profile.update') }}" class="space-y-6" enctype="multipart/form-data"
-      x-data="{ avatarPickerOpen: false, avatarMode: 'options', avatarGenerated: @js(old('avatar_generated')), avatarPreview: @js($user->avatar_url) }"
+      x-data="{ avatarPickerOpen: false, avatarMode: 'options', avatarGenerated: @js(old('avatar_generated')), avatarPreview: @js($user->avatar_url), submitting: false }"
+      @submit="if (submitting) { $event.preventDefault(); return; } submitting = true"
+      @pageshow.window="submitting = false"
       @avatar-saved.window="avatarGenerated = $event.detail.dataUrl; avatarPreview = avatarGenerated; avatarPickerOpen = false; avatarMode = 'options'; $nextTick(() => $el.requestSubmit())">
     @csrf
     @method('patch')
@@ -25,6 +27,7 @@
             <h3 class="font-medium text-gray-900 dark:text-white">Ảnh đại diện</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">PNG hoặc JPG, tối đa 2MB.</p>
             <span x-show="avatarGenerated" x-cloak class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1 block">Đã chọn avatar thiết kế</span>
+            <span x-show="submitting" x-cloak class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1 block">Đang lưu, vui lòng chờ...</span>
         </div>
         <input id="avatar" x-ref="avatarInput" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only"
                @change="const file = $event.target.files[0]; if (! file) { return; } if (file.size > 2 * 1024 * 1024) { alert('Ảnh vượt quá 2MB, vui lòng chọn ảnh nhỏ hơn.'); $event.target.value = ''; return; } avatarGenerated = ''; const reader = new FileReader(); reader.onload = () => avatarPreview = reader.result; reader.readAsDataURL(file); $nextTick(() => $el.closest('form').requestSubmit())">
@@ -109,8 +112,8 @@
                 Đã lưu thay đổi thành công.
             </span>
         @endif
-        <button type="submit" class="px-8 py-2.5 text-sm font-medium bg-black text-white dark:bg-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm">
-            Lưu thay đổi
+        <button type="submit" :disabled="submitting" class="px-8 py-2.5 text-sm font-medium bg-black text-white dark:bg-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm disabled:cursor-wait disabled:opacity-60">
+            <span x-text="submitting ? 'Đang lưu...' : 'Lưu thay đổi'">Lưu thay đổi</span>
         </button>
     </div>
 </form>
