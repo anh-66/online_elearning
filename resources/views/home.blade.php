@@ -100,7 +100,7 @@
                              alt="{{ $banner->title }}"
                              class="w-full h-full object-cover object-center"
                              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-                             onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('hidden');">
+                             onerror="this.style.display='none'; this.nextElementSibling?.classList.replace('hidden', 'flex');">
                         
                         {{-- Fallback nếu ảnh bị lỗi đường dẫn --}}
                         <div class="hidden absolute inset-0 w-full h-full items-center justify-center p-6 text-center"

@@ -47,7 +47,7 @@ Các thành phần khác:
   2. Tự đặt `APP_URL` từ `RENDER_EXTERNAL_URL` và `GOOGLE_REDIRECT_URI` từ `APP_URL`.
   3. Chép file CA của MySQL ra chỗ PHP đọc được.
   4. Chạy `php artisan migrate`, thử lại tối đa 5 lần vì database cloud có thể chậm nhận kết nối.
-  5. Chạy seeder nếu `RUN_SEEDERS=true`.
+  5. Chạy seeder nếu `RUN_SEEDERS=true`, nhưng chỉ khi database còn trống (lệnh `php artisan app:seed-if-empty`). Nhờ vậy ảnh banner, avatar, ảnh khóa học admin đã sửa không bị seeder ghi đè mỗi lần Render khởi động lại. `RUN_SEEDERS=force` thì seed lại mỗi lần như cũ.
   6. Chạy `php artisan optimize` để cache config, route, view.
 - **Render Blueprint** (`render.yaml`): khai báo service bằng code (Infrastructure as Code). Gói Free, vùng Singapore, health check ở `/up`, tự deploy khi push. Các biến bí mật để `sync: false` nên không nằm trong Git.
 
@@ -132,7 +132,7 @@ php artisan test
 | `APP_KEY` | Mã hóa session, cookie | `php artisan key:generate --show` |
 | `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Kết nối MySQL | Trang quản lý của Aiven / TiDB Cloud |
 | `MYSQL_ATTR_SSL_CA` | Đường dẫn file CA cho SSL | Xem mục 4 |
-| `RUN_MIGRATIONS`, `RUN_SEEDERS` | Tự migrate, seed khi khởi động | Tự đặt `true` / `false` |
+| `RUN_MIGRATIONS`, `RUN_SEEDERS` | Tự migrate, seed khi khởi động (seed chỉ chạy khi database trống) | Tự đặt `true` / `false` (`RUN_SEEDERS` có thêm `force`) |
 | `CLOUDINARY_URL` | Lưu file lên Cloudinary | Cloudinary Console > API Keys > API environment variable |
 | `CLOUDINARY_FOLDER` | Thư mục gốc trên Cloudinary (mặc định `online-elearning`) | Tự đặt |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Đăng nhập Google | Google Cloud Console > Credentials |

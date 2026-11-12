@@ -43,9 +43,18 @@ if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     done
 fi
 
-if [ "${RUN_SEEDERS:-false}" = "true" ]; then
-    php artisan db:seed --force --no-interaction
-fi
+# Seed dữ liệu mẫu (tài khoản demo, khóa học, banner mẫu):
+#   RUN_SEEDERS=true  -> chỉ seed khi database còn trống (lần deploy đầu). Đã có dữ liệu thì bỏ qua,
+#                        để ảnh banner, avatar, ảnh khóa học... admin đã sửa không bị ghi đè khi restart.
+#   RUN_SEEDERS=force -> seed lại mỗi lần khởi động (đặt lại toàn bộ dữ liệu mẫu, kể cả ảnh và mật khẩu).
+case "${RUN_SEEDERS:-false}" in
+    true)
+        php artisan app:seed-if-empty --no-interaction
+        ;;
+    force)
+        php artisan db:seed --force --no-interaction
+        ;;
+esac
 
 # Cache config, route, view, event cho production (đọc biến môi trường lúc chạy).
 php artisan optimize --no-interaction

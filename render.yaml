@@ -60,8 +60,9 @@ services:
       # Chạy migrate mỗi lần khởi động (an toàn, chỉ chạy migration mới).
       - key: RUN_MIGRATIONS
         value: "true"
-      # Seed dữ liệu mẫu. Sau lần deploy đầu tiên hãy đổi thành "false",
-      # nếu không seeder sẽ đặt lại mật khẩu các tài khoản mẫu mỗi lần restart.
+      # Seed dữ liệu mẫu, chỉ chạy khi database còn trống (lần deploy đầu tiên).
+      # Đã có dữ liệu thì bỏ qua, nên ảnh banner/avatar/ảnh khóa học đã sửa không bị ghi đè khi restart.
+      # Đặt "force" nếu muốn seed lại mỗi lần khởi động (sẽ đặt lại ảnh và mật khẩu mẫu), "false" để tắt hẳn.
       - key: RUN_SEEDERS
         value: "true"
 
