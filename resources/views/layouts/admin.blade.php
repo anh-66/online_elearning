@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#f9fafb] dark:bg-neutral-950">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    @include('partials.theme-script')
 
     <title>@yield('title', 'Quản Trị Hệ Thống') - Admin Control Panel</title>
 
@@ -135,6 +137,30 @@
             border-radius: 0.75rem;
         }
 
+        /* Giao diện tối: dùng cùng bảng màu neutral với Studio Giảng viên */
+        .dark body {
+            background-color: #0a0a0a;
+        }
+
+        .dark .nav-item {
+            color: #d4d4d4;
+        }
+
+        .dark .nav-item:hover {
+            background-color: #262626;
+            color: #02b3a5;
+        }
+
+        .dark .nav-item.is-active {
+            background-color: rgba(1, 157, 145, 0.18);
+            color: #02b3a5;
+        }
+
+        .dark .glass-card {
+            background: #171717;
+            border-color: #262626;
+        }
+
         .status-badge {
             padding: 0.2rem 0.625rem;
             border-radius: 9999px;
@@ -147,10 +173,12 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        .dark ::-webkit-scrollbar-thumb { background: #404040; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #525252; }
     </style>
 </head>
-<body class="h-full bg-[#f9fafb] antialiased text-gray-800" x-data="{ sidebarOpen: false }">
-    <div class="flex h-screen bg-[#f9fafb] overflow-hidden">
+<body class="h-full bg-[#f9fafb] dark:bg-neutral-950 antialiased text-gray-800 dark:text-neutral-200" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen bg-[#f9fafb] dark:bg-neutral-950 overflow-hidden">
 
         <!-- Mobile Backdrop -->
         <div x-show="sidebarOpen"
@@ -161,18 +189,18 @@
         <!-- ====== SIDEBAR ====== -->
         <aside id="admin-sidebar"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-               class="fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col bg-white border-r border-gray-200 transition-transform duration-200 lg:static lg:translate-x-0">
+               class="fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 transition-transform duration-200 lg:static lg:translate-x-0">
 
             <!-- Brand -->
-            <div class="brand-container h-16 flex items-center px-5 border-b border-gray-100 shrink-0">
+            <div class="brand-container h-16 flex items-center px-5 border-b border-gray-100 dark:border-neutral-800 shrink-0">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 min-w-0">
                     <div class="w-8 h-8 bg-[#019D91] rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                         <iconify-icon icon="lucide:graduation-cap" class="text-white text-lg"></iconify-icon>
                     </div>
-                    <span class="logo-text font-bold text-gray-900 tracking-tight text-base whitespace-nowrap transition-all duration-300">ADMIN CORE</span>
+                    <span class="logo-text font-bold text-gray-900 dark:text-neutral-100 tracking-tight text-base whitespace-nowrap transition-all duration-300">ADMIN CORE</span>
                 </a>
                 <!-- Mobile close button -->
-                <button @click="sidebarOpen = false" class="ml-auto text-gray-400 hover:text-gray-700 lg:hidden">
+                <button @click="sidebarOpen = false" class="ml-auto text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-neutral-200 lg:hidden">
                     <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
                 </button>
             </div>
@@ -230,7 +258,7 @@
 
                 <!-- Divider -->
                 <div class="pt-3 pb-1 px-5">
-                    <div class="h-px bg-gray-100"></div>
+                    <div class="h-px bg-gray-100 dark:bg-neutral-800"></div>
                 </div>
 
                 <!-- Banners -->
@@ -269,7 +297,7 @@
             </nav>
 
             <!-- User Profile Footer with Hover / Click Popover -->
-            <div class="user-block relative border-t border-gray-100 p-3 shrink-0"
+            <div class="user-block relative border-t border-gray-100 dark:border-neutral-800 p-3 shrink-0"
                  x-data="{ userMenuOpen: false }"
                  @mouseenter="userMenuOpen = true"
                  @mouseleave="userMenuOpen = false">
@@ -283,16 +311,16 @@
                      x-transition:leave="transition ease-in duration-100"
                      x-transition:leave-start="opacity-100 scale-100"
                      x-transition:leave-end="opacity-0 scale-95"
-                     class="user-dropdown-menu absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
+                     class="user-dropdown-menu absolute bottom-full left-3 right-3 mb-2 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-gray-100 dark:border-neutral-800 p-2 z-50 divide-y divide-gray-100 dark:divide-neutral-800"
                      @click.away="userMenuOpen = false">
                     <div class="px-3 py-2">
-                        <p class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
-                        <p class="text-[11px] text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
+                        <p class="text-xs font-semibold text-gray-900 dark:text-neutral-100 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
+                        <p class="text-[11px] text-gray-500 dark:text-neutral-400 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
                     </div>
                     <div class="py-1">
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors whitespace-nowrap">
-                            <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400 shrink-0"></iconify-icon>
+                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-neutral-200 hover:bg-[#019D91]/10 hover:text-[#019D91] dark:hover:text-[#02b3a5] rounded-lg transition-colors whitespace-nowrap">
+                            <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400 dark:text-neutral-500 shrink-0"></iconify-icon>
                             <span>Cài đặt tài khoản admin</span>
                         </a>
                     </div>
@@ -300,7 +328,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap">
+                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors whitespace-nowrap">
                                 <iconify-icon icon="lucide:log-out" class="text-base shrink-0"></iconify-icon>
                                 <span>Đăng xuất</span>
                             </button>
@@ -310,7 +338,7 @@
 
                 <!-- Profile Trigger Card -->
                 <div @click="userMenuOpen = !userMenuOpen"
-                     class="user-trigger-card flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
+                     class="user-trigger-card flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors group">
                     <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
                         @if(Auth::user()->avatar_url)
                             <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
@@ -320,10 +348,10 @@
                         @endif
                     </div>
                     <div class="user-info min-w-0 flex-1 transition-all duration-300">
-                        <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-[#019D91] transition-colors">{{ Auth::user()->name ?? 'Admin' }}</p>
-                        <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@system.com' }}</p>
+                        <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate group-hover:text-[#019D91] dark:group-hover:text-[#02b3a5] transition-colors">{{ Auth::user()->name ?? 'Admin' }}</p>
+                        <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">{{ Auth::user()->email ?? 'admin@system.com' }}</p>
                     </div>
-                    <iconify-icon icon="lucide:chevron-up" class="nav-text text-gray-400 group-hover:text-gray-600 text-sm transition-all"></iconify-icon>
+                    <iconify-icon icon="lucide:chevron-up" class="nav-text text-gray-400 dark:text-neutral-500 group-hover:text-gray-600 dark:group-hover:text-neutral-300 text-sm transition-all"></iconify-icon>
                 </div>
             </div>
         </aside>
@@ -332,19 +360,19 @@
         <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
 
             <!-- Header -->
-            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
+            <header class="h-16 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
                 <div class="flex items-center gap-3">
                     <!-- Toggle Sidebar (Desktop) -->
                     <button id="toggle-sidebar"
-                            class="hidden lg:flex p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
+                            class="hidden lg:flex p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg text-gray-500 dark:text-neutral-400 transition-colors">
                         <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
                     </button>
                     <!-- Toggle Sidebar (Mobile) -->
                     <button @click="sidebarOpen = true"
-                            class="flex lg:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
+                            class="flex lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg text-gray-500 dark:text-neutral-400 transition-colors">
                         <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
                     </button>
-                    <h1 class="text-base font-bold text-gray-800 truncate uppercase tracking-wide">
+                    <h1 class="text-base font-bold text-gray-800 dark:text-neutral-200 truncate uppercase tracking-wide">
                         @yield('page_title', 'Bảng Quản Trị Hệ Thống')
                     </h1>
                 </div>
@@ -353,10 +381,13 @@
                     <!-- Notification Bell -->
                     @include('partials.notification-bell')
 
-                    <div class="h-6 w-px bg-gray-200"></div>
+                    <!-- Chuyển giao diện sáng/tối (dùng chung với trang chủ và Studio Giảng viên) -->
+                    <x-theme-toggle />
+
+                    <div class="h-6 w-px bg-gray-200 dark:bg-neutral-700"></div>
 
                     <!-- User Avatar Only -->
-                    <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black text-sm font-bold text-white shadow-sm ring-2 ring-gray-100 select-none" title="{{ Auth::user()->name ?? 'Admin' }}">
+                    <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black text-sm font-bold text-white shadow-sm ring-2 ring-gray-100 dark:ring-neutral-800 select-none" title="{{ Auth::user()->name ?? 'Admin' }}">
                         @if(Auth::user()->avatar_url)
                             <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="h-full w-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                             <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
@@ -368,11 +399,11 @@
             </header>
 
             <!-- Main Content -->
-            <main id="admin-main-content" data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f9fafb]">
+            <main id="admin-main-content" data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f9fafb] dark:bg-neutral-950">
                 <!-- Flash Messages -->
                 @if(session('success'))
-                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5 shadow-sm">
-                        <iconify-icon icon="lucide:check-circle" class="text-emerald-600 shrink-0 text-lg"></iconify-icon>
+                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-2.5 shadow-sm">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-600 dark:text-emerald-400 shrink-0 text-lg"></iconify-icon>
                         <span>{{ session('success') }}</span>
                     </div>
                 @endif
@@ -382,9 +413,9 @@
                 @endif
 
                 @if($errors->any())
-                    <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm shadow-sm">
+                    <div class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-800 dark:text-red-300 text-sm shadow-sm">
                         <p class="font-semibold mb-1 flex items-center gap-2">
-                            <iconify-icon icon="lucide:alert-triangle" class="text-red-600 text-lg"></iconify-icon>
+                            <iconify-icon icon="lucide:alert-triangle" class="text-red-600 dark:text-red-400 text-lg"></iconify-icon>
                             Vui lòng kiểm tra lại dữ liệu:
                         </p>
                         <ul class="list-disc list-inside space-y-0.5 text-xs ml-6">
