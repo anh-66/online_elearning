@@ -67,6 +67,7 @@ Route::patch('/banners/{banner}/toggle', [BannerController::class, 'toggle'])->n
 
 // Thư viện ảnh đã lưu trên Cloudinary
 Route::get('/cloudinary', [CloudinaryController::class, 'index'])->name('cloudinary.index');
+Route::post('/cloudinary/assign', [CloudinaryController::class, 'assign'])->name('cloudinary.assign');
 
 // Phản hồi & Báo cáo sự cố
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');

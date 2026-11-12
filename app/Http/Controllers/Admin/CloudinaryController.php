@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\CloudinaryImageAssigner;
 use App\Services\CloudinaryImageLibrary;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -18,15 +21,17 @@ class CloudinaryController extends Controller
     /**
      * Thư viện ảnh mà website đã upload lên Cloudinary.
      */
-    public function index(Request $request): View|RedirectResponse
+    public function index(Request $request, CloudinaryImageAssigner $assigner): View|RedirectResponse
     {
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
             'folder' => ['nullable', 'string', 'max:200'],
+            'status' => ['nullable', Rule::in(['used', 'unused'])],
         ]);
 
         $keyword = trim((string) ($validated['q'] ?? ''));
         $folder = $validated['folder'] ?? null;
+        $status = $validated['status'] ?? null;
         $library = CloudinaryImageLibrary::fromPublicDisk();
 
         if ($library === null) {
@@ -37,7 +42,7 @@ class CloudinaryController extends Controller
             $library->forget();
 
             return redirect()
-                ->route('admin.cloudinary.index', array_filter(['q' => $keyword, 'folder' => $folder], 'filled'))
+                ->route('admin.cloudinary.index', array_filter(['q' => $keyword, 'folder' => $folder, 'status' => $status], 'filled'))
                 ->with('success', 'Đã tải lại danh sách ảnh mới nhất từ Cloudinary.');
         }
 
@@ -53,9 +58,20 @@ class CloudinaryController extends Controller
             ]);
         }
 
-        $all = collect($result['images']);
+        // Ghi chú ảnh nào đang được dùng ở đâu, để admin tìm ra ảnh bị mất liên kết.
+        $usage = $assigner->usage();
+        $all = collect($result['images'])->map(function (array $image) use ($usage): array {
+            $image['tracked'] = in_array($image['folder'], CloudinaryImageAssigner::TRACKED_FOLDERS, true);
+            $image['used_by'] = $usage[CloudinaryImageAssigner::key($image['path'])] ?? [];
+
+            return $image;
+        });
+        $unused = $all->filter(fn (array $image): bool => $image['tracked'] && $image['used_by'] === []);
+
         $filtered = $all
             ->when($folder !== null && $folder !== '', fn ($images) => $images->where('folder', $folder === '/' ? '' : $folder))
+            ->when($status === 'unused', fn ($images) => $images->filter(fn (array $image): bool => $image['tracked'] && $image['used_by'] === []))
+            ->when($status === 'used', fn ($images) => $images->filter(fn (array $image): bool => $image['used_by'] !== []))
             ->when($keyword !== '', fn ($images) => $images->filter(
                 fn (array $image): bool => str_contains(mb_strtolower($image['path']), mb_strtolower($keyword)),
             ))
@@ -86,6 +102,10 @@ class CloudinaryController extends Controller
             'folders' => $folders,
             'keyword' => $keyword,
             'folder' => $folder,
+            'status' => $status,
+            'unusedCount' => $unused->count(),
+            'targets' => $assigner->targets($all->pluck('path')->all()),
+            'folderDefaultTypes' => CloudinaryImageAssigner::FOLDER_DEFAULT_TYPES,
             'truncated' => $result['truncated'],
             'fetchedAt' => Carbon::parse($result['fetched_at'])->timezone(config('app.timezone')),
             'stats' => [
@@ -96,5 +116,47 @@ class CloudinaryController extends Controller
             ],
             'usage' => $library->usage(),
         ]);
+    }
+
+    /**
+     * Gắn một ảnh có sẵn trên Cloudinary vào banner, ảnh bìa khóa học hoặc avatar.
+     * Chỉ sửa đường dẫn trong database, không upload hay xóa file nào trên Cloudinary.
+     */
+    public function assign(Request $request, CloudinaryImageAssigner $assigner): RedirectResponse
+    {
+        $validated = $request->validate([
+            'path' => ['required', 'string', 'max:500'],
+            'type' => ['required', Rule::in(array_keys(CloudinaryImageAssigner::TYPES))],
+            'target_id' => ['required', 'integer', 'min:1'],
+        ], [
+            'target_id.required' => 'Hãy chọn nơi muốn gắn ảnh.',
+        ]);
+
+        $library = CloudinaryImageLibrary::fromPublicDisk();
+
+        if ($library === null) {
+            return back()->with('error', 'Website chưa kết nối Cloudinary.');
+        }
+
+        try {
+            $images = collect($library->images()['images']);
+        } catch (RuntimeException $exception) {
+            report($exception);
+
+            return back()->with('error', 'Không lấy được danh sách ảnh từ Cloudinary: '.$exception->getMessage());
+        }
+
+        // Chỉ cho gắn ảnh thật sự có trên Cloudinary, tránh lưu đường dẫn tới file không tồn tại.
+        if (! $images->contains('path', $validated['path'])) {
+            return back()->with('error', 'Không tìm thấy ảnh này trên Cloudinary. Bấm "Làm mới" rồi thử lại.');
+        }
+
+        try {
+            $message = $assigner->assign($validated['type'], (int) $validated['target_id'], $validated['path']);
+        } catch (ModelNotFoundException) {
+            return back()->with('error', 'Không tìm thấy nơi cần gắn ảnh, có thể nó vừa bị xóa.');
+        }
+
+        return back()->with('success', $message);
     }
 }

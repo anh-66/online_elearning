@@ -4,7 +4,7 @@
 @section('page_title', 'Ảnh lưu trên Cloudinary')
 
 @section('content')
-<div x-data="cloudinaryGallery()" @keydown.escape.window="close()">
+<div x-data="cloudinaryGallery(@js(['targets' => $targets ?? [], 'folderDefaultTypes' => $folderDefaultTypes ?? []]))" @keydown.escape.window="close()">
 <div class="space-y-6">
 
     {{-- Page Header --}}
@@ -20,7 +20,7 @@
         </div>
         @if($configured)
             <div class="flex items-center gap-2">
-                <a href="{{ route('admin.cloudinary.index', array_filter(['q' => $keyword ?? null, 'folder' => $folder ?? null, 'refresh' => 1], 'filled')) }}"
+                <a href="{{ route('admin.cloudinary.index', array_filter(['q' => $keyword ?? null, 'folder' => $folder ?? null, 'status' => $status ?? null, 'refresh' => 1], 'filled')) }}"
                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-neutral-200 text-sm font-semibold rounded-xl hover:border-[#019D91] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition-colors shadow-sm">
                     <iconify-icon icon="lucide:refresh-cw" class="text-lg"></iconify-icon>
                     Làm mới
@@ -68,7 +68,7 @@
             @foreach([
                 ['icon' => 'lucide:images', 'label' => 'Tổng số ảnh', 'value' => number_format($stats['total'], 0, ',', '.')],
                 ['icon' => 'lucide:hard-drive', 'label' => 'Dung lượng ảnh', 'value' => $stats['size']],
-                ['icon' => 'lucide:folder-tree', 'label' => 'Thư mục', 'value' => $stats['folders']],
+                ['icon' => 'lucide:unlink', 'label' => 'Ảnh chưa dùng', 'value' => number_format($unusedCount, 0, ',', '.')],
                 ['icon' => 'lucide:clock', 'label' => 'Upload gần nhất', 'value' => $stats['latest'] ?? '—'],
             ] as $card)
                 <div class="glass-card p-4 flex items-center gap-3">
@@ -116,13 +116,18 @@
                     </option>
                 @endforeach
             </select>
+            <select name="status" class="md:w-52 py-2.5 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
+                <option value="">Mọi trạng thái</option>
+                <option value="unused" @selected($status === 'unused')>Chưa dùng ở đâu · {{ $unusedCount }}</option>
+                <option value="used" @selected($status === 'used')>Đang được dùng</option>
+            </select>
             <div class="flex gap-2">
                 <button type="submit"
                         class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#019D91] text-white text-sm font-semibold rounded-xl hover:bg-[#008b80] transition-colors">
                     <iconify-icon icon="lucide:filter" class="text-base"></iconify-icon>
                     Lọc
                 </button>
-                @if($keyword !== '' || filled($folder))
+                @if($keyword !== '' || filled($folder) || filled($status))
                     <a href="{{ route('admin.cloudinary.index') }}"
                        class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-neutral-300 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors">
                         Xóa lọc
@@ -130,6 +135,20 @@
                 @endif
             </div>
         </form>
+
+        @if($unusedCount > 0 && $status !== 'unused')
+            <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 flex flex-col sm:flex-row sm:items-center gap-3">
+                <iconify-icon icon="lucide:unlink" class="text-2xl text-amber-600 dark:text-amber-400 shrink-0"></iconify-icon>
+                <p class="flex-1 text-sm text-amber-800 dark:text-amber-300">
+                    Có <strong>{{ $unusedCount }} ảnh</strong> chưa được dùng ở đâu, thường là ảnh bị mất liên kết với banner, khóa học hoặc avatar.
+                    Bấm vào ảnh để gắn lại, không cần upload lại.
+                </p>
+                <a href="{{ route('admin.cloudinary.index', ['status' => 'unused']) }}"
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors whitespace-nowrap">
+                    Xem ảnh chưa dùng
+                </a>
+            </div>
+        @endif
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs text-gray-500 dark:text-neutral-400">
             <p>
@@ -177,6 +196,20 @@
                                 <iconify-icon icon="lucide:folder" class="shrink-0"></iconify-icon>
                                 <span class="truncate">{{ $image['folder_label'] }}</span>
                             </span>
+                            @if($image['used_by'] !== [])
+                                <span class="inline-flex self-start items-center gap-1 max-w-full px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-medium" title="{{ implode(' · ', $image['used_by']) }}">
+                                    <iconify-icon icon="lucide:link" class="shrink-0"></iconify-icon>
+                                    <span class="truncate">{{ $image['used_by'][0] }}</span>
+                                    @if(count($image['used_by']) > 1)
+                                        <span class="shrink-0">+{{ count($image['used_by']) - 1 }}</span>
+                                    @endif
+                                </span>
+                            @elseif($image['tracked'])
+                                <span class="inline-flex self-start items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[11px] font-medium">
+                                    <iconify-icon icon="lucide:unlink" class="shrink-0"></iconify-icon>
+                                    Chưa dùng
+                                </span>
+                            @endif
                             <p class="text-xs text-gray-500 dark:text-neutral-400">
                                 @if($image['width'] && $image['height'])
                                     {{ $image['width'] }}×{{ $image['height'] }} ·
@@ -185,6 +218,11 @@
                             </p>
                             <p class="text-xs text-gray-400 dark:text-neutral-500">{{ $image['uploaded_at'] }}</p>
                             <div class="flex items-center gap-1 pt-1 mt-auto">
+                                <button type="button" @click="open(@js($image))" title="Gắn ảnh này vào banner, khóa học hoặc avatar"
+                                        class="inline-flex items-center gap-1 px-2 py-1 mr-auto whitespace-nowrap text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
+                                    <iconify-icon icon="lucide:link-2" class="text-sm shrink-0"></iconify-icon>
+                                    Gắn
+                                </button>
                                 <button type="button" @click="copy(@js($image['url']))" title="Sao chép link ảnh"
                                         class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
                                     <iconify-icon x-show="copiedUrl !== @js($image['url'])" icon="lucide:copy" class="text-base"></iconify-icon>
@@ -262,8 +300,55 @@
                             </dd>
                         </div>
                     </dl>
+
+                    <div class="rounded-xl p-3 text-xs"
+                         :class="preview.used_by.length ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300'">
+                        <template x-if="preview.used_by.length">
+                            <div>
+                                <p class="font-semibold mb-1">Đang được dùng cho</p>
+                                <ul class="list-disc pl-4 space-y-0.5">
+                                    <template x-for="place in preview.used_by" :key="place">
+                                        <li x-text="place"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+                        <template x-if="!preview.used_by.length">
+                            <p x-text="preview.tracked ? 'Ảnh này chưa được dùng ở đâu trên website.' : 'Ảnh trong bài viết: website không theo dõi ảnh này đang dùng ở đâu.'"></p>
+                        </template>
+                    </div>
+
+                    {{-- Gắn ảnh có sẵn vào banner / ảnh bìa khóa học / avatar --}}
+                    <form method="POST" action="{{ route('admin.cloudinary.assign') }}" class="space-y-2.5 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                        @csrf
+                        <input type="hidden" name="path" :value="preview.path">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900 dark:text-neutral-100">Gắn ảnh này vào</p>
+                            <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-0.5">Mục đang thiếu ảnh được xếp lên đầu.</p>
+                        </div>
+                        <select name="type" x-model="assignType" @change="assignId = ''"
+                                class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
+                            <template x-for="(group, key) in targets" :key="key">
+                                <option :value="key" x-text="group.label" :selected="key === assignType"></option>
+                            </template>
+                        </select>
+                        <select name="target_id" x-model="assignId" required
+                                class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
+                            <option value="">Chọn nơi gắn ảnh...</option>
+                            <template x-for="item in (targets[assignType]?.items ?? [])" :key="assignType + item.id">
+                                <option :value="String(item.id)" x-text="optionLabel(item)" :selected="String(item.id) === assignId"></option>
+                            </template>
+                        </select>
+                        <button type="submit" :disabled="!assignId"
+                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#019D91] text-white text-sm font-semibold rounded-xl hover:bg-[#008b80] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <iconify-icon icon="lucide:link-2" class="text-base"></iconify-icon>
+                            Gắn ảnh
+                        </button>
+                        <p class="text-[11px] text-gray-500 dark:text-neutral-400">Chỉ đổi ảnh trong database. Ảnh cũ của mục đó (nếu có) vẫn còn trên Cloudinary.</p>
+                    </form>
+
                     <a :href="preview.url" target="_blank" rel="noopener noreferrer"
-                       class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#019D91] text-white text-sm font-semibold rounded-xl hover:bg-[#008b80] transition-colors">
+                       class="flex items-center justify-center gap-2 w-full px-4 py-2.5 border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-neutral-200 text-sm font-semibold rounded-xl hover:border-[#019D91] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition-colors">
                         <iconify-icon icon="lucide:external-link" class="text-base"></iconify-icon>
                         Mở ảnh gốc
                     </a>
@@ -276,12 +361,23 @@
 
 @push('scripts')
 <script>
-    function cloudinaryGallery() {
+    function cloudinaryGallery(config) {
         return {
             preview: null,
             copiedUrl: null,
+            targets: config.targets || {},
+            folderDefaultTypes: config.folderDefaultTypes || {},
+            assignType: 'course',
+            assignId: '',
             open(image) {
+                this.assignType = this.folderDefaultTypes[image.folder] || 'course';
+                this.assignId = '';
                 this.preview = image;
+            },
+            optionLabel(item) {
+                const notes = { empty: ' (đang trống ảnh)', broken: ' (ảnh đang lỗi)' };
+
+                return item.label + (notes[item.status] || '');
             },
             close() {
                 this.preview = null;
