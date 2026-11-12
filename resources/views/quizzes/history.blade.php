@@ -79,15 +79,79 @@
         <div class="bg-white dark:bg-[#161b22] rounded-2xl p-5 border border-gray-100 dark:border-[#30363d] shadow-sm">
             <form action="{{ route('quiz.history', $quiz) }}" method="GET" class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    {{-- Lọc Trạng thái --}}
-                    <div>
-                        <select name="status"
-                                onchange="this.form.submit()"
-                                class="text-xs font-medium rounded-xl border-gray-200 dark:border-[#30363d] bg-gray-50 dark:bg-[#0d1117] text-gray-700 dark:text-gray-300 py-2 px-3 focus:border-black focus:ring-black">
-                            <option value="">Trạng thái: Tất cả</option>
-                            <option value="passed" @selected(request('status') === 'passed')>Đã hoàn thành (Đạt)</option>
-                            <option value="failed" @selected(request('status') === 'failed')>Chưa đạt (&lt; 80%)</option>
-                        </select>
+                    {{-- Lọc Trạng thái (Combobox Animate-UI) --}}
+                    @php
+                        $statusOptions = [
+                            '' => 'Trạng thái: Tất cả',
+                            'passed' => 'Đã hoàn thành (Đạt)',
+                            'failed' => 'Chưa đạt (< 80%)',
+                        ];
+                        $initialStatus = request('status', '');
+                        $initialStatusLabel = $statusOptions[$initialStatus] ?? 'Trạng thái: Tất cả';
+                    @endphp
+                    <div class="relative min-w-[200px]"
+                         x-data="{
+                             open: false,
+                             selectedValue: '{{ $initialStatus }}',
+                             selectedLabel: '{{ $initialStatusLabel }}',
+                             options: [
+                                 { value: '', label: 'Trạng thái: Tất cả' },
+                                 { value: 'passed', label: 'Đã hoàn thành (Đạt)' },
+                                 { value: 'failed', label: 'Chưa đạt (< 80%)' }
+                             ],
+                             select(val, label) {
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                                 this.$nextTick(() => {
+                                     this.$el.closest('form').submit();
+                                 });
+                             }
+                         }">
+                        <input type="hidden" name="status" :value="selectedValue">
+
+                        <button type="button"
+                                @click="open = !open"
+                                :aria-expanded="open"
+                                data-slot="combobox-trigger"
+                                class="w-full text-xs font-medium rounded-xl border border-gray-200 dark:border-[#30363d] bg-gray-50 dark:bg-[#0d1117] text-gray-700 dark:text-gray-300 py-2 px-3.5 flex items-center justify-between text-left focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all cursor-pointer select-none group/combobox-trigger shadow-xs">
+                            <span x-text="selectedLabel" class="truncate font-medium"></span>
+                            <svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-gray-300 shrink-0 ml-2 pointer-events-none"
+                                 :class="open ? 'rotate-180 text-gray-700 dark:text-gray-300' : ''"
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open"
+                             x-cloak
+                             @click.outside="open = false"
+                             @keydown.escape.window="open = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                             data-slot="combobox-content"
+                             class="absolute left-0 right-0 top-full mt-1.5 z-50 min-w-[210px] rounded-xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 overflow-hidden space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button"
+                                        @click="select(item.value, item.label)"
+                                        data-slot="combobox-item"
+                                        class="w-full relative flex items-center justify-between px-3 py-2 text-xs rounded-lg transition-colors cursor-pointer select-none text-left"
+                                        :class="selectedValue === item.value 
+                                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                            : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'">
+                                    <span x-text="item.label"></span>
+                                    <svg x-show="selectedValue === item.value"
+                                         class="w-3.5 h-3.5 text-neutral-900 dark:text-white shrink-0 pointer-events-none transition-transform duration-200"
+                                         fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </template>
+                        </div>
                     </div>
 
                     @if(request()->filled('status'))

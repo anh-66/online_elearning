@@ -36,11 +36,29 @@
 
         <div class="space-y-2">
             <template x-for="(answer, index) in answers" :key="index">
-                <div class="flex items-center gap-3 p-2 rounded-xl border transition"
-                     :class="correct === index ? 'border-emerald-300 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10' : 'border-gray-200 dark:border-neutral-800'">
-                    <input type="radio" name="correct_answer" :value="index" :checked="correct === index" @change="correct = index"
-                           class="w-5 h-5 text-emerald-600 dark:text-emerald-400 border-gray-300 dark:border-neutral-700 focus:ring-emerald-500" title="Đáp án đúng">
-                    <span class="text-sm font-bold text-gray-500 dark:text-neutral-400 w-5" x-text="String.fromCharCode(65 + index)"></span>
+                <div class="flex items-center gap-3 p-2.5 rounded-xl border transition"
+                     :class="correct === index ? 'border-neutral-900 dark:border-white bg-neutral-50 dark:bg-white/[0.04] ring-1 ring-neutral-900/10 dark:ring-white/10' : 'border-gray-200 dark:border-neutral-800'">
+                    
+                    {{-- Animate UI Radio Indicator --}}
+                    <label class="relative flex items-center cursor-pointer group shrink-0 p-1"
+                           @click="correct = index">
+                        <input type="radio" name="correct_answer" :value="index" :checked="correct === index"
+                               class="sr-only" title="Đánh dấu đáp án đúng">
+                        <span data-slot="radio-group-item"
+                              class="relative size-4 rounded-full border flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400"
+                              :class="correct === index 
+                                    ? 'border-neutral-900 dark:border-white bg-neutral-900 dark:bg-white' 
+                                    : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50'">
+                            <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                <span class="size-2 rounded-full bg-white dark:bg-neutral-950 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"
+                                      :class="correct === index ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"></span>
+                            </span>
+                        </span>
+                    </label>
+
+                    <button type="button" @click="correct = index" class="text-sm font-bold w-5 cursor-pointer text-left transition-colors"
+                            :class="correct === index ? 'text-neutral-950 dark:text-white font-extrabold' : 'text-gray-500 dark:text-neutral-400'"
+                            x-text="String.fromCharCode(65 + index)"></button>
                     <input type="text" :name="'answers[' + index + ']'" x-model="answers[index]" required maxlength="1000"
                            placeholder="Nội dung đáp án"
                            class="flex-1 rounded-lg border-gray-300 dark:border-neutral-700 text-sm focus:border-brand-600 focus:ring-brand-600">

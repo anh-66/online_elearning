@@ -13,6 +13,10 @@ class EnrollmentController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->isAdmin()) {
+            return back()->with('error', 'Quản trị viên chỉ có thể xem và quản lý khóa học, không thể ghi danh.');
+        }
+
         if ($user->id === $course->instructor_id) {
             return back()->with('error', 'Bạn không thể ghi danh khóa học của chính mình.');
         }

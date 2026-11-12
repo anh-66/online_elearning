@@ -7,9 +7,10 @@
 
     <title>@yield('title', 'Quản Trị Hệ Thống') - Admin Control Panel</title>
 
-    <!-- Fonts: Be Vietnam Pro (Đồng bộ font trang chủ) -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700&display=swap" rel="stylesheet" />
+    <!-- Preconnect Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- Iconify -->
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
@@ -26,13 +27,14 @@
             --sidebar-collapsed: 72px;
         }
 
-        * {
-            font-family: 'Be Vietnam Pro', sans-serif;
+        *, body, button, input, textarea, select {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
-            background-color: #f9fafb;
-            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #ffffff;
         }
 
         /* Sidebar transitions */
@@ -133,6 +135,7 @@
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 0.75rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
         }
 
         .status-badge {
@@ -261,8 +264,9 @@
                 </a>
             </nav>
 
-            <!-- User Profile Footer with Hover / Click Popover -->
+            <!-- User Profile Footer with Hover / Click Popover (@animate-ui / shadcn Popover Style) -->
             <div class="user-block relative border-t border-gray-100 p-3 shrink-0"
+                 data-slot="popover"
                  x-data="{ userMenuOpen: false }"
                  @mouseenter="userMenuOpen = true"
                  @mouseleave="userMenuOpen = false">
@@ -271,20 +275,21 @@
                 <div x-show="userMenuOpen"
                      x-cloak
                      x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                      x-transition:leave="transition ease-in duration-100"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="user-dropdown-menu absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 divide-y divide-gray-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                     data-slot="popover-content"
+                     class="user-dropdown-menu absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-gray-200 p-2 z-50 ring-1 ring-black/5 divide-y divide-gray-100 outline-hidden origin-bottom"
                      @click.away="userMenuOpen = false">
-                    <div class="px-3 py-2">
-                        <p class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
-                        <p class="text-[11px] text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
+                    <div data-slot="popover-header" class="px-3 py-2">
+                        <p data-slot="popover-title" class="text-xs font-semibold text-gray-900 truncate">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</p>
+                        <p data-slot="popover-description" class="text-[11px] text-gray-500 truncate">{{ Auth::user()->email ?? 'admin@gmail.com' }}</p>
                     </div>
                     <div class="py-1">
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-[#019D91]/10 hover:text-[#019D91] rounded-lg transition-colors whitespace-nowrap">
+                           class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-neutral-100 hover:text-neutral-900 rounded-lg transition-colors whitespace-nowrap">
                             <iconify-icon icon="lucide:user-cog" class="text-base text-gray-400 shrink-0"></iconify-icon>
                             <span>Cài đặt tài khoản admin</span>
                         </a>
@@ -303,6 +308,8 @@
 
                 <!-- Profile Trigger Card -->
                 <div @click="userMenuOpen = !userMenuOpen"
+                     data-slot="popover-trigger"
+                     :aria-expanded="userMenuOpen"
                      class="user-trigger-card flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
                     <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
                         @if(Auth::user()->avatar_url)
@@ -361,19 +368,8 @@
             </header>
 
             <!-- Main Content -->
-            <main id="admin-main-content" data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f9fafb]">
+            <main id="admin-main-content" data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-white">
                 <!-- Flash Messages -->
-                @if(session('success'))
-                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2.5 shadow-sm">
-                        <iconify-icon icon="lucide:check-circle" class="text-emerald-600 shrink-0 text-lg"></iconify-icon>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    @include('partials.error-alert', ['message' => session('error')])
-                @endif
-
                 @if($errors->any())
                     <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm shadow-sm">
                         <p class="font-semibold mb-1 flex items-center gap-2">
@@ -395,6 +391,7 @@
 
     @include('partials.admin-confirm-modal')
     @include('partials.back-to-top')
+    @include('partials.toaster')
 
     @stack('scripts')
 

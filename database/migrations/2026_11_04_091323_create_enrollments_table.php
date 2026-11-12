@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->integer('progress_percent')->default(0);
             $table->timestamps();
-            
-            $table->unique(['user_id', 'course_id']); 
+
+            $table->unique(['user_id', 'course_id']);
         });
     }
 

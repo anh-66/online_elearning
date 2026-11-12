@@ -45,25 +45,93 @@
     </div>
 
     @if(($tab ?? 'reviews') === 'reviews')
-        {{-- Reviews Filters --}}
-        <div class="glass-card p-4">
-            <form method="GET" action="{{ route('admin.reviews.index') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <input type="hidden" name="tab" value="reviews">
+        {{-- Reviews Filters Toolbar (Minimalist, gray inputs, horizontal divider) --}}
+        <form method="GET" action="{{ route('admin.reviews.index') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-6 border-b border-gray-100">
+            <input type="hidden" name="tab" value="reviews">
                 <div class="sm:col-span-2 relative">
                     <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
                     <input type="text" name="keyword" value="{{ request('keyword') }}"
                            placeholder="Nội dung đánh giá, tên người học hoặc tên khóa học..."
                            class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
                 </div>
-                <select name="rating"
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] text-gray-600 transition-all">
-                    <option value="">Tất cả mức sao (1–5)</option>
-                    <option value="5" @selected(request('rating') === '5')>5 sao ⭐⭐⭐⭐⭐</option>
-                    <option value="4" @selected(request('rating') === '4')>4 sao ⭐⭐⭐⭐</option>
-                    <option value="3" @selected(request('rating') === '3')>3 sao ⭐⭐⭐</option>
-                    <option value="2" @selected(request('rating') === '2')>2 sao ⭐⭐</option>
-                    <option value="1" @selected(request('rating') === '1')>1 sao ⭐</option>
-                </select>
+                @php
+                    $ratingLabels = [
+                        '' => 'Tất cả mức sao (1–5)',
+                        '5' => '5 sao ⭐⭐⭐⭐⭐',
+                        '4' => '4 sao ⭐⭐⭐⭐',
+                        '3' => '3 sao ⭐⭐⭐',
+                        '2' => '2 sao ⭐⭐',
+                        '1' => '1 sao ⭐',
+                    ];
+                    $currentRatingVal = (string) request('rating', '');
+                    $currentRatingLabel = $ratingLabels[$currentRatingVal] ?? 'Tất cả mức sao (1–5)';
+                @endphp
+                <div class="relative"
+                     x-data="{
+                         open: false,
+                         selectedValue: '{{ $currentRatingVal }}',
+                         selectedLabel: '{{ addslashes($currentRatingLabel) }}',
+                         options: [
+                             { value: '', label: 'Tất cả mức sao (1–5)' },
+                             { value: '5', label: '5 sao ⭐⭐⭐⭐⭐' },
+                             { value: '4', label: '4 sao ⭐⭐⭐⭐' },
+                             { value: '3', label: '3 sao ⭐⭐⭐' },
+                             { value: '2', label: '2 sao ⭐⭐' },
+                             { value: '1', label: '1 sao ⭐' },
+                         ],
+                         select(val, label) {
+                             this.selectedValue = val;
+                             this.selectedLabel = label;
+                             this.open = false;
+                         }
+                     }">
+                    <input type="hidden" name="rating" :value="selectedValue">
+
+                    <!-- Combobox Trigger Button -->
+                    <button type="button"
+                            @click="open = !open"
+                            :aria-expanded="open"
+                            data-slot="combobox-trigger"
+                            class="w-full h-11 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                        <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                             :class="open ? 'rotate-180 text-gray-700' : ''"
+                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Combobox Content Popup -->
+                    <div x-show="open"
+                         x-cloak
+                         @click.outside="open = false"
+                         @keydown.escape.window="open = false"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                         data-slot="combobox-content"
+                         class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                        <template x-for="item in options" :key="item.value">
+                            <button type="button"
+                                    @click="select(item.value, item.label)"
+                                    data-slot="combobox-item"
+                                    class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                    :class="selectedValue === item.value 
+                                        ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                        : 'text-neutral-700 hover:bg-neutral-50'">
+                                <span x-text="item.label"></span>
+                                <svg x-show="selectedValue === item.value"
+                                     class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                     fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </button>
+                        </template>
+                    </div>
+                </div>
                 <div class="sm:col-span-3 flex justify-end gap-2">
                     <button type="submit"
                             class="flex items-center gap-2 rounded-xl bg-[#019D91] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#008b80] transition-colors">
@@ -77,14 +145,12 @@
                         </a>
                     @endif
                 </div>
-            </form>
-        </div>
+        </form>
 
         {{-- Reviews Table --}}
-        <div class="glass-card overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50/50 text-gray-500 text-xs font-semibold uppercase tracking-wider">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
                         <tr>
                             <th class="px-6 py-4">Người dùng</th>
                             <th class="px-4 py-4 min-w-[200px]">Khóa học</th>
@@ -152,16 +218,16 @@
                                                     modalTime = '{{ $review->created_at?->format('d/m/Y H:i') }}';
                                                     modalContent = @js($review->comment ?: '— (Không có nhận xét)');
                                                 "
-                                                class="p-2 text-gray-400 hover:text-[#019D91] hover:bg-[#019D91]/10 rounded-lg transition-all">
-                                            <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
+                                                class="text-gray-400 hover:text-gray-900 transition-colors flex items-center">
+                                            <iconify-icon icon="lucide:eye" class="text-base"></iconify-icon>
                                         </button>
                                         <form method="POST" action="{{ route('admin.reviews.destroy', $review) }}"
                                               data-confirm-message="Bạn có chắc chắn muốn xóa đánh giá này?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Xóa vi phạm"
-                                                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                                <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                                                    class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                                <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
                                     </div>
@@ -181,17 +247,15 @@
                 </table>
             </div>
             @if($reviews && $reviews->hasPages())
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+                <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                     {{ $reviews->links() }}
                 </div>
             @endif
-        </div>
 
     @else
-        {{-- Comments Filters --}}
-        <div class="glass-card p-4">
-            <form method="GET" action="{{ route('admin.reviews.index') }}" class="flex flex-col sm:flex-row items-center gap-3">
-                <input type="hidden" name="tab" value="comments">
+        {{-- Comments Filters Toolbar (Minimalist, gray inputs, horizontal divider) --}}
+        <form method="GET" action="{{ route('admin.reviews.index') }}" class="flex flex-col sm:flex-row items-center gap-3 pb-6 border-b border-gray-100">
+            <input type="hidden" name="tab" value="comments">
                 <div class="relative flex-1 w-full">
                     <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
                     <input type="text" name="keyword" value="{{ request('keyword') }}"
@@ -211,14 +275,12 @@
                         </a>
                     @endif
                 </div>
-            </form>
-        </div>
+        </form>
 
         {{-- Comments Table --}}
-        <div class="glass-card overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50/50 text-gray-500 text-xs font-semibold uppercase tracking-wider">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
                         <tr>
                             <th class="px-6 py-4">Người bình luận</th>
                             <th class="px-4 py-4 min-w-[180px]">Bài học</th>
@@ -267,7 +329,7 @@
                                     {{ $comment->created_at?->format('d/m/Y H:i') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center justify-end gap-1.5">
+                                    <div class="flex items-center justify-end gap-2">
                                         <button type="button"
                                                 title="Xem chi tiết"
                                                 @click="
@@ -281,16 +343,16 @@
                                                     modalTime = '{{ $comment->created_at?->format('d/m/Y H:i') }}';
                                                     modalContent = @js($comment->content);
                                                 "
-                                                class="p-2 text-gray-400 hover:text-[#019D91] hover:bg-[#019D91]/10 rounded-lg transition-all">
-                                            <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
+                                                class="text-gray-400 hover:text-gray-900 transition-colors flex items-center">
+                                            <iconify-icon icon="lucide:eye" class="text-base"></iconify-icon>
                                         </button>
                                         <form method="POST" action="{{ route('admin.reviews.destroy-comment', $comment) }}"
                                               data-confirm-message="Bạn có chắc chắn muốn xóa bình luận này?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Xóa vi phạm"
-                                                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                                <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                                                    class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                                <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
                                     </div>
@@ -310,11 +372,10 @@
                 </table>
             </div>
             @if($comments && $comments->hasPages())
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+                <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                     {{ $comments->links() }}
                 </div>
             @endif
-        </div>
     @endif
 
     {{-- Detail Modal Pop-up --}}

@@ -42,30 +42,163 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label for="role" class="block text-sm font-semibold text-gray-700">Vai trò <span class="text-red-500">*</span></label>
-                <select id="role" name="role" {{ $user->id === auth()->id() ? 'disabled' : '' }}
-                        class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
-                    <option value="admin" @selected(old('role', $user->role) === 'admin')>Quản trị viên (Admin)</option>
-                    <option value="instructor" @selected(old('role', $user->role) === 'instructor')>Giảng viên (Instructor)</option>
-                    <option value="student" @selected(old('role', $user->role) === 'student')>Học viên (Student)</option>
-                </select>
-                @if($user->id === auth()->id())
-                    <input type="hidden" name="role" value="{{ $user->role }}">
+            @php
+                $currentRole = old('role', $user->role ?? 'student');
+                $roleLabels = [
+                    'admin' => 'Quản trị viên (Admin)',
+                    'instructor' => 'Giảng viên (Instructor)',
+                    'student' => 'Học viên (Student)',
+                ];
+                $currentRoleLabel = $roleLabels[$currentRole] ?? 'Học viên (Student)';
+                $isSelfRole = $user->id === auth()->id();
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     disabled: {{ $isSelfRole ? 'true' : 'false' }},
+                     selectedValue: '{{ $currentRole }}',
+                     selectedLabel: '{{ $currentRoleLabel }}',
+                     options: [
+                         { value: 'admin', label: 'Quản trị viên (Admin)' },
+                         { value: 'instructor', label: 'Giảng viên (Instructor)' },
+                         { value: 'student', label: 'Học viên (Student)' },
+                     ],
+                     select(val, label) {
+                         if (this.disabled) return;
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <label class="block text-sm font-semibold text-gray-700">Vai trò <span class="text-red-500">*</span></label>
+                <input type="hidden" name="role" :value="selectedValue">
+
+                <!-- Combobox Trigger Button -->
+                <button type="button"
+                        @click="if (!disabled) open = !open"
+                        :aria-expanded="open"
+                        :disabled="disabled"
+                        data-slot="combobox-trigger"
+                        class="mt-1.5 w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Combobox Content Popup -->
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                     data-slot="combobox-content"
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button"
+                                @click="select(item.value, item.label)"
+                                data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value 
+                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value"
+                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+                @if($isSelfRole)
                     <p class="mt-1 text-xs text-amber-600">Bạn không thể tự đổi vai trò của chính mình.</p>
                 @endif
                 @error('role') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            <div>
-                <label for="status" class="block text-sm font-semibold text-gray-700">Trạng thái <span class="text-red-500">*</span></label>
-                <select id="status" name="status" {{ $user->id === auth()->id() ? 'disabled' : '' }}
-                        class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
-                    <option value="active" @selected(old('status', $user->status) === 'active')>Hoạt động (Active)</option>
-                    <option value="blocked" @selected(old('status', $user->status) === 'blocked')>Đã khóa (Blocked)</option>
-                </select>
-                @if($user->id === auth()->id())
-                    <input type="hidden" name="status" value="{{ $user->status }}">
+            @php
+                $currentStatus = old('status', $user->status ?? 'active');
+                $statusLabels = [
+                    'active' => 'Hoạt động (Active)',
+                    'blocked' => 'Đã khóa (Blocked)',
+                ];
+                $currentStatusLabel = $statusLabels[$currentStatus] ?? 'Hoạt động (Active)';
+                $isSelfStatus = $user->id === auth()->id();
+            @endphp
+            <div class="relative"
+                 x-data="{
+                     open: false,
+                     disabled: {{ $isSelfStatus ? 'true' : 'false' }},
+                     selectedValue: '{{ $currentStatus }}',
+                     selectedLabel: '{{ $currentStatusLabel }}',
+                     options: [
+                         { value: 'active', label: 'Hoạt động (Active)' },
+                         { value: 'blocked', label: 'Đã khóa (Blocked)' },
+                     ],
+                     select(val, label) {
+                         if (this.disabled) return;
+                         this.selectedValue = val;
+                         this.selectedLabel = label;
+                         this.open = false;
+                     }
+                 }">
+                <label class="block text-sm font-semibold text-gray-700">Trạng thái <span class="text-red-500">*</span></label>
+                <input type="hidden" name="status" :value="selectedValue">
+
+                <!-- Combobox Trigger Button -->
+                <button type="button"
+                        @click="if (!disabled) open = !open"
+                        :aria-expanded="open"
+                        :disabled="disabled"
+                        data-slot="combobox-trigger"
+                        class="mt-1.5 w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Combobox Content Popup -->
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     @keydown.escape.window="open = false"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                     data-slot="combobox-content"
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                    <template x-for="item in options" :key="item.value">
+                        <button type="button"
+                                @click="select(item.value, item.label)"
+                                data-slot="combobox-item"
+                                class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                :class="selectedValue === item.value 
+                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                            <span x-text="item.label"></span>
+                            <svg x-show="selectedValue === item.value"
+                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+                @if($isSelfStatus)
                     <p class="mt-1 text-xs text-amber-600">Bạn không thể tự khóa tài khoản của chính mình.</p>
                 @endif
                 @error('status') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

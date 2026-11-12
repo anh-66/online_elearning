@@ -15,6 +15,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=be-vietnam-pro:400,500,600,700,800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -24,32 +26,19 @@
       data-back-to-top-scroll
       x-data="{ 
           mobileMenuOpen: false, 
-          supportFlyoutOpen: false, 
-          supportCloseTimer: null, 
-          openSupportFlyout() { 
-              clearTimeout(this.supportCloseTimer); 
-              clearTimeout(this.featuresCloseTimer); 
-              this.featuresFlyoutOpen = false; 
-              this.supportFlyoutOpen = true; 
+          activeMenu: null, 
+          menuTimeout: null, 
+          openMenu(menu) { 
+              clearTimeout(this.menuTimeout); 
+              this.activeMenu = menu; 
           }, 
-          scheduleSupportClose() { 
-              this.supportCloseTimer = setTimeout(() => { this.supportFlyoutOpen = false; }, 220); 
-          },
-          featuresFlyoutOpen: false,
-          featuresCloseTimer: null,
-          openFeaturesFlyout() {
-              clearTimeout(this.featuresCloseTimer);
-              clearTimeout(this.supportCloseTimer);
-              this.supportFlyoutOpen = false;
-              this.featuresFlyoutOpen = true;
-          },
-          scheduleFeaturesClose() {
-              this.featuresCloseTimer = setTimeout(() => { this.featuresFlyoutOpen = false; }, 220);
+          closeMenu() { 
+              this.menuTimeout = setTimeout(() => { this.activeMenu = null; }, 180); 
           }
       }">
-    <!-- Header / Navbar (LottieFiles Modern Scale - Rộng rãi, thoáng đạt, chữ to rõ nét) -->
-    <header class="sticky top-0 z-50 apple-glass-nav border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors"
-            @keydown.escape="supportFlyoutOpen = false; featuresFlyoutOpen = false; clearTimeout(supportCloseTimer); clearTimeout(featuresCloseTimer)">
+    <!-- Header / Navbar (Nền đặc hoàn toàn, không trong suốt) -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-[#161b22] border-b border-[#E5E5EA] dark:border-[#30363d] transition-colors shadow-xs"
+            @keydown.escape="activeMenu = null; clearTimeout(menuTimeout)">
         <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14">
             <div class="flex items-center justify-between h-18 sm:h-20">
                 <!-- Left: Logo & Nav Links -->
@@ -61,40 +50,54 @@
                         <span class="text-xl sm:text-2xl font-bold tracking-tight whitespace-nowrap">EduLearn</span>
                     </a>
 
-                    <!-- Desktop Nav Links (Font to rõ ràng chuẩn LottieFiles 15px-16px, khoảng cách dãn đều thoáng đãng) -->
-                    <nav class="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8 text-[15px] lg:text-base font-semibold text-[#1D1D1F]/80 dark:text-[#e6edf3] shrink-0">
-                        <a href="{{ url('/') }}" class="whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('home') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
+                    <!-- Desktop Navigation Menu (@animate-ui / LottieFiles NavigationMenu Style) -->
+                    <nav class="hidden md:flex items-center gap-1.5 shrink-0 relative"
+                         data-slot="navigation-menu"
+                         @mouseleave="closeMenu()">
+                        <a href="{{ url('/') }}"
+                           class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center outline-none select-none text-[#1D1D1F] dark:text-[#e6edf3] hover:bg-black/[0.05] dark:hover:bg-white/10">
                             Trang chủ
                         </a>
-                        <a href="{{ url('/courses') }}" class="whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('courses.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
+
+                        <a href="{{ url('/courses') }}"
+                           class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center outline-none select-none text-[#1D1D1F] dark:text-[#e6edf3] hover:bg-black/[0.05] dark:hover:bg-white/10">
                             Khóa học
                         </a>
-                        <!-- Support Nav with Flyout Trigger -->
-                        <div class="relative py-2 shrink-0"
-                             @mouseenter="openSupportFlyout()"
-                             @mouseleave="scheduleSupportClose()">
-                            <a href="{{ route('support.index') }}"
-                               class="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 {{ request()->routeIs('support.*') ? 'font-bold text-[#019D91] dark:text-[#00ddb3]' : '' }}">
-                                <span class="whitespace-nowrap">Hỗ Trợ</span>
-                                <svg class="w-4 h-4 shrink-0 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': supportFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </a>
-                        </div>
 
-                        <!-- Features Nav with Mega Menu Trigger (Tiện ích) -->
-                        <div class="relative py-2 shrink-0"
-                             @mouseenter="openFeaturesFlyout()"
-                             @mouseleave="scheduleFeaturesClose()">
+                        <!-- Support Trigger -->
+                        <div class="relative shrink-0">
                             <button type="button"
-                                    class="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors hover:text-[#019D91] dark:hover:text-[#02b3a5] py-2 focus:outline-none"
-                                    :class="{ 'text-[#019D91] dark:text-[#02b3a5]': featuresFlyoutOpen }">
-                                <span class="whitespace-nowrap">Tiện ích</span>
-                                <svg class="w-4 h-4 shrink-0 transition-transform duration-200" :class="{ 'rotate-180 text-[#019D91] dark:text-[#02b3a5]': featuresFlyoutOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
+                                    @mouseenter="openMenu('support')"
+                                    @click="activeMenu = activeMenu === 'support' ? null : 'support'"
+                                    class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center gap-1.5 outline-none select-none group hover:bg-black/[0.05] dark:hover:bg-white/10 text-[#1D1D1F] dark:text-[#e6edf3]"
+                                    :class="activeMenu === 'support' ? 'bg-black/[0.05] dark:bg-white/10' : ''">
+                                <span>Hỗ Trợ</span>
+                                <svg class="relative top-px size-3 text-gray-400 dark:text-gray-400 transition-transform duration-300 ease-out"
+                                     :class="{ 'rotate-180': activeMenu === 'support' }"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                         </div>
+
+                        <!-- Features Trigger -->
+                        <div class="relative shrink-0">
+                            <button type="button"
+                                    @mouseenter="openMenu('features')"
+                                    @click="activeMenu = activeMenu === 'features' ? null : 'features'"
+                                    class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center gap-1.5 outline-none select-none group hover:bg-black/[0.05] dark:hover:bg-white/10 text-[#1D1D1F] dark:text-[#e6edf3]"
+                                    :class="activeMenu === 'features' ? 'bg-black/[0.05] dark:bg-white/10' : ''">
+                                <span>Tiện ích</span>
+                                <svg class="relative top-px size-3 text-gray-400 dark:text-gray-400 transition-transform duration-300 ease-out"
+                                     :class="{ 'rotate-180': activeMenu === 'features' }"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Shared Viewport Dropdown Menu (Cố định ô to, mượt mà khi chuyển menu) -->
+                        @include('partials.navigation-menu-dropdown')
                     </nav>
                 </div>
 
@@ -115,32 +118,37 @@
                 <div class="flex items-center space-x-3 sm:space-x-4 shrink-0">
                     @include('partials.notification-bell')
 
+                    @auth
+                        @if(Auth::user()->isStudent())
+                        @include('partials.attendance-checkin')
+                        @endif
+                    @endauth
+
                     <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2.5 transition" />
 
                     @auth
                         @if(Auth::user()->isAdmin())
-                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
-                                Khóa học của tôi
-                            </a>
-                            <a href="{{ route('admin.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#019D91] dark:text-[#02b3a5] hover:text-[#008b80] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                            <a href="{{ route('admin.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Trang Quản trị Admin
                             </a>
                         @elseif(Auth::user()->isInstructor())
-                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Khóa học của tôi
                             </a>
-                            <a href="{{ route('instructor.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#019D91] dark:text-[#02b3a5] hover:text-[#008b80] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                            <a href="{{ route('instructor.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Studio Giảng viên
                             </a>
                         @else
-                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F]/85 dark:text-[#e6edf3] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
+                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Khóa học của tôi
                             </a>
                         @endif
 
-                        <!-- User Profile Dropdown -->
-                        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                        <!-- User Profile Dropdown Popover (@animate-ui / shadcn Popover Style) -->
+                        <div class="relative" data-slot="popover" x-data="{ open: false }" @click.outside="open = false">
                             <button @click="open = !open"
+                                    data-slot="popover-trigger"
+                                    :aria-expanded="open"
                                     class="flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-[#019D91] transition hover:opacity-90 active:scale-95"
                                     aria-label="Tài khoản cá nhân">
                                 <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-base sm:text-lg flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
@@ -153,19 +161,21 @@
                                 </div>
                             </button>
 
-                            <!-- Dropdown Menu -->
-                            <div x-show="open" x-cloak
+                            <!-- Popover Content -->
+                            <div x-show="open" 
+                                 x-cloak
                                  x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="transform opacity-0 scale-95"
-                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:enter-start="transform opacity-0 -translate-y-1 scale-95"
+                                 x-transition:enter-end="transform opacity-100 translate-y-0 scale-100"
                                  x-transition:leave="transition ease-in duration-100"
-                                 x-transition:leave-start="transform opacity-100 scale-100"
-                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="absolute right-0 mt-3 w-64 bg-white dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] rounded-2xl shadow-xl border border-[#E5E5EA] dark:border-[#30363d] py-2 z-50 text-[15px]">
+                                 x-transition:leave-start="transform opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave-end="transform opacity-0 -translate-y-1 scale-95"
+                                 data-slot="popover-content"
+                                 class="absolute right-0 mt-3 w-64 bg-white dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-800 ring-1 ring-black/5 dark:ring-white/5 py-2 z-50 text-[15px] outline-hidden origin-top-right">
 
-                                <div class="px-4 py-3 border-b border-[#E5E5EA] dark:border-[#30363d]">
-                                    <p class="font-bold truncate">{{ Auth::user()->name }}</p>
-                                    <p class="text-xs text-[#86868B] dark:text-[#7d8590] truncate mt-0.5">{{ Auth::user()->email }}</p>
+                                <div data-slot="popover-header" class="px-4 py-3 border-b border-neutral-100 dark:border-[#30363d]">
+                                    <p data-slot="popover-title" class="font-bold truncate text-neutral-900 dark:text-white">{{ Auth::user()->name }}</p>
+                                    <p data-slot="popover-description" class="text-xs text-[#86868B] dark:text-[#7d8590] truncate mt-0.5">{{ Auth::user()->email }}</p>
                                     <span class="inline-block mt-2 px-2.5 py-0.5 text-xs font-semibold rounded-full
                                         {{ Auth::user()->isAdmin() ? 'bg-neutral-900 text-white dark:bg-[#30363d] dark:text-white' : (Auth::user()->isInstructor() ? 'bg-[#019D91]/15 text-[#018076] dark:bg-[#019D91]/20 dark:text-[#02b3a5]' : 'bg-neutral-100 text-neutral-800 dark:bg-[#21262d] dark:text-[#c9d1d9]') }}">
                                         {{ Auth::user()->isAdmin() ? 'Quản trị viên' : (Auth::user()->isInstructor() ? 'Giảng viên' : 'Học viên') }}
@@ -175,9 +185,6 @@
                                 @if(Auth::user()->isAdmin())
                                     <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-semibold text-[#019D91] dark:text-[#02b3a5]">
                                         Trang Quản trị Admin
-                                    </a>
-                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
-                                        Khóa học của tôi
                                     </a>
                                 @elseif(Auth::user()->isInstructor())
                                     <a href="{{ route('instructor.dashboard') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-semibold text-[#019D91] dark:text-[#02b3a5]">
@@ -250,9 +257,6 @@
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': mobileFeaturesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="mobileFeaturesOpen" x-cloak class="pl-3 pr-2 py-1 space-y-1">
-                        <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">
-                            Khóa học của tôi
-                        </a>
                         @if(auth()->check() && Auth::user()->isAdmin())
                             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#019D91] dark:text-[#02b3a5] font-semibold hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Trang Quản trị Admin
@@ -261,8 +265,12 @@
                             <a href="{{ route('instructor.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#019D91] dark:text-[#02b3a5] font-semibold hover:bg-black/5 dark:hover:bg-[#21262d]">
                                 Studio Giảng viên
                             </a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">
+                                Khóa học của tôi
+                            </a>
                         @endif
-                        <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Danh sách yêu thích</a>
+                        <a href="{{ auth()->check() && !Auth::user()->isAdmin() ? route('dashboard') : route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Danh sách yêu thích</a>
                         <a href="{{ url('/courses') }}" class="block px-3 py-2 rounded-lg text-sm text-[#1D1D1F] dark:text-[#f0f6fc] hover:bg-black/5 dark:hover:bg-[#21262d]">Bài thi & Đánh giá</a>
                     </div>
                 </div>
@@ -276,32 +284,10 @@
             </div>
         </div>
 
-        @include('partials.support-mega-menu')
-        @include('partials.features-mega-menu')
     </header>
 
-    <div x-show="supportFlyoutOpen || featuresFlyoutOpen"
-         x-cloak
-         class="pointer-events-none fixed inset-0 z-30 bg-black/35 backdrop-blur-md backdrop-saturate-150 transition-opacity duration-300 dark:bg-black/50"
-         aria-hidden="true"></div>
-
-    <!-- Flash Messages (Ẩn trên trang phòng học để không gián đoạn trải nghiệm học tập) -->
-    @if((session('success') || session('error')) && !request()->routeIs('learning.player'))
-    <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 mt-4">
-        @if(session('success'))
-            <div class="px-5 py-3 rounded-full bg-white dark:bg-neutral-900 border border-[#D2D2D7]/60 dark:border-neutral-800 text-sm flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2.5 text-emerald-600 dark:text-emerald-400">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span class="text-[#1D1D1F] dark:text-white font-medium">{{ session('success') }}</span>
-                </div>
-            </div>
-        @endif
-
-        @if(session('error'))
-            @include('partials.error-alert', ['message' => session('error')])
-        @endif
-    </div>
-    @endif
+    {{-- Animate UI Global Toaster --}}
+    @include('partials.toaster')
 
     <!-- Main Content Area -->
     <main class="flex-1">
@@ -336,7 +322,7 @@
                     <ul class="space-y-3.5 sm:space-y-4 text-[14px] sm:text-[15px] leading-relaxed">
                         <li><a href="{{ route('login') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Đăng nhập tài khoản</a></li>
                         <li><a href="{{ route('register') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Đăng ký thành viên</a></li>
-                        @if (Route::has('my-courses'))
+                        @if (Route::has('my-courses') && (!auth()->check() || !Auth::user()->isAdmin()))
                             <li><a href="{{ route('my-courses') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Khóa học của tôi</a></li>
                         @endif
                         <li><a href="{{ route('profile.edit') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Quản lý hồ sơ</a></li>

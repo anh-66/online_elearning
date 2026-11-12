@@ -31,7 +31,7 @@
      }">
     <div class="w-full max-w-2xl">
         <!-- Breadcrumb -->
-        <nav class="mb-6 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <nav class="sticky top-[72px] z-30 mb-6 flex items-center gap-2 bg-white/95 py-4 text-base text-gray-500 backdrop-blur-md dark:bg-[#0d1117]/95 dark:text-gray-400 sm:top-[80px]">
             <a href="{{ route('support.index') }}" class="hover:text-black dark:hover:text-white transition">Trung tâm Hỗ trợ</a>
             <span>/</span>
             <span class="text-gray-900 dark:text-gray-200 font-medium">Báo cáo sự cố & Góp ý</span>
@@ -103,38 +103,119 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Issue Category -->
+                <!-- Issue Category (Combobox Animate-UI) -->
                 <div>
-                    <label for="category-select" class="block text-[13px] font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Loại phản hồi <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <select id="category-select" name="category"
-                                class="w-full px-4 py-3 bg-white dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg outline-none transition-all duration-200 focus:border-black dark:focus:border-white focus:ring-0 text-sm text-gray-900 dark:text-white appearance-none cursor-pointer pr-10">
-                            <option value="bug" {{ old('category') === 'bug' ? 'selected' : '' }}>Lỗi kỹ thuật</option>
-                            <option value="feature" {{ old('category') === 'feature' ? 'selected' : '' }}>Góp ý tính năng</option>
-                            <option value="question" {{ old('category') === 'question' ? 'selected' : '' }}>Câu hỏi</option>
-                            <option value="other" {{ old('category') === 'other' ? 'selected' : '' }}>Khác</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
-                            <iconify-icon icon="lucide:chevron-down" class="text-lg"></iconify-icon>
+                    <label class="block text-[13px] font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Loại phản hồi <span class="text-red-500">*</span></label>
+                    @php
+                        $feedbackCategories = [
+                            'bug' => 'Lỗi kỹ thuật',
+                            'feature' => 'Góp ý tính năng',
+                            'question' => 'Câu hỏi',
+                            'other' => 'Khác',
+                        ];
+                        $initialCategory = old('category', 'bug');
+                        $initialCategoryLabel = $feedbackCategories[$initialCategory] ?? 'Lỗi kỹ thuật';
+                    @endphp
+                    <div class="relative"
+                         x-data="{
+                             open: false,
+                             selectedValue: '{{ $initialCategory }}',
+                             selectedLabel: '{{ $initialCategoryLabel }}',
+                             options: [
+                                 { value: 'bug', label: 'Lỗi kỹ thuật' },
+                                 { value: 'feature', label: 'Góp ý tính năng' },
+                                 { value: 'question', label: 'Câu hỏi' },
+                                 { value: 'other', label: 'Khác' }
+                             ],
+                             select(val, label) {
+                                 this.selectedValue = val;
+                                 this.selectedLabel = label;
+                                 this.open = false;
+                             }
+                         }">
+                        <!-- Hidden Input for Form Submission -->
+                        <input type="hidden" name="category" :value="selectedValue">
+
+                        <!-- Trigger Button -->
+                        <button type="button"
+                                @click="open = !open"
+                                :aria-expanded="open"
+                                data-slot="combobox-trigger"
+                                class="w-full h-11 px-4 py-2.5 bg-white dark:bg-[#161b22] border border-gray-200 dark:border-[#30363d] rounded-lg text-sm text-gray-900 dark:text-white flex items-center justify-between text-left focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-gray-400 dark:focus:border-gray-500 transition-all cursor-pointer select-none group/combobox-trigger shadow-xs">
+                            <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-gray-200"></span>
+                            <!-- ArrowDown01Icon -->
+                            <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-gray-300 shrink-0 pointer-events-none"
+                                 :class="open ? 'rotate-180 text-gray-700 dark:text-gray-300' : ''"
+                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Content Popup -->
+                        <div x-show="open"
+                             x-cloak
+                             @click.outside="open = false"
+                             @keydown.escape.window="open = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                             data-slot="combobox-content"
+                             class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-[#30363d] bg-white dark:bg-[#161b22] shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 overflow-hidden space-y-0.5">
+                            <template x-for="item in options" :key="item.value">
+                                <button type="button"
+                                        @click="select(item.value, item.label)"
+                                        data-slot="combobox-item"
+                                        class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
+                                        :class="selectedValue === item.value 
+                                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                            : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'">
+                                    <span x-text="item.label"></span>
+                                    <svg x-show="selectedValue === item.value"
+                                         class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none transition-transform duration-200"
+                                         fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
 
-                <!-- Priority Level -->
+                <!-- Priority Level (@animate-ui / shadcn RadioGroup Style) -->
                 <div>
                     <label class="block text-[13px] font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Mức độ ưu tiên <span class="text-red-500">*</span></label>
-                    <div class="flex items-center space-x-6 py-2.5">
-                        <label class="flex items-center space-x-2 cursor-pointer group-radio">
-                            <input type="radio" name="priority" value="low" {{ old('priority') === 'low' ? 'checked' : '' }} class="w-4 h-4 accent-black dark:accent-white border-gray-300 dark:border-neutral-600 focus:ring-0">
-                            <span class="text-sm text-gray-600 dark:text-gray-300">Thấp</span>
+                    <div data-slot="radio-group" class="flex flex-wrap items-center gap-6 py-2.5">
+                        <label class="flex items-center gap-3 cursor-pointer group select-none relative">
+                            <input type="radio" name="priority" value="low" {{ old('priority') === 'low' ? 'checked' : '' }} class="peer sr-only">
+                            <span data-slot="radio-group-item" class="relative size-4 rounded-full border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50 flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400 peer-checked:border-neutral-900 dark:peer-checked:border-white peer-checked:bg-neutral-900 dark:peer-checked:bg-white peer-checked:[&>span>span]:opacity-100 peer-checked:[&>span>span]:scale-100 peer-focus-visible:ring-2 peer-focus-visible:ring-neutral-900/20">
+                                <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                    <span class="size-2 rounded-full bg-white dark:bg-neutral-950 opacity-0 scale-0 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"></span>
+                                </span>
+                            </span>
+                            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors peer-checked:text-neutral-950 dark:peer-checked:text-white peer-checked:font-semibold">Thấp</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer group-radio">
-                            <input type="radio" name="priority" value="medium" {{ old('priority', 'medium') === 'medium' ? 'checked' : '' }} class="w-4 h-4 accent-black dark:accent-white border-gray-300 dark:border-neutral-600 focus:ring-0">
-                            <span class="text-sm text-gray-600 dark:text-gray-300">Trung bình</span>
+
+                        <label class="flex items-center gap-3 cursor-pointer group select-none relative">
+                            <input type="radio" name="priority" value="medium" {{ old('priority', 'medium') === 'medium' ? 'checked' : '' }} class="peer sr-only">
+                            <span data-slot="radio-group-item" class="relative size-4 rounded-full border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50 flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400 peer-checked:border-neutral-900 dark:peer-checked:border-white peer-checked:bg-neutral-900 dark:peer-checked:bg-white peer-checked:[&>span>span]:opacity-100 peer-checked:[&>span>span]:scale-100 peer-focus-visible:ring-2 peer-focus-visible:ring-neutral-900/20">
+                                <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                    <span class="size-2 rounded-full bg-white dark:bg-neutral-950 opacity-0 scale-0 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"></span>
+                                </span>
+                            </span>
+                            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors peer-checked:text-neutral-950 dark:peer-checked:text-white peer-checked:font-semibold">Trung bình</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer group-radio">
-                            <input type="radio" name="priority" value="high" {{ old('priority') === 'high' ? 'checked' : '' }} class="w-4 h-4 accent-black dark:accent-white border-gray-300 dark:border-neutral-600 focus:ring-0">
-                            <span class="text-sm text-gray-600 dark:text-gray-300">Cao</span>
+
+                        <label class="flex items-center gap-3 cursor-pointer group select-none relative">
+                            <input type="radio" name="priority" value="high" {{ old('priority') === 'high' ? 'checked' : '' }} class="peer sr-only">
+                            <span data-slot="radio-group-item" class="relative size-4 rounded-full border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900/50 flex items-center justify-center shrink-0 aspect-square outline-none transition-all duration-200 group-hover:border-neutral-400 peer-checked:border-neutral-900 dark:peer-checked:border-white peer-checked:bg-neutral-900 dark:peer-checked:bg-white peer-checked:[&>span>span]:opacity-100 peer-checked:[&>span>span]:scale-100 peer-focus-visible:ring-2 peer-focus-visible:ring-neutral-900/20">
+                                <span data-slot="radio-group-indicator" class="relative z-10 flex size-4 items-center justify-center pointer-events-none">
+                                    <span class="size-2 rounded-full bg-white dark:bg-neutral-950 opacity-0 scale-0 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none"></span>
+                                </span>
+                            </span>
+                            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors peer-checked:text-neutral-950 dark:peer-checked:text-white peer-checked:font-semibold">Cao</span>
                         </label>
                     </div>
                 </div>
