@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseCatalogController;
+use App\Http\Controllers\CourseChatController;
 use App\Http\Controllers\CourseCheckoutController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\HomeController;
@@ -35,6 +36,11 @@ Route::get('/support/bao-cao-su-co', [SupportController::class, 'feedback'])->na
 Route::post('/support/bao-cao-su-co', [SupportController::class, 'submitFeedback'])->name('support.feedback.submit');
 Route::get('/support/feedback', fn () => redirect()->route('support.feedback'));
 Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support.show');
+
+// Chat AI tư vấn khóa học (không cần đăng nhập, giới hạn lượt hỏi trong AppServiceProvider)
+Route::post('/chat/courses', CourseChatController::class)
+    ->middleware('throttle:course-chat')
+    ->name('course-chat.send');
 
 /*
 |--------------------------------------------------------------------------

@@ -315,6 +315,7 @@
     @endif
 
     @include('partials.back-to-top')
+    @include('partials.course-chat')
 
     <!-- Footer (Theme tối chuẩn LottieFiles - Rộng rãi, chữ to rõ ràng, không ôm sát khung) -->
     <footer class="bg-[#0b0c0e] text-[#8e8e93] {{ request()->routeIs('home') ? 'mt-0' : 'mt-12' }} select-none">

@@ -69,3 +69,10 @@ services:
       # Lấy ở Cloudinary Console > API Keys > "API environment variable".
       - key: CLOUDINARY_URL
         sync: false
+
+      # Chat AI tư vấn khóa học (Google Gemini, gói miễn phí). Lấy key ở https://aistudio.google.com/apikey
+      # Không có key thì khung chat tự ẩn.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite

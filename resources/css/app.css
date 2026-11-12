@@ -482,6 +482,15 @@
         height: 1.25rem;
     }
 
+    /* Có khung chat AI ở góc phải dưới: đẩy nút "Lên đầu" lên trên nút chat. */
+    .has-course-chat .back-to-top {
+        bottom: 5.75rem;
+    }
+
+    #course-chat [hidden] {
+        display: none !important;
+    }
+
     @keyframes back-to-top-in {
         from {
             opacity: 0;
@@ -506,6 +515,10 @@
             bottom: 1rem;
             min-width: 6.75rem;
             padding: 0.625rem 0.75rem;
+        }
+
+        .has-course-chat .back-to-top {
+            bottom: 5.25rem;
         }
 
         .cookie-heading {
