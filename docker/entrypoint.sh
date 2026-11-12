@@ -18,6 +18,13 @@ if [ -z "${GOOGLE_REDIRECT_URI:-}" ] && [ -n "${APP_URL:-}" ]; then
     export GOOGLE_REDIRECT_URI="${APP_URL%/}/auth/google/callback"
 fi
 
+# Secret File của Render (/etc/secrets) chỉ root đọc được, còn Apache chạy PHP bằng www-data.
+# Chép file CA (là chứng chỉ công khai, không phải bí mật) ra chỗ www-data đọc được.
+if [ -n "${MYSQL_ATTR_SSL_CA:-}" ] && [ -f "${MYSQL_ATTR_SSL_CA}" ]; then
+    install -m 0644 "${MYSQL_ATTR_SSL_CA}" /etc/ssl/certs/mysql-ca.pem
+    export MYSQL_ATTR_SSL_CA=/etc/ssl/certs/mysql-ca.pem
+fi
+
 # Link public/storage -> storage/app/public để hiển thị file upload.
 php artisan storage:link --force --no-interaction >/dev/null
 
