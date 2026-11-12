@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Chạy mỗi lần container khởi động trên Render (deploy, restart, hoặc khi service free "thức dậy").
+set -euo pipefail
+
+cd /var/www/html
+
+if [ -z "${APP_KEY:-}" ]; then
+    echo "[entrypoint] Thiếu APP_KEY. Tạo bằng 'php artisan key:generate --show' rồi thêm vào Environment trên Render." >&2
+    exit 1
+fi
+
+# Render tự cấp RENDER_EXTERNAL_URL (vd: https://online-elearning.onrender.com).
+# Dùng nó làm APP_URL nếu chưa đặt; tự đặt APP_URL khi dùng tên miền riêng.
+if [ -z "${APP_URL:-}" ] && [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
+    export APP_URL="${RENDER_EXTERNAL_URL}"
+fi
+if [ -z "${GOOGLE_REDIRECT_URI:-}" ] && [ -n "${APP_URL:-}" ]; then
+    export GOOGLE_REDIRECT_URI="${APP_URL%/}/auth/google/callback"
+fi
+
+# Link public/storage -> storage/app/public để hiển thị file upload.
+php artisan storage:link --force --no-interaction >/dev/null
+
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+    attempt=1
+    max_attempts="${DB_CONNECT_RETRIES:-5}"
+    # Database cloud có thể mất vài giây để nhận kết nối, nên thử lại vài lần.
+    until php artisan migrate --force --no-interaction; do
+        if [ "$attempt" -ge "$max_attempts" ]; then
+            echo "[entrypoint] Không migrate được sau ${attempt} lần. Kiểm tra lại DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, MYSQL_ATTR_SSL_CA." >&2
+            exit 1
+        fi
+        echo "[entrypoint] Migrate lỗi (lần ${attempt}/${max_attempts}), thử lại sau 5 giây..." >&2
+        attempt=$((attempt + 1))
+        sleep 5
+    done
+fi
+
+if [ "${RUN_SEEDERS:-false}" = "true" ]; then
+    php artisan db:seed --force --no-interaction
+fi
+
+# Cache config, route, view, event cho production (đọc biến môi trường lúc chạy).
+php artisan optimize --no-interaction
+
+chown -R www-data:www-data storage bootstrap/cache
+
+exec docker-php-entrypoint "$@"

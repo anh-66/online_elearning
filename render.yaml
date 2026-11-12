@@ -1,0 +1,73 @@
+# Render Blueprint cho EduLearn.
+# Tạo trên Render: New > Blueprint > chọn repo này và nhánh muốn deploy.
+# Các biến "sync: false" là secret: Render sẽ hỏi giá trị khi tạo Blueprint và không lưu trong Git.
+services:
+  - type: web
+    name: online-elearning
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /up
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: EduLearn
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      # Tạo bằng: php artisan key:generate --show  (dạng base64:...)
+      - key: APP_KEY
+        sync: false
+      - key: APP_LOCALE
+        value: en
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+
+      # MySQL cloud (Aiven, TiDB Cloud, ...). Render không có MySQL managed.
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      # File CA để bật SSL tới MySQL:
+      #   Aiven: thêm Secret File tên ca.pem rồi điền /etc/secrets/ca.pem
+      #   TiDB Cloud: điền /etc/ssl/certs/ca-certificates.crt
+      - key: MYSQL_ATTR_SSL_CA
+        sync: false
+
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: MAIL_MAILER
+        value: log
+
+      # Chạy migrate mỗi lần khởi động (an toàn, chỉ chạy migration mới).
+      - key: RUN_MIGRATIONS
+        value: "true"
+      # Seed dữ liệu mẫu. Sau lần deploy đầu tiên hãy đổi thành "false",
+      # nếu không seeder sẽ đặt lại mật khẩu các tài khoản mẫu mỗi lần restart.
+      - key: RUN_SEEDERS
+        value: "true"
+
+    # File upload (avatar, ảnh khóa học, tài liệu) nằm trên ổ đĩa tạm của container
+    # và sẽ mất khi redeploy/restart. Muốn giữ lại cần gói trả phí + persistent disk:
+    # disk:
+    #   name: uploads
+    #   mountPath: /var/www/html/storage/app/public
+    #   sizeGB: 1

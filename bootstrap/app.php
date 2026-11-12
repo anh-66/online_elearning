@@ -27,6 +27,10 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Render (và các host tương tự) đứng sau proxy HTTPS: tin header X-Forwarded-*
+        // để URL, asset và cookie được sinh đúng với https.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => CheckRole::class,
         ]);
