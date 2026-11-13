@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Mail\EmailOtpMail;
+use App\Models\EmailLog;
 use App\Models\EmailOtp;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -52,7 +54,7 @@ class EmailOtpService
         RateLimiter::hit($limiterKey, 3600);
 
         try {
-            Mail::to($user)->send(new EmailOtpMail($user, $code, $purpose, $ttl));
+            $sent = Mail::to($user)->send(new EmailOtpMail($user, $code, $purpose, $ttl));
         } catch (Throwable $exception) {
             // Mã vẫn dùng được: ghi vào log để chủ web vẫn test được khi Brevo lỗi (Render > Logs).
             Log::error('Brevo: gửi mail OTP thất bại.', [
@@ -61,11 +63,34 @@ class EmailOtpService
                 'code' => $code,
                 'error' => $exception->getMessage(),
             ]);
+            $this->record($user, $purpose, EmailLog::STATUS_FAILED, error: $exception->getMessage());
 
             return EmailOtpResult::sendFailed();
         }
 
+        $this->record($user, $purpose, EmailLog::STATUS_SENT, messageId: $sent?->getMessageId());
+
         return EmailOtpResult::sent();
+    }
+
+    /**
+     * Ghi nhật ký cho trang admin "Email đã gửi" (không lưu mã). Lỗi khi ghi không được làm hỏng việc gửi mã.
+     */
+    private function record(User $user, string $purpose, string $status, ?string $messageId = null, ?string $error = null): void
+    {
+        try {
+            EmailLog::create([
+                'user_id' => $user->getKey(),
+                'to_email' => $user->email,
+                'purpose' => $purpose,
+                'mailer' => (string) config('mail.default'),
+                'status' => $status,
+                'message_id' => $messageId !== null ? Str::limit($messageId, 250, '') : null,
+                'error' => $error !== null ? Str::limit($error, 1000) : null,
+            ]);
+        } catch (Throwable $exception) {
+            Log::warning('Không ghi được nhật ký gửi mail.', ['error' => $exception->getMessage()]);
+        }
     }
 
     public function check(User $user, string $purpose, string $code): EmailOtpResult

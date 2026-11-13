@@ -285,6 +285,13 @@
                     <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Thông báo</span>
                 </a>
 
+                <!-- Email đã gửi -->
+                <a href="{{ route('admin.email-logs.index') }}"
+                   class="nav-item {{ request()->routeIs('admin.email-logs.*') ? 'is-active' : '' }}">
+                    <iconify-icon icon="lucide:mail-check" class="text-xl shrink-0"></iconify-icon>
+                    <span class="nav-text ml-3 whitespace-nowrap transition-all duration-300">Email đã gửi</span>
+                </a>
+
                 <!-- Phản hồi & Báo cáo -->
                 <a href="{{ route('admin.feedbacks.index') }}"
                    class="nav-item {{ request()->routeIs('admin.feedbacks.*') ? 'is-active' : '' }}">

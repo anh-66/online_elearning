@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CloudinaryController;
 use App\Http\Controllers\Admin\CloudinaryTrashController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmailLogController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\InstructorController;
@@ -78,6 +79,9 @@ Route::post('/cloudinary/trash/bulk-restore', [CloudinaryTrashController::class,
 Route::delete('/cloudinary/trash/bulk', [CloudinaryTrashController::class, 'bulkDestroy'])->name('cloudinary.trash.bulk-destroy');
 Route::post('/cloudinary/trash/{item}/restore', [CloudinaryTrashController::class, 'restore'])->whereNumber('item')->name('cloudinary.trash.restore');
 Route::delete('/cloudinary/trash/{item}', [CloudinaryTrashController::class, 'destroy'])->whereNumber('item')->name('cloudinary.trash.destroy');
+
+// Email đã gửi (mã OTP): thành công hay thất bại
+Route::get('/email-logs', [EmailLogController::class, 'index'])->name('email-logs.index');
 
 // Phản hồi & Báo cáo sự cố
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
