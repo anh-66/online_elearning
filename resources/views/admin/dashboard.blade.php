@@ -12,15 +12,15 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Người dùng</p>
-                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['users']) }}</h3>
+                    <p class="text-sm font-medium text-gray-500 dark:text-neutral-400">Người dùng</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ number_format($stats['users']) }}</h3>
                 </div>
-                <div class="p-2.5 bg-[#019D91]/10 rounded-xl text-[#019D91]">
+                <div class="p-2.5 bg-[#019D91]/10 rounded-xl text-[#019D91] dark:text-[#02b3a5]">
                     <iconify-icon icon="lucide:users-2" class="text-2xl"></iconify-icon>
                 </div>
             </div>
             <div class="mt-4">
-                <a href="{{ route('admin.users.index') }}" class="text-xs font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                <a href="{{ route('admin.users.index') }}" class="text-xs font-medium text-[#019D91] dark:text-[#02b3a5] hover:underline flex items-center gap-1">
                     Xem chi tiết
                     <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
                 </a>
@@ -31,15 +31,15 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Doanh thu</p>
-                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['revenue'], 0, ',', '.') }}<span class="text-xl ml-1">đ</span></h3>
+                    <p class="text-sm font-medium text-gray-500 dark:text-neutral-400">Doanh thu</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ number_format($stats['revenue'], 0, ',', '.') }}<span class="text-xl ml-1">đ</span></h3>
                 </div>
-                <div class="p-2.5 bg-emerald-50 rounded-xl text-emerald-600">
+                <div class="p-2.5 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl text-emerald-600 dark:text-emerald-400">
                     <iconify-icon icon="lucide:banknote" class="text-2xl"></iconify-icon>
                 </div>
             </div>
             <div class="mt-4">
-                <span class="text-xs text-gray-400">Tổng doanh thu tích lũy</span>
+                <span class="text-xs text-gray-400 dark:text-neutral-500">Tổng doanh thu tích lũy</span>
             </div>
         </div>
 
@@ -47,15 +47,15 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Khóa học</p>
-                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['courses']) }}</h3>
+                    <p class="text-sm font-medium text-gray-500 dark:text-neutral-400">Khóa học</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ number_format($stats['courses']) }}</h3>
                 </div>
-                <div class="p-2.5 bg-amber-50 rounded-xl text-amber-600">
+                <div class="p-2.5 bg-amber-50 dark:bg-amber-500/10 rounded-xl text-amber-600 dark:text-amber-400">
                     <iconify-icon icon="lucide:book-open" class="text-2xl"></iconify-icon>
                 </div>
             </div>
             <div class="mt-4">
-                <a href="{{ route('admin.courses.index') }}" class="text-xs font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                <a href="{{ route('admin.courses.index') }}" class="text-xs font-medium text-[#019D91] dark:text-[#02b3a5] hover:underline flex items-center gap-1">
                     Xem tất cả
                     <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
                 </a>
@@ -66,15 +66,15 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Lượt ghi danh</p>
-                    <h3 class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($stats['enrollments']) }}</h3>
+                    <p class="text-sm font-medium text-gray-500 dark:text-neutral-400">Lượt ghi danh</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ number_format($stats['enrollments']) }}</h3>
                 </div>
-                <div class="p-2.5 bg-purple-50 rounded-xl text-purple-600">
+                <div class="p-2.5 bg-purple-50 dark:bg-purple-500/10 rounded-xl text-purple-600 dark:text-purple-400">
                     <iconify-icon icon="lucide:clipboard-list" class="text-2xl"></iconify-icon>
                 </div>
             </div>
             <div class="mt-4">
-                <a href="{{ route('admin.enrollments.index') }}" class="text-xs font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                <a href="{{ route('admin.enrollments.index') }}" class="text-xs font-medium text-[#019D91] dark:text-[#02b3a5] hover:underline flex items-center gap-1">
                     Xem chi tiết
                     <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
                 </a>
@@ -88,8 +88,8 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Xu hướng doanh thu</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm đã chọn</p>
+                    <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Xu hướng doanh thu</h2>
+                    <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">Theo tháng trong năm đã chọn</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
                     <div class="relative inline-block"
@@ -114,18 +114,18 @@
                          }">
                         <input type="hidden" name="year" :value="selectedValue">
                         <button type="button" @click="open = !open"
-                                class="text-xs sm:text-sm rounded-xl border border-gray-200 py-1.5 pl-3 pr-2.5 bg-white hover:bg-gray-50 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
-                            <span x-text="selectedLabel" class="font-semibold text-gray-800"></span>
-                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                                class="text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-neutral-800 py-1.5 pl-3 pr-2.5 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
+                            <span x-text="selectedLabel" class="font-semibold text-gray-800 dark:text-neutral-200"></span>
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 dark:text-neutral-500 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
                         </button>
                         <div x-show="open" x-cloak @click.outside="open = false"
-                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 bg-white shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
+                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
                             <template x-for="item in options" :key="item.value">
                                 <button type="button" @click="select(item.value, item.label)"
-                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 text-left transition-colors cursor-pointer"
-                                        :class="selectedValue === item.value ? 'bg-neutral-100 font-semibold text-neutral-900' : 'text-neutral-700'">
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/40 text-left transition-colors cursor-pointer"
+                                        :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 font-semibold text-neutral-900 dark:text-white' : 'text-neutral-700 dark:text-neutral-300'">
                                     <span x-text="item.label"></span>
-                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900"></iconify-icon>
+                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900 dark:text-white"></iconify-icon>
                                 </button>
                             </template>
                         </div>
@@ -141,8 +141,8 @@
         <div class="glass-card p-6">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Lượt ghi danh</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Theo tháng trong năm {{ $selectedYear }}</p>
+                    <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Lượt ghi danh</h2>
+                    <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">Theo tháng trong năm {{ $selectedYear }}</p>
                 </div>
                 <form method="GET" action="{{ route('admin.dashboard') }}">
                     <div class="relative inline-block"
@@ -167,18 +167,18 @@
                          }">
                         <input type="hidden" name="year" :value="selectedValue">
                         <button type="button" @click="open = !open"
-                                class="text-xs sm:text-sm rounded-xl border border-gray-200 py-1.5 pl-3 pr-2.5 bg-white hover:bg-gray-50 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
-                            <span x-text="selectedLabel" class="font-semibold text-gray-800"></span>
-                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
+                                class="text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-neutral-800 py-1.5 pl-3 pr-2.5 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 flex items-center gap-2 focus:border-[#019D91] focus:ring-1 focus:ring-[#019D91]/20 cursor-pointer shadow-xs">
+                            <span x-text="selectedLabel" class="font-semibold text-gray-800 dark:text-neutral-200"></span>
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs text-gray-400 dark:text-neutral-500 transition-transform" :class="open ? 'rotate-180' : ''"></iconify-icon>
                         </button>
                         <div x-show="open" x-cloak @click.outside="open = false"
-                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 bg-white shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
+                             class="absolute right-0 mt-1 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl p-1 min-w-[120px] text-xs space-y-0.5">
                             <template x-for="item in options" :key="item.value">
                                 <button type="button" @click="select(item.value, item.label)"
-                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 text-left transition-colors cursor-pointer"
-                                        :class="selectedValue === item.value ? 'bg-neutral-100 font-semibold text-neutral-900' : 'text-neutral-700'">
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/40 text-left transition-colors cursor-pointer"
+                                        :class="selectedValue === item.value ? 'bg-neutral-100 dark:bg-neutral-800 font-semibold text-neutral-900 dark:text-white' : 'text-neutral-700 dark:text-neutral-300'">
                                     <span x-text="item.label"></span>
-                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900"></iconify-icon>
+                                    <iconify-icon icon="lucide:check" x-show="selectedValue === item.value" class="text-xs text-neutral-900 dark:text-white"></iconify-icon>
                                 </button>
                             </template>
                         </div>
@@ -196,8 +196,8 @@
         {{-- Course Status Doughnut --}}
         <div class="glass-card p-6">
             <div class="mb-6">
-                <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Phân bố khóa học</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Theo trạng thái kiểm duyệt</p>
+                <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Phân bố khóa học</h2>
+                <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">Theo trạng thái kiểm duyệt</p>
             </div>
             <div class="h-56 w-full">
                 <canvas id="courseStatusChart"></canvas>
@@ -207,31 +207,31 @@
         {{-- Pending Courses --}}
         @if($pendingCourses->isNotEmpty())
             <div class="xl:col-span-2 glass-card overflow-hidden">
-                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <div class="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-6 py-4">
                     <div>
-                        <h2 class="text-base font-bold text-gray-900 uppercase tracking-wide">Khóa học chờ duyệt</h2>
-                        <p class="text-xs text-gray-400 mt-0.5">Cần xem xét trước khi xuất bản</p>
+                        <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Khóa học chờ duyệt</h2>
+                        <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">Cần xem xét trước khi xuất bản</p>
                     </div>
                     <a href="{{ route('admin.courses.index', ['status' => 'pending']) }}"
-                       class="text-sm font-medium text-[#019D91] hover:underline flex items-center gap-1">
+                       class="text-sm font-medium text-[#019D91] dark:text-[#02b3a5] hover:underline flex items-center gap-1">
                         Xem tất cả
                         <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon>
                     </a>
                 </div>
-                <div class="divide-y divide-gray-100 max-h-72 overflow-y-auto">
+                <div class="divide-y divide-gray-100 dark:divide-neutral-800 max-h-72 overflow-y-auto">
                     @foreach($pendingCourses as $course)
-                        <div class="flex items-center justify-between gap-4 px-6 py-4 hover:bg-gray-50/50 transition-colors">
+                        <div class="flex items-center justify-between gap-4 px-6 py-4 hover:bg-gray-50/50 dark:hover:bg-neutral-800/40 transition-colors">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                                    <iconify-icon icon="lucide:book-open" class="text-amber-500 text-lg"></iconify-icon>
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
+                                    <iconify-icon icon="lucide:book-open" class="text-amber-500 dark:text-amber-400 text-lg"></iconify-icon>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-sm font-semibold text-gray-900 truncate">{{ $course->title }}</p>
-                                    <p class="text-xs text-gray-400 truncate mt-0.5">{{ $course->instructor->name ?? 'Chưa có giảng viên' }}</p>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate">{{ $course->title }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-neutral-500 truncate mt-0.5">{{ $course->instructor->name ?? 'Chưa có giảng viên' }}</p>
                                 </div>
                             </div>
                             <a href="{{ route('admin.courses.index', ['status' => 'pending', 'keyword' => $course->title]) }}"
-                               class="shrink-0 text-xs font-semibold text-[#019D91] hover:underline whitespace-nowrap">
+                               class="shrink-0 text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:underline whitespace-nowrap">
                                 Xem xét
                             </a>
                         </div>
@@ -241,11 +241,11 @@
         @else
             <div class="xl:col-span-2 glass-card p-6 flex items-center justify-center">
                 <div class="text-center">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 flex items-center justify-center mb-3">
-                        <iconify-icon icon="lucide:check-circle" class="text-emerald-500 text-2xl"></iconify-icon>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-500 dark:text-emerald-400 text-2xl"></iconify-icon>
                     </div>
-                    <p class="text-sm font-medium text-gray-600">Không có khóa học chờ duyệt</p>
-                    <p class="text-xs text-gray-400 mt-1">Tất cả khóa học đã được kiểm duyệt</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-neutral-300">Không có khóa học chờ duyệt</p>
+                    <p class="text-xs text-gray-400 dark:text-neutral-500 mt-1">Tất cả khóa học đã được kiểm duyệt</p>
                 </div>
             </div>
         @endif
@@ -261,6 +261,19 @@
             return;
         }
 
+        const chartPalette = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+
+            return {
+                label: isDark ? '#a3a3a3' : '#6b7280',
+                tick: isDark ? '#737373' : '#9ca3af',
+                grid: isDark ? '#262626' : '#f3f4f6',
+                surface: isDark ? '#171717' : '#ffffff',
+            };
+        };
+        const palette = chartPalette();
+        Chart.defaults.color = palette.label;
+
         const baseOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -269,20 +282,20 @@
                     grid: { display: false },
                     ticks: {
                         font: { size: 12, weight: '500' },
-                        color: '#6b7280',
+                        color: palette.label,
                         maxRotation: 0,
                         autoSkip: false
                     }
                 },
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#f3f4f6' },
-                    ticks: { precision: 0, font: { size: 11 }, color: '#9ca3af' }
+                    grid: { color: palette.grid },
+                    ticks: { precision: 0, font: { size: 11 }, color: palette.tick }
                 }
             }
         };
 
-        new Chart(document.getElementById('revenueChart'), {
+        const revenueChart = new Chart(document.getElementById('revenueChart'), {
             type: 'line',
             data: {
                 labels: @json($revenueChart['labels']),
@@ -339,7 +352,7 @@
             }
         });
 
-        new Chart(document.getElementById('enrollmentChart'), {
+        const enrollmentChart = new Chart(document.getElementById('enrollmentChart'), {
             type: 'bar',
             data: {
                 labels: @json($enrollmentChart['labels']),
@@ -370,7 +383,7 @@
             }
         });
 
-        new Chart(document.getElementById('courseStatusChart'), {
+        const courseStatusChart = new Chart(document.getElementById('courseStatusChart'), {
             type: 'doughnut',
             data: {
                 labels: @json($courseStatusChart['labels']),
@@ -378,7 +391,7 @@
                     data: @json($courseStatusChart['data']),
                     backgroundColor: ['#94a3b8', '#f59e0b', '#019D91', '#ef4444'],
                     borderWidth: 3,
-                    borderColor: '#ffffff'
+                    borderColor: palette.surface
                 }]
             },
             options: {
@@ -387,11 +400,28 @@
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { boxWidth: 10, font: { size: 11 }, padding: 12 }
+                        labels: { boxWidth: 10, font: { size: 11 }, padding: 12, color: palette.label }
                     }
                 },
                 cutout: '68%'
             }
+        });
+
+        // Đổi màu trục/lưới khi người dùng bấm nút sáng/tối mà không cần tải lại trang
+        window.addEventListener('theme-changed', () => {
+            const next = chartPalette();
+            Chart.defaults.color = next.label;
+
+            [revenueChart, enrollmentChart].forEach((chart) => {
+                chart.options.scales.x.ticks.color = next.label;
+                chart.options.scales.y.ticks.color = next.tick;
+                chart.options.scales.y.grid.color = next.grid;
+                chart.update('none');
+            });
+
+            courseStatusChart.data.datasets[0].borderColor = next.surface;
+            courseStatusChart.options.plugins.legend.labels.color = next.label;
+            courseStatusChart.update('none');
         });
     });
 </script>

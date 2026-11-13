@@ -8,56 +8,97 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+/**
+ * Quên mật khẩu, bước cuối: tạo mật khẩu mới. Chỉ vào được sau khi đã nhập đúng mã.
+ */
 class NewPasswordController extends Controller
 {
     /**
-     * Display the password reset view.
+     * Khoá session ghi nhận "đã nhập đúng mã": ['user_id' => ..., 'until' => timestamp].
      */
-    public function create(Request $request): View
+    public const SESSION_VERIFIED = 'password_reset_verified';
+
+    /**
+     * Trang tạo mật khẩu mới.
+     */
+    public function create(Request $request): View|RedirectResponse
     {
-        return view('auth.reset-password', ['request' => $request]);
+        $user = $this->verifiedUser($request);
+        if ($user === null) {
+            return $this->backToStart($request);
+        }
+
+        return view('auth.new-password', [
+            'email' => $user->email,
+        ]);
     }
 
     /**
-     * Handle an incoming new password request.
-     *
-     * @throws ValidationException
+     * Lưu mật khẩu mới.
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
+        $user = $this->verifiedUser($request);
+        if ($user === null) {
+            return $this->backToStart($request);
+        }
+
+        $validated = $request->validate([
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        $user->forceFill([
+            'password' => Hash::make($validated['password']),
+            'remember_token' => Str::random(60),
+        ])->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+        // Nhận được mã qua email nghĩa là người này đúng là chủ email.
+        if ($user->email_verified_at === null) {
+            $user->markEmailAsVerified();
+        }
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
-        return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        event(new PasswordReset($user));
+
+        $request->session()->forget([
+            self::SESSION_VERIFIED,
+            'password_reset_email',
+            'password_reset_requested_at',
+            'password_reset_fake_attempts',
+        ]);
+
+        return redirect()->route('login')->with('status', 'Đổi mật khẩu thành công. Bạn đăng nhập bằng mật khẩu mới nhé.');
+    }
+
+    /**
+     * Tài khoản đã nhập đúng mã trong session này, nếu còn trong thời gian cho phép.
+     */
+    private function verifiedUser(Request $request): ?User
+    {
+        $state = $request->session()->get(self::SESSION_VERIFIED);
+        if (! is_array($state) || (int) ($state['until'] ?? 0) < now()->getTimestamp()) {
+            return null;
+        }
+
+        $user = User::query()->find($state['user_id'] ?? null);
+
+        return $user !== null && $user->isActive() ? $user : null;
+    }
+
+    /**
+     * Chưa nhập mã (hoặc quá hạn) thì quay lại bước nhập email.
+     */
+    private function backToStart(Request $request): RedirectResponse
+    {
+        $message = $request->session()->has(self::SESSION_VERIFIED)
+            ? 'Đã quá '.config('otp.reset_window_minutes', 10).' phút kể từ lúc nhập mã. Bạn nhận mã mới để đặt lại mật khẩu nhé.'
+            : 'Bạn cần nhập mã xác nhận gửi qua email trước khi tạo mật khẩu mới.';
+
+        $request->session()->forget(self::SESSION_VERIFIED);
+
+        return redirect()->route('password.request')->withErrors(['email' => $message]);
     }
 }

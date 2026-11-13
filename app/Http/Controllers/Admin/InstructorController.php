@@ -25,13 +25,16 @@ class InstructorController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        User::create([
+        $instructor = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => User::ROLE_INSTRUCTOR,
             'status' => User::STATUS_ACTIVE,
         ]);
+
+        // Tài khoản do admin tạo không cần nhập mã OTP xác thực email.
+        $instructor->markEmailAsVerified();
 
         return redirect()->route('admin.dashboard')
             ->with('status', 'Đã tạo tài khoản giảng viên thành công.');

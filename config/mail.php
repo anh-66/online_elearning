@@ -65,6 +65,14 @@ return [
             'transport' => 'resend',
         ],
 
+        // Brevo gửi qua API HTTPS (không cần cổng SMTP). Driver: app/Mail/Transport/BrevoTransport.php
+        'brevo' => [
+            'transport' => 'brevo',
+            'key' => env('BREVO_API_KEY'),
+            'endpoint' => env('BREVO_API_ENDPOINT', 'https://api.brevo.com/v3/smtp/email'),
+            'timeout' => 15,
+        ],
+
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),

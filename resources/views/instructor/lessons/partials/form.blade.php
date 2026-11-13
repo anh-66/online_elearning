@@ -122,7 +122,7 @@
                 <label for="attachment" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mb-1">Tài liệu đính kèm</label>
                 @if($lesson->attachment_path)
                     <div class="mb-2 p-3 rounded-xl bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 text-sm">
-                        <a href="{{ asset('storage/'.$lesson->attachment_path) }}" target="_blank" class="text-brand-700 dark:text-brand-400 font-medium hover:underline break-all">📎 {{ basename($lesson->attachment_path) }}</a>
+                        <a href="{{ Storage::disk('public')->url($lesson->attachment_path) }}" target="_blank" class="text-brand-700 dark:text-brand-400 font-medium hover:underline break-all">📎 {{ basename($lesson->attachment_path) }}</a>
                         <label class="flex items-center gap-2 mt-2 text-xs text-gray-600 dark:text-neutral-300">
                             <input type="checkbox" name="remove_attachment" value="1" class="rounded border-gray-300 dark:border-neutral-700 text-rose-600 dark:text-rose-400 focus:ring-rose-500">
                             Xóa tài liệu hiện tại

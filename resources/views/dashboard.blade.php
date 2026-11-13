@@ -158,7 +158,7 @@
                             {{-- Thumbnail / Media --}}
                             @if($course->thumbnail)
                                 <a href="{{ route('courses.show', $course->slug) }}" class="relative aspect-[16/10] overflow-hidden block bg-[#f0f2f5] dark:bg-[#0d1117]">
-                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                                    <img src="{{ Storage::disk('public')->url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
                                 </a>
                             @else
                                 <a href="{{ route('courses.show', $course->slug) }}" class="relative aspect-[16/10] bg-[#f0f2f5] dark:bg-[#0d1117] flex items-center justify-center p-8 block">

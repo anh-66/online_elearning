@@ -149,7 +149,7 @@
                         <iconify-icon icon="lucide:paperclip" class="text-lg text-gray-500"></iconify-icon>
                         <span class="font-medium text-gray-900 dark:text-white">Tài liệu đính kèm bài học</span>
                     </div>
-                    <a href="{{ asset('storage/' . $currentLesson->attachment_path) }}" target="_blank" download
+                    <a href="{{ Storage::disk('public')->url($currentLesson->attachment_path) }}" target="_blank" download
                        class="px-4 py-2 text-xs font-semibold rounded-lg bg-white dark:bg-neutral-800 text-gray-800 dark:text-white border border-gray-200 dark:border-neutral-700 hover:bg-gray-100 transition">
                         Tải về
                     </a>

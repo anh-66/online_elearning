@@ -1,10 +1,12 @@
 <x-guest-layout title="Khôi phục mật khẩu">
+    <x-password-reset-steps :current="1" />
+
     <div class="mb-6">
         <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 uppercase">
             QUÊN MẬT KHẨU?
         </h2>
         <p class="mt-2 text-sm text-neutral-500 leading-relaxed">
-            Đừng lo lắng! Hãy nhập địa chỉ email đã đăng ký, chúng tôi sẽ gửi liên kết để bạn đặt lại mật khẩu mới.
+            Đừng lo lắng! Hãy nhập địa chỉ email đã đăng ký, chúng tôi sẽ gửi mã gồm 6 số để bạn đặt lại mật khẩu mới.
         </p>
     </div>
 
@@ -22,7 +24,7 @@
         </div>
 
         <button type="submit" class="w-full h-11 sm:h-12 mt-2 rounded-2xl bg-[#019D91] hover:bg-[#008b80] text-white text-sm sm:text-base font-semibold shadow-sm transition active:scale-[0.99] flex items-center justify-center">
-            Gửi liên kết đặt lại mật khẩu
+            Gửi mã xác nhận
         </button>
 
         <div class="text-center pt-3">

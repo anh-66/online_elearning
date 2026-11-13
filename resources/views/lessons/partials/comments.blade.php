@@ -63,7 +63,7 @@
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-full bg-slate-900 text-white text-xs font-semibold flex items-center justify-center overflow-hidden shrink-0 border border-slate-700">
                             @if($comment->user?->avatar_url)
-                                <img src="{{ $comment->user->avatar_url }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
+                                <img src="{{ $comment->user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
                             @else
                                 <span>{{ $comment->user?->initialLetter() ?? '?' }}</span>
                             @endif
@@ -154,7 +154,7 @@
                                     <div class="flex items-center gap-2">
                                         <div class="w-7 h-7 rounded-full bg-slate-800 text-xs font-bold text-white flex items-center justify-center shrink-0">
                                             @if($reply->user?->avatar_url)
-                                                <img src="{{ $reply->user->avatar_url }}" alt="{{ $reply->user->name }}" class="w-full h-full object-cover rounded-full">
+                                                <img src="{{ $reply->user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $reply->user->name }}" class="w-full h-full object-cover rounded-full">
                                             @else
                                                 <span>{{ $reply->user?->initialLetter() ?? '?' }}</span>
                                             @endif

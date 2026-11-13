@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CloudinaryController;
+use App\Http\Controllers\Admin\CloudinaryTrashController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmailLogController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\InstructorController;
@@ -63,6 +66,22 @@ Route::resource('notifications', NotificationController::class);
 // Banners
 Route::resource('banners', BannerController::class);
 Route::patch('/banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
+
+// Thư viện ảnh đã lưu trên Cloudinary
+Route::get('/cloudinary', [CloudinaryController::class, 'index'])->name('cloudinary.index');
+Route::post('/cloudinary/assign', [CloudinaryController::class, 'assign'])->name('cloudinary.assign');
+Route::post('/cloudinary/unlink', [CloudinaryController::class, 'unlink'])->name('cloudinary.unlink');
+Route::get('/cloudinary/trash', [CloudinaryTrashController::class, 'index'])->name('cloudinary.trash.index');
+Route::post('/cloudinary/trash', [CloudinaryTrashController::class, 'store'])->name('cloudinary.trash.store');
+Route::delete('/cloudinary/trash', [CloudinaryTrashController::class, 'empty'])->name('cloudinary.trash.empty');
+Route::post('/cloudinary/trash/bulk', [CloudinaryTrashController::class, 'bulkStore'])->name('cloudinary.trash.bulk-store');
+Route::post('/cloudinary/trash/bulk-restore', [CloudinaryTrashController::class, 'bulkRestore'])->name('cloudinary.trash.bulk-restore');
+Route::delete('/cloudinary/trash/bulk', [CloudinaryTrashController::class, 'bulkDestroy'])->name('cloudinary.trash.bulk-destroy');
+Route::post('/cloudinary/trash/{item}/restore', [CloudinaryTrashController::class, 'restore'])->whereNumber('item')->name('cloudinary.trash.restore');
+Route::delete('/cloudinary/trash/{item}', [CloudinaryTrashController::class, 'destroy'])->whereNumber('item')->name('cloudinary.trash.destroy');
+
+// Email đã gửi (mã OTP): thành công hay thất bại
+Route::get('/email-logs', [EmailLogController::class, 'index'])->name('email-logs.index');
 
 // Phản hồi & Báo cáo sự cố
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');

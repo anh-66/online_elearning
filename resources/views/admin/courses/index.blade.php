@@ -9,8 +9,8 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Danh sách Khóa học</h2>
-            <p class="text-sm text-gray-500 mt-0.5">Kiểm duyệt nội dung, duyệt phát hành và xử lý vi phạm.</p>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Danh sách Khóa học</h2>
+            <p class="text-sm text-gray-500 dark:text-neutral-400 mt-0.5">Kiểm duyệt nội dung, duyệt phát hành và xử lý vi phạm.</p>
         </div>
     </div>
 
@@ -18,40 +18,40 @@
     <div class="flex items-center gap-2 overflow-x-auto pb-1">
         <a href="{{ route('admin.courses.index', array_merge(request()->except('status', 'page'), ['status' => 'all'])) }}"
            class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all
-                  {{ ($status ?? 'all') === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                  {{ ($status ?? 'all') === 'all' ? 'bg-gray-900 text-white shadow-sm dark:bg-white dark:text-neutral-900' : 'bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800' }}">
             Tất cả
         </a>
         <a href="{{ route('admin.courses.index', array_merge(request()->except('status', 'page'), ['status' => \App\Models\Course::STATUS_PENDING])) }}"
            class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all
-                  {{ ($status ?? '') === \App\Models\Course::STATUS_PENDING ? 'bg-amber-500 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                  {{ ($status ?? '') === \App\Models\Course::STATUS_PENDING ? 'bg-amber-500 text-white shadow-sm' : 'bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800' }}">
             Chờ duyệt ({{ $statusCounts[\App\Models\Course::STATUS_PENDING] ?? 0 }})
         </a>
         <a href="{{ route('admin.courses.index', array_merge(request()->except('status', 'page'), ['status' => \App\Models\Course::STATUS_PUBLISHED])) }}"
            class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all
-                  {{ ($status ?? '') === \App\Models\Course::STATUS_PUBLISHED ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                  {{ ($status ?? '') === \App\Models\Course::STATUS_PUBLISHED ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800' }}">
             Đã xuất bản ({{ $statusCounts[\App\Models\Course::STATUS_PUBLISHED] ?? 0 }})
         </a>
         <a href="{{ route('admin.courses.index', array_merge(request()->except('status', 'page'), ['status' => \App\Models\Course::STATUS_DRAFT])) }}"
            class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all
-                  {{ ($status ?? '') === \App\Models\Course::STATUS_DRAFT ? 'bg-gray-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                  {{ ($status ?? '') === \App\Models\Course::STATUS_DRAFT ? 'bg-gray-600 text-white shadow-sm' : 'bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800' }}">
             Bản nháp ({{ $statusCounts[\App\Models\Course::STATUS_DRAFT] ?? 0 }})
         </a>
         <a href="{{ route('admin.courses.index', array_merge(request()->except('status', 'page'), ['status' => \App\Models\Course::STATUS_REJECTED])) }}"
            class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all
-                  {{ ($status ?? '') === \App\Models\Course::STATUS_REJECTED ? 'bg-red-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                  {{ ($status ?? '') === \App\Models\Course::STATUS_REJECTED ? 'bg-red-600 text-white shadow-sm' : 'bg-white dark:bg-neutral-900 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800' }}">
             Bị từ chối ({{ $statusCounts[\App\Models\Course::STATUS_REJECTED] ?? 0 }})
         </a>
     </div>
 
     {{-- Filters Toolbar (Minimalist, gray inputs, horizontal divider) --}}
-    <form method="GET" action="{{ route('admin.courses.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 border-b border-gray-100">
+    <form method="GET" action="{{ route('admin.courses.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 border-b border-gray-100 dark:border-neutral-800">
         <input type="hidden" name="status" value="{{ $status ?? 'all' }}">
 
             <div class="sm:col-span-2 relative">
-                <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
+                <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-500 text-lg"></iconify-icon>
                 <input type="text" name="keyword" value="{{ request('keyword') }}"
                        placeholder="Tên khóa học hoặc giảng viên..."
-                       class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
+                       class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition-all">
             </div>
 
             @php
@@ -83,10 +83,10 @@
                         @click="open = !open"
                         :aria-expanded="open"
                         data-slot="combobox-trigger"
-                        class="w-full h-11 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
-                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
-                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
-                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                        class="w-full h-11 px-4 py-2.5 bg-gray-50 dark:bg-neutral-800/40 border border-gray-200 dark:border-neutral-800 rounded-xl text-sm text-gray-700 dark:text-neutral-200 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-neutral-200"></span>
+                    <svg class="w-4 h-4 text-gray-400 dark:text-neutral-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-neutral-300 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700 dark:text-neutral-200' : ''"
                          fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
                     </svg>
@@ -104,18 +104,18 @@
                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                      x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
                      data-slot="combobox-content"
-                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
                     <template x-for="item in options" :key="item.value">
                         <button type="button"
                                 @click="select(item.value, item.label)"
                                 data-slot="combobox-item"
                                 class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
                                 :class="selectedValue === item.value 
-                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
-                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                                    ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'">
                             <span x-text="item.label"></span>
                             <svg x-show="selectedValue === item.value"
-                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none"
                                  fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
@@ -132,7 +132,7 @@
                 </button>
                 @if(request()->hasAny(['keyword', 'category_id']))
                     <a href="{{ route('admin.courses.index', ['status' => $status ?? 'all']) }}"
-                       class="rounded-xl bg-gray-100 px-3.5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-200 transition-colors">
+                       class="rounded-xl bg-gray-100 dark:bg-neutral-800 px-3.5 py-2.5 text-sm font-semibold text-gray-600 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors">
                         Đặt lại
                     </a>
                 @endif
@@ -142,7 +142,7 @@
     {{-- Courses Table --}}
     <div class="overflow-x-auto">
         <table class="w-full text-left">
-            <thead class="border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+            <thead class="border-b border-gray-100 dark:border-neutral-800 text-gray-400 dark:text-neutral-500 text-xs font-semibold uppercase tracking-wider">
                     <tr>
                         <th class="px-6 py-4">Khóa học</th>
                         <th class="px-4 py-4">Giảng viên</th>
@@ -152,28 +152,28 @@
                         <th class="px-6 py-4 text-right">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-100 dark:divide-neutral-800">
                     @forelse($courses as $course)
-                        <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-neutral-800/40 transition-colors group">
                             {{-- Course Thumbnail + Title --}}
                             <td class="px-6 py-4">
                                 <div class="flex items-start gap-3">
-                                    <div class="w-16 h-11 rounded-lg bg-gray-100 overflow-hidden shrink-0 border border-gray-200">
+                                    <div class="w-16 h-11 rounded-lg bg-gray-100 dark:bg-neutral-800 overflow-hidden shrink-0 border border-gray-200 dark:border-neutral-800">
                                         @if($course->thumbnail)
-                                            <img src="{{ asset('storage/'.$course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+                                            <img src="{{ Storage::disk('public')->url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
-                                                <iconify-icon icon="lucide:book-open" class="text-gray-400 text-xl"></iconify-icon>
+                                                <iconify-icon icon="lucide:book-open" class="text-gray-400 dark:text-neutral-500 text-xl"></iconify-icon>
                                             </div>
                                         @endif
                                     </div>
                                     <div class="min-w-0 max-w-xs">
-                                        <p class="text-sm font-semibold text-gray-900 leading-snug">{{ $course->title }}</p>
-                                        <p class="text-xs text-gray-500 mt-0.5">
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 leading-snug">{{ $course->title }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
                                             {{ $course->price > 0 ? number_format($course->price).' đ' : 'Miễn phí' }}
                                         </p>
                                         @if($course->status === \App\Models\Course::STATUS_REJECTED && $course->reject_reason)
-                                            <div class="mt-1.5 p-2 rounded-lg bg-red-50 border border-red-100 text-xs text-red-700">
+                                            <div class="mt-1.5 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-xs text-red-700 dark:text-red-300">
                                                 <span class="font-semibold">Lý do từ chối:</span> {{ $course->reject_reason }}
                                             </div>
                                         @endif
@@ -183,32 +183,32 @@
 
                             {{-- Instructor --}}
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <p class="text-sm font-medium text-gray-800">{{ $course->instructor->name ?? '—' }}</p>
-                                <p class="text-xs text-gray-400">{{ $course->instructor->email ?? '' }}</p>
+                                <p class="text-sm font-medium text-gray-800 dark:text-neutral-200">{{ $course->instructor->name ?? '—' }}</p>
+                                <p class="text-xs text-gray-400 dark:text-neutral-500">{{ $course->instructor->email ?? '' }}</p>
                             </td>
 
                             {{-- Category --}}
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="text-xs font-medium text-[#019D91] bg-[#019D91]/10 px-2.5 py-1 rounded-lg">
+                                <span class="text-xs font-medium text-[#019D91] dark:text-[#02b3a5] bg-[#019D91]/10 px-2.5 py-1 rounded-lg">
                                     {{ $course->category->name ?? 'Chưa phân loại' }}
                                 </span>
                             </td>
 
                             {{-- Enrollments --}}
-                            <td class="px-4 py-4 text-center font-semibold text-gray-900 whitespace-nowrap">
+                            <td class="px-4 py-4 text-center font-semibold text-gray-900 dark:text-neutral-100 whitespace-nowrap">
                                 {{ number_format($course->enrollments_count ?? 0) }}
                             </td>
 
                             {{-- Status --}}
                             <td class="px-4 py-4 whitespace-nowrap">
                                 @if($course->status === \App\Models\Course::STATUS_PUBLISHED)
-                                    <span class="status-badge bg-emerald-50 text-emerald-600">Đã xuất bản</span>
+                                    <span class="status-badge bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Đã xuất bản</span>
                                 @elseif($course->status === \App\Models\Course::STATUS_PENDING)
-                                    <span class="status-badge bg-amber-50 text-amber-600">Chờ duyệt</span>
+                                    <span class="status-badge bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">Chờ duyệt</span>
                                 @elseif($course->status === \App\Models\Course::STATUS_REJECTED)
-                                    <span class="status-badge bg-red-50 text-red-600">Bị từ chối</span>
+                                    <span class="status-badge bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400">Bị từ chối</span>
                                 @else
-                                    <span class="status-badge bg-gray-100 text-gray-500">Bản nháp</span>
+                                    <span class="status-badge bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-neutral-400">Bản nháp</span>
                                 @endif
                             </td>
 
@@ -222,7 +222,7 @@
                                             @method('PATCH')
                                             <button type="submit"
                                                     title="Duyệt"
-                                                    class="text-gray-400 hover:text-emerald-600 transition-colors flex items-center">
+                                                    class="text-gray-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center">
                                                 <iconify-icon icon="lucide:check-circle" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
@@ -233,7 +233,7 @@
                                         <button type="button"
                                                 @click="rejectCourseId = {{ $course->id }}; rejectCourseTitle = '{{ addslashes($course->title) }}'; rejectActionUrl = '{{ route('admin.courses.reject', $course) }}'; rejectModalOpen = true"
                                                 title="{{ $course->isPublished() ? 'Từ chối (Vi phạm)' : 'Từ chối' }}"
-                                                class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                                class="text-gray-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center">
                                             <iconify-icon icon="lucide:x-circle" class="text-base"></iconify-icon>
                                         </button>
                                     @endif
@@ -245,7 +245,7 @@
                                             @method('PATCH')
                                             <button type="submit"
                                                     title="Ẩn khóa học"
-                                                    class="text-gray-400 hover:text-amber-600 transition-colors flex items-center">
+                                                    class="text-gray-400 dark:text-neutral-500 hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center">
                                                 <iconify-icon icon="lucide:eye-off" class="text-base"></iconify-icon>
                                             </button>
                                         </form>
@@ -255,7 +255,7 @@
                                     @if($course->isPublished())
                                         <a href="{{ route('courses.show', $course->slug) }}" target="_blank"
                                            title="Xem trang công khai"
-                                           class="text-gray-400 hover:text-gray-900 transition-colors flex items-center">
+                                           class="text-gray-400 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center">
                                             <iconify-icon icon="lucide:eye" class="text-base"></iconify-icon>
                                         </a>
                                     @endif
@@ -266,7 +266,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Xóa"
-                                                class="text-gray-400 hover:text-red-600 transition-colors flex items-center">
+                                                class="text-gray-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center">
                                             <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
                                         </button>
                                     </form>
@@ -277,8 +277,8 @@
                         <tr>
                             <td colspan="6" class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center gap-2">
-                                    <iconify-icon icon="lucide:book-open" class="text-gray-300 text-4xl"></iconify-icon>
-                                    <p class="text-sm text-gray-500">Không tìm thấy khóa học phù hợp</p>
+                                    <iconify-icon icon="lucide:book-open" class="text-gray-300 dark:text-neutral-600 text-4xl"></iconify-icon>
+                                    <p class="text-sm text-gray-500 dark:text-neutral-400">Không tìm thấy khóa học phù hợp</p>
                                 </div>
                             </td>
                         </tr>
@@ -289,8 +289,8 @@
 
         {{-- Pagination --}}
         @if($courses->hasPages())
-            <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p class="text-xs text-gray-500">
+            <div class="pt-6 border-t border-gray-100 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-xs text-gray-500 dark:text-neutral-400">
                     Hiển thị {{ $courses->firstItem() }}–{{ $courses->lastItem() }} trong tổng số {{ $courses->total() }} khóa học
                 </p>
                 {{ $courses->links() }}
@@ -311,34 +311,34 @@
                     @csrf
                     @method('PATCH')
 
-                    <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-neutral-800">
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
-                                <iconify-icon icon="lucide:x-circle" class="text-red-500 text-lg"></iconify-icon>
+                            <div class="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+                                <iconify-icon icon="lucide:x-circle" class="text-red-500 dark:text-red-400 text-lg"></iconify-icon>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900" id="modal-title">Từ chối / Khóa vi phạm</h3>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100" id="modal-title">Từ chối / Khóa vi phạm</h3>
                         </div>
                         <button type="button" @click="rejectModalOpen = false"
-                                class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
+                                class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-all">
                             <iconify-icon icon="lucide:x" class="text-lg"></iconify-icon>
                         </button>
                     </div>
 
                     <div class="mt-5">
-                        <p class="text-sm text-gray-600">
-                            Khóa học: <span class="font-semibold text-gray-900" x-text="rejectCourseTitle"></span>
+                        <p class="text-sm text-gray-600 dark:text-neutral-300">
+                            Khóa học: <span class="font-semibold text-gray-900 dark:text-neutral-100" x-text="rejectCourseTitle"></span>
                         </p>
-                        <label for="reject_reason" class="block text-sm font-semibold text-gray-700 mt-4 mb-1.5">
-                            Lý do từ chối <span class="text-red-500">*</span>
+                        <label for="reject_reason" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200 mt-4 mb-1.5">
+                            Lý do từ chối <span class="text-red-500 dark:text-red-400">*</span>
                         </label>
                         <textarea id="reject_reason" name="reject_reason" rows="4" required
                                   placeholder="Nhập chi tiết lý do từ chối hoặc nội dung vi phạm..."
-                                  class="w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all resize-none"></textarea>
+                                  class="w-full rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all resize-none"></textarea>
                     </div>
 
                     <div class="mt-6 flex items-center justify-end gap-3">
                         <button type="button" @click="rejectModalOpen = false"
-                                class="px-5 py-2.5 rounded-xl bg-gray-100 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">
+                                class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-neutral-800 text-sm font-semibold text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors">
                             Hủy
                         </button>
                         <button type="submit"

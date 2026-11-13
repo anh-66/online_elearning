@@ -1,29 +1,61 @@
-<x-guest-layout title="Xác minh email">
+<x-guest-layout title="Xác thực email">
     <div class="mb-6">
-        <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400">
-            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#019D91]/10 text-[#019D91]">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </div>
-        <h2 class="text-2xl font-bold tracking-tight text-neutral-950 dark:text-neutral-100">Xác minh địa chỉ email</h2>
-        <p class="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">Cảm ơn bạn đã đăng ký! Hãy bấm vào liên kết chúng tôi vừa gửi tới email của bạn để kích hoạt tài khoản. Nếu chưa nhận được, bạn có thể yêu cầu gửi lại.</p>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 uppercase">
+            XÁC THỰC EMAIL
+        </h2>
+        <p class="mt-2 text-sm text-neutral-500 leading-relaxed">
+            Mã gồm 6 số đã được gửi tới <span class="font-semibold text-neutral-800 break-words">{{ $email }}</span>.
+            Nhập mã để kích hoạt tài khoản. Mã có hiệu lực {{ config('otp.ttl_minutes', 10) }} phút.
+        </p>
     </div>
 
-    @if (session('status') == 'verification-link-sent')
-        <p class="mb-5 rounded-md bg-brand-50 dark:bg-brand-500/10 px-4 py-3 text-sm font-medium text-brand-800 dark:text-brand-300">
-            Một liên kết xác minh mới đã được gửi tới email bạn dùng khi đăng ký.
-        </p>
+    @php
+        $notice = session('otp_notice', $notice ?? null);
+        $problem = session('otp_problem', $problem ?? null);
+    @endphp
+
+    @if ($notice)
+        <p class="mb-4 rounded-xl bg-[#019D91]/10 px-4 py-2.5 text-xs font-medium text-[#018076]" role="status">{{ $notice }}</p>
     @endif
 
-    <form method="POST" action="{{ route('verification.send') }}">
+    @if ($problem)
+        <p class="mb-4 rounded-xl bg-amber-50 px-4 py-2.5 text-xs font-medium text-amber-800" role="alert">{{ $problem }}</p>
+    @endif
+
+    <form method="POST" action="{{ route('verification.verify') }}" class="space-y-4"
+          x-data="{ sending: false }"
+          x-on:otp-complete="if (! sending) { sending = true; $el.requestSubmit(); }"
+          x-on:submit="sending = true">
         @csrf
-        <button type="submit" class="inline-flex w-full items-center justify-center rounded-md bg-brand-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2">
-            Gửi lại email xác minh
+
+        <div>
+            <label class="block text-sm font-semibold text-neutral-800 mb-2">Mã xác thực</label>
+            <x-otp-input name="code" :autofocus="true" :invalid="$errors->has('code')" />
+            <x-input-error :messages="$errors->get('code')" class="mt-2 text-xs" />
+        </div>
+
+        <button type="submit" x-bind:disabled="sending"
+                class="w-full h-11 sm:h-12 mt-2 rounded-2xl bg-[#019D91] hover:bg-[#008b80] disabled:opacity-70 text-white text-sm sm:text-base font-semibold shadow-sm transition active:scale-[0.99] flex items-center justify-center">
+            Xác thực email
         </button>
     </form>
 
-    <form method="POST" action="{{ route('logout') }}" class="mt-4 text-center">
+    <div class="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-neutral-200 px-4 py-3">
+        <p class="text-xs text-neutral-500">Chưa nhận được mã? Xem cả mục <span class="font-semibold text-neutral-700">Spam / Quảng cáo</span>.</p>
+        <form method="POST" action="{{ route('verification.send') }}">
+            @csrf
+            <x-otp-resend-button :seconds="$resendIn" />
+        </form>
+    </div>
+
+    <form method="POST" action="{{ route('logout') }}" class="mt-5 text-center">
         @csrf
-        <button type="submit" class="text-sm font-medium text-neutral-600 dark:text-neutral-300 underline-offset-4 transition hover:text-brand-700 dark:hover:text-brand-300 hover:underline">
-            Đăng xuất
+        <span class="text-xs sm:text-sm text-neutral-500">Nhập sai email?</span>
+        <button type="submit" class="text-xs sm:text-sm font-semibold text-[#019D91] hover:underline transition">
+            Đăng xuất và đăng ký lại
         </button>
     </form>
 </x-guest-layout>

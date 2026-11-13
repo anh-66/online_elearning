@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\EmailOtpService;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['name', 'email', 'password', 'role', 'avatar', 'bio', 'status', 'google_id', 'onboarding_completed'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -43,6 +44,22 @@ class User extends Authenticatable
             'password' => 'hashed',
             'onboarding_completed' => 'boolean',
         ];
+    }
+
+    /**
+     * Tài khoản đã xác thực email chưa. Khi tắt OTP (EMAIL_OTP_ENABLED=false) thì coi như ai cũng đã xác thực.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        return ! app(EmailOtpService::class)->enabled() || $this->email_verified_at !== null;
+    }
+
+    /**
+     * Gửi mã OTP 6 số qua email thay cho link xác thực mặc định của Laravel.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        app(EmailOtpService::class)->send($this, EmailOtp::PURPOSE_VERIFY_EMAIL);
     }
 
     public function isAdmin(): bool
@@ -92,6 +109,10 @@ class User extends Authenticatable
 
                 if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
                     return $this->avatar;
+                }
+
+                if (config('filesystems.disks.public.driver') !== 'local') {
+                    return Storage::disk('public')->url($this->avatar);
                 }
 
                 if (! Storage::disk('public')->exists($this->avatar)) {

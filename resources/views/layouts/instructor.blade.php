@@ -298,7 +298,7 @@
                         :class="isCollapsed ? 'justify-center p-1' : ''">
                     <div class="size-8 rounded-lg bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 font-bold flex items-center justify-center shrink-0 overflow-hidden text-xs">
                         @if(Auth::user()->avatar_url)
-                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                            <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                             <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
                         @else
                             <span>{{ Auth::user()->initialLetter() }}</span>

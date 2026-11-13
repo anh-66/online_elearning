@@ -24,6 +24,7 @@ class GoogleController extends Controller
             $googleUser = Socialite::driver('google')->user();
             $googleId = $googleUser->getId();
             $email = $googleUser->getEmail();
+            $avatarUrl = $googleUser->getAvatar();
 
             if (! $googleId || ! $email) {
                 throw new \RuntimeException('Google did not return a valid identity.');
@@ -50,9 +51,9 @@ class GoogleController extends Controller
                     'email' => $email,
                     'google_id' => $googleId,
                     'password' => Str::random(32),
+                    'avatar' => $avatarUrl,
                     'role' => User::ROLE_STUDENT,
                     'status' => User::STATUS_ACTIVE,
-                    'email_verified_at' => now(),
                     'onboarding_completed' => false,
                 ]);
                 $isNewUser = true;
@@ -61,6 +62,10 @@ class GoogleController extends Controller
             if (! $user->isActive()) {
                 throw new \RuntimeException('The user account is not active.');
             }
+
+            $this->markGoogleEmailAsVerified($user, $isNewUser);
+
+            $this->syncGoogleAvatar($user, $avatarUrl);
 
             Auth::login($user);
             $request->session()->regenerate();
@@ -84,6 +89,40 @@ class GoogleController extends Controller
             report($exception);
 
             return redirect()->route('login')->with('error', 'Đăng nhập bằng Google thất bại. Vui lòng thử lại!');
+        }
+    }
+
+    /**
+     * Google đã xác minh email nên không cần mã OTP. Tài khoản đăng ký bằng mật khẩu mà chưa xác thực
+     * thì đổi mật khẩu sang ngẫu nhiên, để người đăng ký trước bằng email của người khác không dùng chung được.
+     */
+    private function markGoogleEmailAsVerified(User $user, bool $isNewUser): void
+    {
+        if ($user->email_verified_at !== null) {
+            return;
+        }
+
+        $attributes = ['email_verified_at' => now()];
+        if (! $isNewUser) {
+            $attributes['password'] = Str::random(32);
+        }
+
+        $user->forceFill($attributes)->save();
+    }
+
+    /**
+     * Use the Google profile picture unless the user has their own uploaded avatar.
+     */
+    private function syncGoogleAvatar(User $user, ?string $avatarUrl): void
+    {
+        if (! is_string($avatarUrl) || $avatarUrl === '' || $user->avatar === $avatarUrl) {
+            return;
+        }
+
+        $hasExternalAvatar = is_string($user->avatar) && str_starts_with($user->avatar, 'http');
+
+        if (! $user->hasAvatar() || $hasExternalAvatar) {
+            $user->update(['avatar' => $avatarUrl]);
         }
     }
 }
