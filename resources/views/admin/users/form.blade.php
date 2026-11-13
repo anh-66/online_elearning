@@ -7,10 +7,10 @@
 <div class="max-w-2xl glass-card p-6">
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <h2 class="text-base font-bold text-gray-900">Chỉnh sửa người dùng: {{ $user->name }}</h2>
-            <p class="text-xs text-gray-500 mt-0.5">Cập nhật thông tin cơ bản, vai trò và trạng thái tài khoản.</p>
+            <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100">Chỉnh sửa người dùng: {{ $user->name }}</h2>
+            <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">Cập nhật thông tin cơ bản, vai trò và trạng thái tài khoản.</p>
         </div>
-        <a href="{{ route('admin.users.index') }}" class="text-xs font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-1">
+        <a href="{{ route('admin.users.index') }}" class="text-xs font-semibold text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-200 flex items-center gap-1">
             <iconify-icon icon="lucide:arrow-left" class="text-sm"></iconify-icon>
             Quay lại
         </a>
@@ -21,24 +21,24 @@
         @method('PUT')
 
         <div>
-            <label for="name" class="block text-sm font-semibold text-gray-700">Họ và tên <span class="text-red-500">*</span></label>
+            <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Họ và tên <span class="text-red-500 dark:text-red-400">*</span></label>
             <input id="name" name="name" value="{{ old('name', $user->name) }}" required autofocus
-                   class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
-            @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                   class="mt-1.5 block w-full rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
+            @error('name') <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
         </div>
 
         <div>
-            <label for="email" class="block text-sm font-semibold text-gray-700">Email <span class="text-red-500">*</span></label>
+            <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Email <span class="text-red-500 dark:text-red-400">*</span></label>
             <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required
-                   class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
-            @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                   class="mt-1.5 block w-full rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
+            @error('email') <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
         </div>
 
         <div>
-            <label for="bio" class="block text-sm font-semibold text-gray-700">Tiểu sử / Giới thiệu ngắn</label>
+            <label for="bio" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Tiểu sử / Giới thiệu ngắn</label>
             <textarea id="bio" name="bio" rows="3" placeholder="Giới thiệu về chuyên môn, kinh nghiệm giảng dạy..."
-                      class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">{{ old('bio', $user->bio) }}</textarea>
-            @error('bio') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                      class="mt-1.5 block w-full rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">{{ old('bio', $user->bio) }}</textarea>
+            @error('bio') <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -70,7 +70,7 @@
                          this.open = false;
                      }
                  }">
-                <label class="block text-sm font-semibold text-gray-700">Vai trò <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Vai trò <span class="text-red-500 dark:text-red-400">*</span></label>
                 <input type="hidden" name="role" :value="selectedValue">
 
                 <!-- Combobox Trigger Button -->
@@ -79,10 +79,10 @@
                         :aria-expanded="open"
                         :disabled="disabled"
                         data-slot="combobox-trigger"
-                        class="mt-1.5 w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger disabled:bg-gray-100 disabled:cursor-not-allowed">
-                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
-                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
-                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                        class="mt-1.5 w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-900 dark:text-neutral-100 text-sm flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger disabled:bg-gray-100 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-neutral-200"></span>
+                    <svg class="w-4 h-4 text-gray-400 dark:text-neutral-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-neutral-300 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700 dark:text-neutral-200' : ''"
                          fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
                     </svg>
@@ -100,18 +100,18 @@
                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                      x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
                      data-slot="combobox-content"
-                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
                     <template x-for="item in options" :key="item.value">
                         <button type="button"
                                 @click="select(item.value, item.label)"
                                 data-slot="combobox-item"
                                 class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
                                 :class="selectedValue === item.value 
-                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
-                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                                    ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'">
                             <span x-text="item.label"></span>
                             <svg x-show="selectedValue === item.value"
-                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none"
                                  fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
@@ -119,9 +119,9 @@
                     </template>
                 </div>
                 @if($isSelfRole)
-                    <p class="mt-1 text-xs text-amber-600">Bạn không thể tự đổi vai trò của chính mình.</p>
+                    <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">Bạn không thể tự đổi vai trò của chính mình.</p>
                 @endif
-                @error('role') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                @error('role') <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
 
             @php
@@ -150,7 +150,7 @@
                          this.open = false;
                      }
                  }">
-                <label class="block text-sm font-semibold text-gray-700">Trạng thái <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Trạng thái <span class="text-red-500 dark:text-red-400">*</span></label>
                 <input type="hidden" name="status" :value="selectedValue">
 
                 <!-- Combobox Trigger Button -->
@@ -159,10 +159,10 @@
                         :aria-expanded="open"
                         :disabled="disabled"
                         data-slot="combobox-trigger"
-                        class="mt-1.5 w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger disabled:bg-gray-100 disabled:cursor-not-allowed">
-                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800"></span>
-                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 shrink-0 pointer-events-none"
-                         :class="open ? 'rotate-180 text-gray-700' : ''"
+                        class="mt-1.5 w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-900 dark:text-neutral-100 text-sm flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-[#019D91]/20 focus:border-[#019D91] transition cursor-pointer select-none group/combobox-trigger disabled:bg-gray-100 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed">
+                    <span x-text="selectedLabel" class="truncate font-medium text-gray-800 dark:text-neutral-200"></span>
+                    <svg class="w-4 h-4 text-gray-400 dark:text-neutral-500 transition-transform duration-200 group-hover/combobox-trigger:text-gray-700 dark:group-hover/combobox-trigger:text-neutral-300 shrink-0 pointer-events-none"
+                         :class="open ? 'rotate-180 text-gray-700 dark:text-neutral-200' : ''"
                          fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
                     </svg>
@@ -180,18 +180,18 @@
                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                      x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
                      data-slot="combobox-content"
-                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+                     class="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1 max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
                     <template x-for="item in options" :key="item.value">
                         <button type="button"
                                 @click="select(item.value, item.label)"
                                 data-slot="combobox-item"
                                 class="w-full relative flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer select-none text-left"
                                 :class="selectedValue === item.value 
-                                    ? 'bg-neutral-100 text-neutral-900 font-medium' 
-                                    : 'text-neutral-700 hover:bg-neutral-50'">
+                                    ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white font-medium' 
+                                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'">
                             <span x-text="item.label"></span>
                             <svg x-show="selectedValue === item.value"
-                                 class="w-4 h-4 text-neutral-900 shrink-0 pointer-events-none"
+                                 class="w-4 h-4 text-neutral-900 dark:text-white shrink-0 pointer-events-none"
                                  fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
@@ -199,24 +199,24 @@
                     </template>
                 </div>
                 @if($isSelfStatus)
-                    <p class="mt-1 text-xs text-amber-600">Bạn không thể tự khóa tài khoản của chính mình.</p>
+                    <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">Bạn không thể tự khóa tài khoản của chính mình.</p>
                 @endif
-                @error('status') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                @error('status') <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
         </div>
 
         <div>
-            <label for="password" class="block text-sm font-semibold text-gray-700">Mật khẩu mới (bỏ trống nếu không đổi)</label>
+            <label for="password" class="block text-sm font-semibold text-gray-700 dark:text-neutral-200">Mật khẩu mới (bỏ trống nếu không đổi)</label>
             <input id="password" type="password" name="password" minlength="8" placeholder="Tối thiểu 8 ký tự"
-                   class="mt-1.5 block w-full rounded-xl border-gray-200 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
-            @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                   class="mt-1.5 block w-full rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-2 focus:ring-[#019D91]/20 transition-all">
+            @error('password') <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
         </div>
 
         <div class="flex items-center gap-3 pt-3">
             <button type="submit" class="rounded-xl bg-[#019D91] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#008b80] shadow-sm transition-colors">
                 Cập nhật thông tin
             </button>
-            <a href="{{ route('admin.users.index') }}" class="text-sm font-semibold text-gray-500 hover:text-gray-700">
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-semibold text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-200">
                 Hủy
             </a>
         </div>

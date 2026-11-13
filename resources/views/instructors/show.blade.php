@@ -12,7 +12,7 @@
             {{-- Avatar --}}
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                 @if($instructor->avatar_url)
-                    <img src="{{ $instructor->avatar_url }}"
+                    <img src="{{ $instructor->avatar_url }}" referrerpolicy="no-referrer"
                          alt="{{ $instructor->name }}"
                          class="w-full h-full object-cover rounded-xl"
                          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">

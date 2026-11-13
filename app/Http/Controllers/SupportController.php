@@ -281,10 +281,10 @@ class SupportController extends Controller
                 'intro' => 'Nếu không thể đăng nhập do quên mật khẩu, bạn chỉ cần một vài thao tác đơn giản để tạo mật khẩu mới an toàn thông qua địa chỉ email đã đăng ký.',
                 'action_label' => 'Đi đến trang Quên mật khẩu',
                 'action_url' => route('password.request'),
-                'action_help' => 'Hệ thống sẽ gửi một liên kết bảo mật có thời hạn đến hộp thư email của bạn.',
+                'action_help' => 'Hệ thống sẽ gửi một mã gồm 6 số, có hiệu lực 10 phút, đến hộp thư email của bạn.',
                 'illustration_type' => 'password_reset',
                 'device_title' => 'EduLearn - Xác thực Email & Khôi phục mật khẩu',
-                'steps_heading' => 'Các bước khôi phục mật khẩu qua liên kết xác nhận email',
+                'steps_heading' => 'Các bước khôi phục mật khẩu bằng mã xác nhận gửi qua email',
                 'steps' => [
                     [
                         'step_number' => 1,
@@ -300,25 +300,25 @@ class SupportController extends Controller
                     ],
                     [
                         'step_number' => 3,
-                        'title' => 'Gửi yêu cầu nhận liên kết đặt lại',
-                        'description' => 'Nhấn nút "Gửi liên kết đặt lại mật khẩu". Hệ thống sẽ tạo mã xác thực bảo mật và gửi email cho bạn trong vài giây.',
+                        'title' => 'Gửi yêu cầu nhận mã xác nhận',
+                        'description' => 'Nhấn nút "Gửi mã xác nhận". Hệ thống sẽ tạo mã gồm 6 số và gửi email cho bạn trong vài giây.',
                     ],
                     [
                         'step_number' => 4,
                         'title' => 'Kiểm tra hộp thư đến của bạn',
-                        'description' => 'Mở hòm thư điện tử của bạn (kiểm tra cả mục Hộp thư đến lẫn mục Thư rác/Spam). Mở email từ EduLearn và nhấp vào nút "Đặt lại mật khẩu".',
+                        'description' => 'Mở hòm thư điện tử của bạn (kiểm tra cả mục Hộp thư đến lẫn mục Thư rác/Spam). Mở email từ EduLearn và xem mã gồm 6 số.',
                     ],
                     [
                         'step_number' => 5,
-                        'title' => 'Thiết lập mật khẩu mới',
-                        'description' => 'Nhập mật khẩu mới an toàn, điền xác nhận và bấm nút hoàn thành để đăng nhập trở lại hệ thống học tập.',
-                        'link_label' => 'Yêu cầu liên kết khôi phục ngay',
+                        'title' => 'Nhập mã rồi tạo mật khẩu mới',
+                        'description' => 'Nhập mã 6 số và bấm "Xác nhận mã". Mã đúng thì trang tạo mật khẩu mới mới hiện ra: nhập mật khẩu mới, xác nhận lại rồi bấm "Đổi mật khẩu" để đăng nhập trở lại hệ thống học tập.',
+                        'link_label' => 'Yêu cầu mã khôi phục ngay',
                         'link_url' => route('password.request'),
                     ],
                 ],
                 'notes' => [
-                    'Liên kết đặt lại mật khẩu có thời hạn an toàn 60 phút kể từ lúc gửi.',
-                    'Nếu không nhận được email sau 5 phút, hãy kiểm tra lại hòm thư Spam hoặc ấn gửi lại một lần nữa.',
+                    'Mã đặt lại mật khẩu có hiệu lực 10 phút kể từ lúc gửi. Nhập sai 5 lần thì cần gửi lại mã mới.',
+                    'Nếu không nhận được email sau vài phút, hãy kiểm tra lại hòm thư Spam hoặc bấm "Gửi lại mã" (cách nhau 60 giây).',
                 ],
             ],
 

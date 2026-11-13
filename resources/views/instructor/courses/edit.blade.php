@@ -39,7 +39,7 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
                 @foreach($course->images as $image)
                     <div class="relative group">
-                        <img src="{{ asset('storage/'.$image->image_path) }}" alt="Ảnh khóa học" class="aspect-video w-full object-cover rounded-lg border border-gray-200 dark:border-neutral-800">
+                        <img src="{{ Storage::disk('public')->url($image->image_path) }}" alt="Ảnh khóa học" class="aspect-video w-full object-cover rounded-lg border border-gray-200 dark:border-neutral-800">
                         <form method="POST" action="{{ route('instructor.courses.images.destroy', [$course, $image]) }}" onsubmit="return confirm('Xóa ảnh này?')"
                               class="absolute top-1.5 right-1.5">
                             @csrf

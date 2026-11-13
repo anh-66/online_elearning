@@ -82,7 +82,7 @@
                 <div class="w-8 h-8 rounded-full bg-gray-900 text-white dark:bg-white dark:text-black flex items-center justify-center text-xs font-bold overflow-hidden shadow-2xs">
                     @auth
                         @if(Auth::user()->avatar_url)
-                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                            <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
                         @else
                             <span>{{ Auth::user()->initialLetter() }}</span>
                         @endif

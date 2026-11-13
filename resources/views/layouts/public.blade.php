@@ -153,7 +153,7 @@
                                     aria-label="Tài khoản cá nhân">
                                 <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-base sm:text-lg flex items-center justify-center overflow-hidden ring-2 ring-black/10 dark:ring-[#30363d] shadow-sm select-none">
                                     @if(Auth::user()->avatar_url)
-                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                        <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                         <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
                                     @else
                                         <span>{{ Auth::user()->initialLetter() }}</span>
@@ -301,6 +301,7 @@
     @endif
 
     @include('partials.back-to-top')
+    @include('partials.course-chat')
 
     <!-- Footer (Theme tối chuẩn LottieFiles - Rộng rãi, chữ to rõ ràng, không ôm sát khung) -->
     <footer class="bg-[#0b0c0e] text-[#8e8e93] {{ request()->routeIs('home') ? 'mt-0' : 'mt-12' }} select-none">

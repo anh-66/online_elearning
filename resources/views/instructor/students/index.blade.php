@@ -113,7 +113,7 @@
                                 <button type="button" @click="activeStudent = details[{{ $enrollment->id }}]" class="flex items-center gap-3 text-left group focus:outline-none">
                                     <div class="w-9 h-9 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-transparent group-hover:ring-[#019D91] transition">
                                         @if($enrollment->user->avatar_url)
-                                            <img src="{{ $enrollment->user->avatar_url }}" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                            <img src="{{ $enrollment->user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
                                             <span class="hidden flex items-center justify-center w-full h-full">{{ $enrollment->user->initialLetter() }}</span>
                                         @else
                                             <span>{{ $enrollment->user->initialLetter() }}</span>

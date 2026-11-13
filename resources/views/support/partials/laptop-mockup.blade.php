@@ -96,12 +96,12 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
                         <h4 class="text-xs sm:text-sm font-semibold text-[#1D1D1F] dark:text-white mb-1">Khôi phục mật khẩu qua Email</h4>
-                        <p class="text-[11px] text-[#86868B] dark:text-[#7d8590] mb-3">Điền email của bạn để nhận đường dẫn đặt lại an toàn</p>
+                        <p class="text-[11px] text-[#86868B] dark:text-[#7d8590] mb-3">Điền email của bạn để nhận mã xác nhận gồm 6 số</p>
                         <div class="h-8 px-3 rounded-lg bg-[#F5F5F7] dark:bg-[#21262d] border border-[#E5E5EA] dark:border-[#30363d] flex items-center text-xs text-[#1D1D1F] dark:text-white mb-2.5">
                             hocvien@edulearn.vn
                         </div>
                         <div class="w-full py-1.5 bg-[#019D91] text-white text-xs font-semibold rounded-lg shadow-sm">
-                            Gửi liên kết đặt lại mật khẩu
+                            Gửi mã xác nhận
                         </div>
                     </div>
 

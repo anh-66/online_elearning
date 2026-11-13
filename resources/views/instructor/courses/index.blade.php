@@ -64,7 +64,7 @@
                                 <div class="flex items-start space-x-3">
                                     <div class="w-20 h-12 rounded-lg bg-gray-100 dark:bg-neutral-800 overflow-hidden shrink-0">
                                         @if($course->thumbnail)
-                                            <img src="{{ asset('storage/'.$course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+                                            <img src="{{ Storage::disk('public')->url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-neutral-500 text-xs">No image</div>
                                         @endif

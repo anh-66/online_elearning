@@ -38,7 +38,16 @@ return [
             'report' => false,
         ],
 
-        'public' => [
+        // Có CLOUDINARY_URL thì file upload lưu lên Cloudinary,
+        // không thì lưu trong storage/app/public như bình thường.
+        'public' => env('CLOUDINARY_URL') ? [
+            'driver' => 'cloudinary',
+            'cloudinary_url' => env('CLOUDINARY_URL'),
+            'folder' => env('CLOUDINARY_FOLDER', 'online-elearning'),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => true,
+        ] : [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',

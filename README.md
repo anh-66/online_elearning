@@ -126,9 +126,13 @@ php artisan storage:link
 
 ### 4. Cấu hình Google OAuth (tùy chọn)
 
+Hướng dẫn từng bước cho mọi API key (Google, Gemini, Cloudinary, Brevo) nằm ở
+[docs/api-keys](docs/api-keys/README.md), cách chạy project từ đầu ở
+[docs/huong-dan-chay-local.md](docs/huong-dan-chay-local.md).
+
 Tạo OAuth 2.0 Client ID loại Web application trong
 [Google Cloud Console](https://console.cloud.google.com/), thêm callback URL
-`http://127.0.0.1:8000/auth/google/callback`, rồi khai báo:
+`http://localhost:8000/auth/google/callback`, rồi khai báo:
 
 ```env
 GOOGLE_CLIENT_ID=your-google-client-id

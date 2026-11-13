@@ -16,7 +16,7 @@
             <div class="flex items-start gap-4 min-w-0">
                 <div class="w-32 h-20 rounded-xl bg-gray-100 dark:bg-neutral-800 overflow-hidden shrink-0 hidden sm:block">
                     @if($course->thumbnail)
-                        <img src="{{ asset('storage/'.$course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+                        <img src="{{ Storage::disk('public')->url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
                     @endif
                 </div>
                 <div class="min-w-0">
