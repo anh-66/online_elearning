@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Filesystem\CloudinaryAdapter;
 use App\Models\CloudinaryTrash;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
@@ -17,16 +18,28 @@ class CloudinaryTrashBin
 {
     public const DAYS = 7;
 
+    /**
+     * Số giây tối đa dành cho việc xóa vĩnh viễn trong một lần bấm. PHP trên Render dừng request sau
+     * 60 giây (docker/php/app.ini), mà Cloudinary xóa từng ảnh một, nên xóa nhiều ảnh thì chia làm nhiều lượt.
+     */
+    public const REQUEST_SECONDS = 40;
+
+    /**
+     * Thời gian dành cho việc tự dọn ảnh hết hạn khi admin mở trang, để trang không bị chậm quá lâu.
+     */
+    public const PAGE_LOAD_SECONDS = 15;
+
     public function __construct(private readonly CloudinaryImageAssigner $assigner) {}
 
     /**
      * Chuyển ảnh vào thùng rác.
      *
      * @param  array<string, mixed>  $image  một ảnh trong CloudinaryImageLibrary::images()
+     * @param  array<string, array<int, array<string, mixed>>>|null  $knownPlaces  kết quả CloudinaryImageAssigner::places() nếu đã có sẵn
      */
-    public function trash(array $image, ?User $by = null): CloudinaryTrash
+    public function trash(array $image, ?User $by = null, ?array $knownPlaces = null): CloudinaryTrash
     {
-        $places = $this->assigner->unlinkAll($image['path']);
+        $places = $this->assigner->unlinkAll($image['path'], $knownPlaces);
 
         return CloudinaryTrash::query()->updateOrCreate(['path' => $image['path']], [
             'name' => $image['name'],
@@ -41,6 +54,29 @@ class CloudinaryTrashBin
             'deleted_by' => $by?->getKey(),
             'purge_at' => now()->addDays(self::DAYS),
         ]);
+    }
+
+    /**
+     * Chuyển nhiều ảnh vào thùng rác cùng lúc (chỉ sửa database nên làm hết trong một transaction).
+     *
+     * @param  array<int, array<string, mixed>>  $images  các ảnh trong CloudinaryImageLibrary::images()
+     * @return array{trashed: int, unlinked: int}
+     */
+    public function trashMany(array $images, ?User $by = null): array
+    {
+        return DB::transaction(function () use ($images, $by): array {
+            $places = $this->assigner->places();
+            $trashed = 0;
+            $unlinked = 0;
+
+            foreach ($images as $image) {
+                $item = $this->trash($image, $by, $places);
+                $trashed++;
+                $unlinked += count((array) $item->places);
+            }
+
+            return ['trashed' => $trashed, 'unlinked' => $unlinked];
+        });
     }
 
     /**
@@ -87,22 +123,26 @@ class CloudinaryTrashBin
     }
 
     /**
-     * Xóa vĩnh viễn những ảnh đã nằm trong thùng rác quá DAYS ngày.
-     * Render gói free không có cron miễn phí, nên hàm này được gọi khi admin mở trang
-     * Ảnh Cloudinary và mỗi lần server khởi động (lệnh cloudinary:purge-trash).
+     * Xóa vĩnh viễn nhiều ảnh. Hết $seconds giây thì dừng, những ảnh chưa kịp xóa vẫn nằm trong thùng rác
+     * (đếm vào "remaining") để lần sau xóa tiếp. $seconds = null là không giới hạn (dùng cho lệnh artisan).
      *
-     * @return array{purged: int, failed: int}
+     * @param  iterable<int, CloudinaryTrash>  $items
+     * @return array{purged: int, failed: int, remaining: int}
      */
-    public function purgeExpired(): array
+    public function purgeMany(iterable $items, ?float $seconds = null): array
     {
+        $deadline = $seconds === null ? null : microtime(true) + $seconds;
         $purged = 0;
         $failed = 0;
+        $remaining = 0;
 
-        if (! Storage::disk('public')->getAdapter() instanceof CloudinaryAdapter) {
-            return ['purged' => 0, 'failed' => 0];
-        }
+        foreach ($items as $item) {
+            if ($deadline !== null && microtime(true) >= $deadline) {
+                $remaining++;
 
-        foreach (CloudinaryTrash::query()->where('purge_at', '<=', now())->get() as $item) {
+                continue;
+            }
+
             try {
                 $this->purge($item);
                 $purged++;
@@ -112,7 +152,23 @@ class CloudinaryTrashBin
             }
         }
 
-        return ['purged' => $purged, 'failed' => $failed];
+        return ['purged' => $purged, 'failed' => $failed, 'remaining' => $remaining];
+    }
+
+    /**
+     * Xóa vĩnh viễn những ảnh đã nằm trong thùng rác quá DAYS ngày.
+     * Render gói free không có cron miễn phí, nên hàm này được gọi khi admin mở trang
+     * Ảnh Cloudinary và mỗi lần server khởi động (lệnh cloudinary:purge-trash).
+     *
+     * @return array{purged: int, failed: int, remaining: int}
+     */
+    public function purgeExpired(?float $seconds = null): array
+    {
+        if (! Storage::disk('public')->getAdapter() instanceof CloudinaryAdapter) {
+            return ['purged' => 0, 'failed' => 0, 'remaining' => 0];
+        }
+
+        return $this->purgeMany(CloudinaryTrash::query()->where('purge_at', '<=', now())->orderBy('purge_at')->get(), $seconds);
     }
 
     /**

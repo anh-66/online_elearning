@@ -183,83 +183,113 @@
                 </div>
             </div>
         @else
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                @foreach($images as $image)
-                    <div class="glass-card overflow-hidden group flex flex-col">
-                        <button type="button" @click="open(@js($image))" title="Xem ảnh lớn"
-                                class="relative block aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
-                            <img src="{{ $image['thumb_url'] }}" alt="{{ $image['name'] }}" loading="lazy"
-                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
-                            @if($image['format'] !== '')
-                                <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-white/90 text-[10px] font-bold text-gray-700 dark:text-neutral-200 shadow-sm">{{ $image['format'] }}</span>
-                            @endif
+            <div x-data="cloudinarySelection(@js($selection))" class="space-y-4">
+                @component('admin.cloudinary.partials.selection-bar', [
+                    'hint' => 'Tích vào ô ở góc mỗi ảnh để chọn nhiều ảnh rồi xóa cùng lúc.',
+                    'total' => count($selection['allKeys']),
+                    'hasPages' => $images->hasPages(),
+                ])
+                    <form method="POST" action="{{ route('admin.cloudinary.trash.bulk-store') }}"
+                          @submit="if (! confirm(bulkTrashMessage(selected.length, usedCount()))) $event.preventDefault()">
+                        @csrf
+                        <input type="hidden" name="paths" :value="JSON.stringify(selected)">
+                        <button type="submit"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap">
+                            <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                            <span x-text="'Xóa ' + selected.length + ' ảnh'">Xóa ảnh đã chọn</span>
                         </button>
-                        <div class="p-3 flex-1 flex flex-col gap-1">
-                            <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate" title="{{ $image['path'] }}">{{ $image['name'] }}</p>
-                            <span class="inline-flex self-start items-center gap-1 max-w-full px-2 py-0.5 rounded-full bg-[#e6f6f5] dark:bg-[#019D91]/15 text-[#019D91] dark:text-[#02b3a5] text-[11px] font-medium" title="{{ $image['folder'] === '' ? '/' : $image['folder'] }}">
-                                <iconify-icon icon="lucide:folder" class="shrink-0"></iconify-icon>
-                                <span class="truncate">{{ $image['folder_label'] }}</span>
-                            </span>
-                            @if($image['used_by'] !== [])
-                                <span class="inline-flex self-start items-center gap-1 max-w-full px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-medium" title="{{ implode(' · ', $image['used_by']) }}">
-                                    <iconify-icon icon="lucide:link" class="shrink-0"></iconify-icon>
-                                    <span class="truncate">{{ $image['used_by'][0] }}</span>
-                                    @if(count($image['used_by']) > 1)
-                                        <span class="shrink-0">+{{ count($image['used_by']) - 1 }}</span>
+                    </form>
+                @endcomponent
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                    @foreach($images as $image)
+                        <div class="glass-card overflow-hidden group flex flex-col"
+                             :class="isSelected(@js($image['path'])) && 'outline outline-2 outline-offset-0 outline-[#019D91] dark:outline-[#02b3a5]'">
+                            <div class="relative">
+                                {{-- Đang chọn nhiều thì bấm vào ảnh để chọn/bỏ chọn, không mở ảnh lớn --}}
+                                <button type="button" @click="selected.length ? toggle(@js($image['path'])) : open(@js($image))"
+                                        :title="selected.length ? 'Chọn / bỏ chọn ảnh này' : 'Xem ảnh lớn'"
+                                        class="relative block w-full aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
+                                    <img src="{{ $image['thumb_url'] }}" alt="{{ $image['name'] }}" loading="lazy"
+                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                    @if($image['format'] !== '')
+                                        <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-white/90 text-[10px] font-bold text-gray-700 shadow-sm">{{ $image['format'] }}</span>
                                     @endif
+                                </button>
+                                <label class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/90 dark:bg-neutral-900/90 shadow-sm cursor-pointer"
+                                       title="Chọn ảnh này">
+                                    <input type="checkbox" :checked="isSelected(@js($image['path']))" @change="toggle(@js($image['path']))"
+                                           aria-label="Chọn ảnh {{ $image['name'] }}"
+                                           class="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 text-[#019D91] dark:text-[#02b3a5] focus:ring-[#019D91] cursor-pointer">
+                                </label>
+                            </div>
+                            <div class="p-3 flex-1 flex flex-col gap-1">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate" title="{{ $image['path'] }}">{{ $image['name'] }}</p>
+                                <span class="inline-flex self-start items-center gap-1 max-w-full px-2 py-0.5 rounded-full bg-[#e6f6f5] dark:bg-[#019D91]/15 text-[#019D91] dark:text-[#02b3a5] text-[11px] font-medium" title="{{ $image['folder'] === '' ? '/' : $image['folder'] }}">
+                                    <iconify-icon icon="lucide:folder" class="shrink-0"></iconify-icon>
+                                    <span class="truncate">{{ $image['folder_label'] }}</span>
                                 </span>
-                            @elseif($image['tracked'])
-                                <span class="inline-flex self-start items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[11px] font-medium">
-                                    <iconify-icon icon="lucide:unlink" class="shrink-0"></iconify-icon>
-                                    Chưa dùng
-                                </span>
-                            @endif
-                            <p class="text-xs text-gray-500 dark:text-neutral-400">
-                                @if($image['width'] && $image['height'])
-                                    {{ $image['width'] }}×{{ $image['height'] }} ·
+                                @if($image['used_by'] !== [])
+                                    <span class="inline-flex self-start items-center gap-1 max-w-full px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-medium" title="{{ implode(' · ', $image['used_by']) }}">
+                                        <iconify-icon icon="lucide:link" class="shrink-0"></iconify-icon>
+                                        <span class="truncate">{{ $image['used_by'][0] }}</span>
+                                        @if(count($image['used_by']) > 1)
+                                            <span class="shrink-0">+{{ count($image['used_by']) - 1 }}</span>
+                                        @endif
+                                    </span>
+                                @elseif($image['tracked'])
+                                    <span class="inline-flex self-start items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[11px] font-medium">
+                                        <iconify-icon icon="lucide:unlink" class="shrink-0"></iconify-icon>
+                                        Chưa dùng
+                                    </span>
                                 @endif
-                                {{ $image['size'] }}
-                            </p>
-                            <p class="text-xs text-gray-400 dark:text-neutral-500">{{ $image['uploaded_at'] }}</p>
-                            <div class="flex items-center gap-1 pt-1 mt-auto">
-                                <button type="button" @click="open(@js($image))" title="Gắn ảnh này vào banner, khóa học hoặc avatar"
-                                        class="inline-flex items-center gap-1 px-2 py-1 mr-auto whitespace-nowrap text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
-                                    <iconify-icon icon="lucide:link-2" class="text-sm shrink-0"></iconify-icon>
-                                    Gắn
-                                </button>
-                                <button type="button" @click="copy(@js($image['url']))" title="Sao chép link ảnh"
-                                        class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
-                                    <iconify-icon x-show="copiedUrl !== @js($image['url'])" icon="lucide:copy" class="text-base"></iconify-icon>
-                                    <iconify-icon x-show="copiedUrl === @js($image['url'])" x-cloak icon="lucide:check" class="text-base text-emerald-600 dark:text-emerald-400"></iconify-icon>
-                                </button>
-                                <a href="{{ $image['url'] }}" target="_blank" rel="noopener noreferrer" title="Mở ảnh gốc"
-                                   class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
-                                    <iconify-icon icon="lucide:external-link" class="text-base"></iconify-icon>
-                                </a>
-                                @php
-                                    $trashConfirm = (count($image['places']) > 0
-                                        ? 'Ảnh đang dùng ở '.count($image['places']).' chỗ. Xóa sẽ tháo ảnh khỏi các chỗ đó và chuyển vào thùng rác.'
-                                        : 'Chuyển ảnh này vào thùng rác?').' Sau '.$trashDays.' ngày ảnh sẽ bị xóa vĩnh viễn trên Cloudinary.';
-                                @endphp
-                                <form method="POST" action="{{ route('admin.cloudinary.trash.store') }}" onsubmit="return confirm(@js($trashConfirm))">
-                                    @csrf
-                                    <input type="hidden" name="path" value="{{ $image['path'] }}">
-                                    <button type="submit" title="Xóa ảnh (chuyển vào thùng rác)"
-                                            class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
-                                        <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                                <p class="text-xs text-gray-500 dark:text-neutral-400">
+                                    @if($image['width'] && $image['height'])
+                                        {{ $image['width'] }}×{{ $image['height'] }} ·
+                                    @endif
+                                    {{ $image['size'] }}
+                                </p>
+                                <p class="text-xs text-gray-400 dark:text-neutral-500">{{ $image['uploaded_at'] }}</p>
+                                <div class="flex items-center gap-1 pt-1 mt-auto">
+                                    <button type="button" @click="open(@js($image))" title="Gắn ảnh này vào banner, khóa học hoặc avatar"
+                                            class="inline-flex items-center gap-1 px-2 py-1 mr-auto whitespace-nowrap text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
+                                        <iconify-icon icon="lucide:link-2" class="text-sm shrink-0"></iconify-icon>
+                                        Gắn
                                     </button>
-                                </form>
+                                    <button type="button" @click="copy(@js($image['url']))" title="Sao chép link ảnh"
+                                            class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
+                                        <iconify-icon x-show="copiedUrl !== @js($image['url'])" icon="lucide:copy" class="text-base"></iconify-icon>
+                                        <iconify-icon x-show="copiedUrl === @js($image['url'])" x-cloak icon="lucide:check" class="text-base text-emerald-600 dark:text-emerald-400"></iconify-icon>
+                                    </button>
+                                    <a href="{{ $image['url'] }}" target="_blank" rel="noopener noreferrer" title="Mở ảnh gốc"
+                                       class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-[#019D91] dark:hover:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
+                                        <iconify-icon icon="lucide:external-link" class="text-base"></iconify-icon>
+                                    </a>
+                                    @php
+                                        $trashConfirm = (count($image['places']) > 0
+                                            ? 'Ảnh đang dùng ở '.count($image['places']).' chỗ. Xóa sẽ tháo ảnh khỏi các chỗ đó và chuyển vào thùng rác.'
+                                            : 'Chuyển ảnh này vào thùng rác?').' Sau '.$trashDays.' ngày ảnh sẽ bị xóa vĩnh viễn trên Cloudinary.';
+                                    @endphp
+                                    <form method="POST" action="{{ route('admin.cloudinary.trash.store') }}" onsubmit="return confirm(@js($trashConfirm))">
+                                        @csrf
+                                        <input type="hidden" name="path" value="{{ $image['path'] }}">
+                                        <button type="submit" title="Xóa ảnh (chuyển vào thùng rác)"
+                                                class="p-1.5 text-gray-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
+                                            <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-
-            @if($images->hasPages())
-                <div class="glass-card px-6 py-4">
-                    {{ $images->links() }}
+                    @endforeach
                 </div>
-            @endif
+
+                @if($images->hasPages())
+                    <div class="glass-card px-6 py-4">
+                        {{ $images->links() }}
+                    </div>
+                @endif
+            </div>
         @endif
     @endif
 
@@ -420,6 +450,11 @@
             // Ẩn những mục đã có ảnh chạy được, chỉ để lại mục đang trống hoặc ảnh lỗi.
             missingTargets() {
                 return (this.targets[this.assignType]?.items ?? []).filter((item) => item.status !== 'ok');
+            },
+            bulkTrashMessage(count, used) {
+                return 'Chuyển ' + count + ' ảnh đã chọn vào thùng rác?'
+                    + (used ? ' Có ' + used + ' ảnh đang được dùng, sẽ bị tháo khỏi những chỗ đó.' : '')
+                    + ' Sau ' + this.trashDays + ' ngày ảnh sẽ bị xóa vĩnh viễn trên Cloudinary.';
             },
             trashMessage(image) {
                 const count = (image.places || []).length;

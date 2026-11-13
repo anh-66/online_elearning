@@ -73,8 +73,11 @@ Route::post('/cloudinary/unlink', [CloudinaryController::class, 'unlink'])->name
 Route::get('/cloudinary/trash', [CloudinaryTrashController::class, 'index'])->name('cloudinary.trash.index');
 Route::post('/cloudinary/trash', [CloudinaryTrashController::class, 'store'])->name('cloudinary.trash.store');
 Route::delete('/cloudinary/trash', [CloudinaryTrashController::class, 'empty'])->name('cloudinary.trash.empty');
-Route::post('/cloudinary/trash/{item}/restore', [CloudinaryTrashController::class, 'restore'])->name('cloudinary.trash.restore');
-Route::delete('/cloudinary/trash/{item}', [CloudinaryTrashController::class, 'destroy'])->name('cloudinary.trash.destroy');
+Route::post('/cloudinary/trash/bulk', [CloudinaryTrashController::class, 'bulkStore'])->name('cloudinary.trash.bulk-store');
+Route::post('/cloudinary/trash/bulk-restore', [CloudinaryTrashController::class, 'bulkRestore'])->name('cloudinary.trash.bulk-restore');
+Route::delete('/cloudinary/trash/bulk', [CloudinaryTrashController::class, 'bulkDestroy'])->name('cloudinary.trash.bulk-destroy');
+Route::post('/cloudinary/trash/{item}/restore', [CloudinaryTrashController::class, 'restore'])->whereNumber('item')->name('cloudinary.trash.restore');
+Route::delete('/cloudinary/trash/{item}', [CloudinaryTrashController::class, 'destroy'])->whereNumber('item')->name('cloudinary.trash.destroy');
 
 // Phản hồi & Báo cáo sự cố
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');

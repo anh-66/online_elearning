@@ -48,7 +48,7 @@ class CloudinaryController extends Controller
         }
 
         // Render free không có cron: dọn ảnh hết hạn trong thùng rác mỗi khi admin mở trang này.
-        $trash->purgeExpired();
+        $trash->purgeExpired(CloudinaryTrashBin::PAGE_LOAD_SECONDS);
         $trashed = array_flip($trash->paths());
 
         try {
@@ -96,6 +96,14 @@ class CloudinaryController extends Controller
             ['path' => $request->url(), 'query' => $request->query()],
         );
 
+        // Dữ liệu cho ô tích chọn nhiều ảnh: ảnh trên trang này, mọi ảnh khớp bộ lọc (để "chọn tất cả"
+        // cả các trang khác) và những ảnh đang được dùng (để cảnh báo trước khi xóa).
+        $selection = [
+            'pageKeys' => $images->pluck('path')->values()->all(),
+            'allKeys' => $filtered->pluck('path')->values()->all(),
+            'usedKeys' => $filtered->filter(fn (array $image): bool => $image['places'] !== [])->pluck('path')->values()->all(),
+        ];
+
         $folders = $all->countBy('folder')
             ->sortKeys()
             ->map(fn (int $count, string $name): array => [
@@ -116,6 +124,7 @@ class CloudinaryController extends Controller
             'unusedCount' => $unused->count(),
             'targets' => $assigner->targets($all->pluck('path')->all()),
             'folderDefaultTypes' => CloudinaryImageAssigner::FOLDER_DEFAULT_TYPES,
+            'selection' => $selection,
             'trashCount' => count($trashed),
             'trashDays' => CloudinaryTrashBin::DAYS,
             'truncated' => $result['truncated'],

@@ -111,15 +111,17 @@ Menu **Ảnh Cloudinary** (đường dẫn `/admin/cloudinary`) cho admin xem to
 - **Gắn / tháo ảnh**: mỗi ảnh cho biết đang dùng ở đâu (banner, ảnh bìa, thư viện ảnh khóa học, avatar, đính kèm) hoặc "Chưa dùng". Admin gắn ảnh có sẵn vào banner, ảnh bìa khóa học, avatar (chỉ hiện mục đang thiếu ảnh), hoặc **Tháo** ảnh khỏi một chỗ mà vẫn giữ file trên Cloudinary. Chỉ sửa đường dẫn trong database.
 - **Thùng rác 7 ngày**: nút **Xóa** tháo ảnh khỏi mọi chỗ đang dùng rồi đưa vào bảng `cloudinary_trash` (ghi lại các chỗ cũ để **Khôi phục**). Hết 7 ngày, hoặc khi admin bấm **Xóa vĩnh viễn**, website gọi **Cloudinary Upload API `destroy`** (có ký SHA-1, `invalidate=true` để xóa cả bản cache trên CDN) để xóa ảnh thật trên Cloudinary.
 - **Tự dọn không cần cron**: Render gói Free không có cron miễn phí, nên ảnh hết hạn được xóa khi admin mở trang Ảnh Cloudinary / Thùng rác và mỗi lần server khởi động (`php artisan cloudinary:purge-trash` trong `docker/entrypoint.sh`).
+- **Chọn nhiều ảnh**: mỗi ảnh có ô tích (Alpine.js). Tích 1 ô là hiện thanh **Chọn tất cả** (trang này, rồi "chọn luôn cả các trang khác") để **xóa hàng loạt** vào thùng rác; trong Thùng rác thì **khôi phục** hoặc **xóa vĩnh viễn** hàng loạt. Danh sách đã chọn gửi lên dạng một chuỗi JSON để chọn hàng nghìn ảnh cũng không vướng giới hạn `max_input_vars` của PHP.
+- **Giới hạn thời gian khi xóa vĩnh viễn**: Cloudinary xóa từng ảnh một, còn PHP trên Render dừng request sau 60 giây, nên mỗi lần bấm chỉ xóa trong khoảng 40 giây (tự dọn khi mở trang: 15 giây). Ảnh chưa kịp xóa vẫn nằm trong thùng rác, bấm lại để xóa tiếp.
 
-File liên quan: `app/Services/CloudinaryImageLibrary.php`, `app/Services/CloudinaryImageAssigner.php`, `app/Services/CloudinaryTrashBin.php`, `app/Models/CloudinaryTrash.php`, `app/Console/Commands/PurgeCloudinaryTrashCommand.php`, `app/Http/Controllers/Admin/CloudinaryController.php`, `app/Http/Controllers/Admin/CloudinaryTrashController.php`, `resources/views/admin/cloudinary/` (`index`, `trash`, `partials/tabs`), `routes/admin.php`, `resources/views/layouts/admin.blade.php`.
+File liên quan: `app/Services/CloudinaryImageLibrary.php`, `app/Services/CloudinaryImageAssigner.php`, `app/Services/CloudinaryTrashBin.php`, `app/Models/CloudinaryTrash.php`, `app/Console/Commands/PurgeCloudinaryTrashCommand.php`, `app/Http/Controllers/Admin/CloudinaryController.php`, `app/Http/Controllers/Admin/CloudinaryTrashController.php`, `resources/views/admin/cloudinary/` (`index`, `trash`, `partials/tabs`, `partials/selection-bar`), `routes/admin.php`, `resources/views/layouts/admin.blade.php`.
 
 ## 9. Kiểm thử và chất lượng code
 
 - **PHPUnit** (feature test của Laravel), database SQLite trong bộ nhớ khi test.
 - **`Http::fake()`** giả lập Cloudinary và Gemini, nên test chạy không cần mạng và không tốn lượt API.
 - **Laravel Pint** để định dạng code theo chuẩn của Laravel.
-- Các file test: `tests/Feature/CloudinaryStorageTest.php`, `tests/Feature/CourseChatTest.php`, `tests/Feature/Admin/CloudinaryImagesTest.php`, `tests/Feature/Admin/CloudinaryAssignImageTest.php`, `tests/Feature/Admin/CloudinaryTrashTest.php`, `tests/Feature/Auth/GoogleAuthenticationTest.php`.
+- Các file test: `tests/Feature/CloudinaryStorageTest.php`, `tests/Feature/CourseChatTest.php`, `tests/Feature/Admin/CloudinaryImagesTest.php`, `tests/Feature/Admin/CloudinaryAssignImageTest.php`, `tests/Feature/Admin/CloudinaryTrashTest.php`, `tests/Feature/Admin/CloudinaryBulkDeleteTest.php`, `tests/Feature/Auth/GoogleAuthenticationTest.php`.
 
 Chạy test:
 

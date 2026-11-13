@@ -45,6 +45,9 @@
             @if($purged['purged'] > 0)
                 <span class="block mt-1 font-semibold">Vừa tự xóa vĩnh viễn {{ $purged['purged'] }} ảnh đã quá {{ $days }} ngày.</span>
             @endif
+            @if(($purged['remaining'] ?? 0) > 0)
+                <span class="block mt-1 font-semibold">Còn {{ $purged['remaining'] }} ảnh hết hạn chưa kịp xóa, tải lại trang để xóa tiếp.</span>
+            @endif
         </span>
     </div>
 
@@ -57,67 +60,111 @@
             </div>
         </div>
     @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            @foreach($items as $item)
-                @php $daysLeft = $item->daysLeft(); @endphp
-                <div class="glass-card overflow-hidden flex flex-col">
-                    <a href="{{ $item->url }}" target="_blank" rel="noopener noreferrer" title="Mở ảnh gốc"
-                       class="relative block aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
-                        <img src="{{ $item->thumb_url }}" alt="{{ $item->name }}" loading="lazy" class="w-full h-full object-cover opacity-80">
-                        <span class="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm {{ $daysLeft <= 1 ? 'bg-red-600 text-white' : 'bg-white/90 text-gray-800' }}">
-                            <iconify-icon icon="lucide:clock"></iconify-icon>
-                            {{ $daysLeft === 0 ? 'Xóa trong lần dọn tới' : 'Còn '.$daysLeft.' ngày' }}
-                        </span>
-                    </a>
-                    <div class="p-4 flex-1 flex flex-col gap-2">
-                        <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate" title="{{ $item->path }}">{{ $item->name }}</p>
-                        <p class="text-xs text-gray-500 dark:text-neutral-400">
-                            Xóa lúc {{ $item->created_at->timezone(config('app.timezone'))->format('H:i d/m/Y') }}
-                            @if($item->deleter) bởi {{ $item->deleter->name }} @endif
-                        </p>
-                        <p class="text-xs text-gray-500 dark:text-neutral-400">
-                            Xóa vĩnh viễn: {{ $item->purge_at->timezone(config('app.timezone'))->format('d/m/Y') }}
-                        </p>
-                        @if(! empty($item->places))
-                            <div class="text-xs text-gray-600 dark:text-neutral-300">
-                                <p class="font-semibold">Từng dùng cho:</p>
-                                <ul class="list-disc pl-4 mt-0.5 space-y-0.5">
-                                    @foreach($item->places as $place)
-                                        <li class="break-words">{{ $place['label'] ?? '' }}</li>
-                                    @endforeach
-                                </ul>
+        <div x-data="cloudinarySelection(@js($selection))" class="space-y-4">
+            @component('admin.cloudinary.partials.selection-bar', [
+                'hint' => 'Tích vào ô ở góc mỗi ảnh để khôi phục hoặc xóa vĩnh viễn nhiều ảnh cùng lúc.',
+                'total' => count($selection['allKeys']),
+                'hasPages' => $items->hasPages(),
+            ])
+                <form method="POST" action="{{ route('admin.cloudinary.trash.bulk-restore') }}">
+                    @csrf
+                    <input type="hidden" name="ids" :value="JSON.stringify(selected)">
+                    <button type="submit"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#019D91] text-white text-sm font-semibold hover:bg-[#008b80] transition-colors shadow-sm whitespace-nowrap">
+                        <iconify-icon icon="lucide:rotate-ccw" class="text-base"></iconify-icon>
+                        <span x-text="'Khôi phục ' + selected.length + ' ảnh'">Khôi phục ảnh đã chọn</span>
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('admin.cloudinary.trash.bulk-destroy') }}"
+                      @submit="if (! confirm('Xóa vĩnh viễn ' + selected.length + ' ảnh đã chọn? Ảnh sẽ bị xóa luôn trên Cloudinary và không khôi phục được.')) $event.preventDefault()">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="ids" :value="JSON.stringify(selected)">
+                    <button type="submit"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap">
+                        <iconify-icon icon="lucide:trash-2" class="text-base"></iconify-icon>
+                        <span x-text="'Xóa vĩnh viễn ' + selected.length + ' ảnh'">Xóa vĩnh viễn ảnh đã chọn</span>
+                    </button>
+                </form>
+            @endcomponent
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                @foreach($items as $item)
+                    @php
+                        $daysLeft = $item->daysLeft();
+                        $key = (string) $item->getKey();
+                    @endphp
+                    <div class="glass-card overflow-hidden flex flex-col"
+                         :class="isSelected(@js($key)) && 'outline outline-2 outline-offset-0 outline-[#019D91] dark:outline-[#02b3a5]'">
+                        <div class="relative">
+                            {{-- Đang chọn nhiều thì bấm vào ảnh để chọn/bỏ chọn, không mở ảnh gốc --}}
+                            <a href="{{ $item->url }}" target="_blank" rel="noopener noreferrer"
+                               @click="if (selected.length) { $event.preventDefault(); toggle(@js($key)); }"
+                               :title="selected.length ? 'Chọn / bỏ chọn ảnh này' : 'Mở ảnh gốc'"
+                               class="relative block aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
+                                <img src="{{ $item->thumb_url }}" alt="{{ $item->name }}" loading="lazy" class="w-full h-full object-cover opacity-80">
+                                <span class="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm {{ $daysLeft <= 1 ? 'bg-red-600 text-white' : 'bg-white/90 text-gray-800' }}">
+                                    <iconify-icon icon="lucide:clock"></iconify-icon>
+                                    {{ $daysLeft === 0 ? 'Xóa trong lần dọn tới' : 'Còn '.$daysLeft.' ngày' }}
+                                </span>
+                            </a>
+                            <label class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/90 dark:bg-neutral-900/90 shadow-sm cursor-pointer"
+                                   title="Chọn ảnh này">
+                                <input type="checkbox" :checked="isSelected(@js($key))" @change="toggle(@js($key))"
+                                       aria-label="Chọn ảnh {{ $item->name }}"
+                                       class="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 text-[#019D91] dark:text-[#02b3a5] focus:ring-[#019D91] cursor-pointer">
+                            </label>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col gap-2">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate" title="{{ $item->path }}">{{ $item->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-neutral-400">
+                                Xóa lúc {{ $item->created_at->timezone(config('app.timezone'))->format('H:i d/m/Y') }}
+                                @if($item->deleter) bởi {{ $item->deleter->name }} @endif
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-neutral-400">
+                                Xóa vĩnh viễn: {{ $item->purge_at->timezone(config('app.timezone'))->format('d/m/Y') }}
+                            </p>
+                            @if(! empty($item->places))
+                                <div class="text-xs text-gray-600 dark:text-neutral-300">
+                                    <p class="font-semibold">Từng dùng cho:</p>
+                                    <ul class="list-disc pl-4 mt-0.5 space-y-0.5">
+                                        @foreach($item->places as $place)
+                                            <li class="break-words">{{ $place['label'] ?? '' }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            <div class="flex flex-wrap gap-2 pt-2 mt-auto">
+                                <form method="POST" action="{{ route('admin.cloudinary.trash.restore', $item) }}" class="flex-1">
+                                    @csrf
+                                    <button type="submit"
+                                            class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 whitespace-nowrap rounded-xl bg-[#019D91] text-white text-xs font-semibold hover:bg-[#008b80] transition-colors">
+                                        <iconify-icon icon="lucide:rotate-ccw" class="text-sm"></iconify-icon>
+                                        Khôi phục
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.cloudinary.trash.destroy', $item) }}" class="flex-1"
+                                      onsubmit="return confirm(@js('Xóa vĩnh viễn ảnh '.$item->name.'? Ảnh sẽ bị xóa luôn trên Cloudinary và không khôi phục được.'))">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 whitespace-nowrap rounded-xl border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                        <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
+                                        Xóa vĩnh viễn
+                                    </button>
+                                </form>
                             </div>
-                        @endif
-                        <div class="flex flex-wrap gap-2 pt-2 mt-auto">
-                            <form method="POST" action="{{ route('admin.cloudinary.trash.restore', $item) }}" class="flex-1">
-                                @csrf
-                                <button type="submit"
-                                        class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 whitespace-nowrap rounded-xl bg-[#019D91] text-white text-xs font-semibold hover:bg-[#008b80] transition-colors">
-                                    <iconify-icon icon="lucide:rotate-ccw" class="text-sm"></iconify-icon>
-                                    Khôi phục
-                                </button>
-                            </form>
-                            <form method="POST" action="{{ route('admin.cloudinary.trash.destroy', $item) }}" class="flex-1"
-                                  onsubmit="return confirm(@js('Xóa vĩnh viễn ảnh '.$item->name.'? Ảnh sẽ bị xóa luôn trên Cloudinary và không khôi phục được.'))">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 whitespace-nowrap rounded-xl border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
-                                    <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
-                                    Xóa vĩnh viễn
-                                </button>
-                            </form>
                         </div>
                     </div>
-                </div>
-            @endforeach
-        </div>
-
-        @if($items->hasPages())
-            <div class="glass-card px-6 py-4">
-                {{ $items->links() }}
+                @endforeach
             </div>
-        @endif
+
+            @if($items->hasPages())
+                <div class="glass-card px-6 py-4">
+                    {{ $items->links() }}
+                </div>
+            @endif
+        </div>
     @endif
 </div>
 @endsection

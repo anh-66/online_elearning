@@ -142,14 +142,16 @@ class CloudinaryImageAssigner
 
     /**
      * Tháo ảnh khỏi mọi chỗ đang dùng. Trả về danh sách chỗ đã tháo để sau này khôi phục.
+     * Khi xóa nhiều ảnh cùng lúc, truyền sẵn kết quả places() để không phải đọc lại database cho từng ảnh.
      *
+     * @param  array<string, array<int, array{type: string, id: int, label: string, course_id?: int}>>|null  $places
      * @return array<int, array{type: string, id: int, label: string, course_id?: int}>
      */
-    public function unlinkAll(string $path): array
+    public function unlinkAll(string $path, ?array $places = null): array
     {
         $unlinked = [];
 
-        foreach ($this->places()[self::key($path)] ?? [] as $place) {
+        foreach (($places ?? $this->places())[self::key($path)] ?? [] as $place) {
             if ($done = $this->unlink($place['type'], $place['id'], $path)) {
                 $unlinked[] = $done;
             }
