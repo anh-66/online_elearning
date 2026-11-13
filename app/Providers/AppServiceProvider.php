@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Filesystem\CloudinaryAdapter;
+use App\Mail\Transport\BrevoTransport;
 use App\Services\GeminiClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
@@ -37,6 +39,13 @@ class AppServiceProvider extends ServiceProvider
 
             return new FilesystemAdapter(new Filesystem($adapter, $config), $adapter, $config);
         });
+
+        // Gửi mail qua API của Brevo (MAIL_MAILER=brevo), vì Render gói Free chặn cổng SMTP.
+        Mail::extend('brevo', fn (array $config) => new BrevoTransport(
+            $config['key'] ?? null,
+            $config['endpoint'] ?? 'https://api.brevo.com/v3/smtp/email',
+            (int) ($config['timeout'] ?? 15),
+        ));
 
         // Giới hạn chat AI theo người dùng (hoặc IP nếu chưa đăng nhập) để không hết lượt Gemini miễn phí.
         RateLimiter::for('course-chat', function (Request $request) {

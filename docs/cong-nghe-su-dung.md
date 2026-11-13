@@ -1,8 +1,8 @@
-# Công nghệ sử dụng: deploy, lưu file, chat AI và trang ảnh admin
+# Công nghệ sử dụng: deploy, lưu file, chat AI, trang ảnh admin và xác thực email
 
 > Tài liệu này liệt kê các công nghệ dùng trong những phần làm thêm trên nhánh `deploy-render`:
 > đưa web lên Render, lưu file upload trên Cloudinary, đăng nhập Google, chat AI tư vấn khóa học
-> và trang **Ảnh Cloudinary** trong admin. Tất cả dịch vụ bên ngoài đều dùng gói **miễn phí**,
+> trang **Ảnh Cloudinary** trong admin và xác thực email bằng mã OTP. Tất cả dịch vụ bên ngoài đều dùng gói **miễn phí**,
 > và không cài thêm package Composer nào mới.
 
 ## 1. Tổng quan
@@ -15,6 +15,7 @@
 | Đăng nhập Google | Laravel Socialite, Google OAuth 2.0 | Miễn phí |
 | Chat AI tư vấn khóa học | Google Gemini API, Laravel HTTP Client, Rate Limiter | Gemini gói Free |
 | Trang Ảnh Cloudinary (admin) | Cloudinary Admin API, Laravel Cache, Alpine.js | Miễn phí |
+| Xác thực email, quên mật khẩu | Mã OTP 6 số gửi qua Brevo API, Laravel Mail (driver tự viết), Rate Limiter | Brevo gói Free |
 | Kiểm thử | PHPUnit, `Http::fake()`, Laravel Pint | Miễn phí |
 
 ## 2. Nền tảng có sẵn của dự án
@@ -116,12 +117,28 @@ Menu **Ảnh Cloudinary** (đường dẫn `/admin/cloudinary`) cho admin xem to
 
 File liên quan: `app/Services/CloudinaryImageLibrary.php`, `app/Services/CloudinaryImageAssigner.php`, `app/Services/CloudinaryTrashBin.php`, `app/Models/CloudinaryTrash.php`, `app/Console/Commands/PurgeCloudinaryTrashCommand.php`, `app/Http/Controllers/Admin/CloudinaryController.php`, `app/Http/Controllers/Admin/CloudinaryTrashController.php`, `resources/views/admin/cloudinary/` (`index`, `trash`, `partials/tabs`, `partials/selection-bar`), `routes/admin.php`, `resources/views/layouts/admin.blade.php`.
 
-## 9. Kiểm thử và chất lượng code
+## 9. Xác thực email và quên mật khẩu bằng mã OTP
+
+Tài khoản đăng ký bằng email phải nhập mã 6 số gửi về email thì mới dùng được web. Quên mật khẩu cũng nhận mã 6 số qua email thay cho link.
+
+- **Brevo Transactional API** (`POST https://api.brevo.com/v3/smtp/email`, header `api-key`): Render gói Free chặn cổng SMTP 25/465/587 nên không gửi qua Gmail SMTP được; Brevo gửi qua HTTPS (cổng 443). Gói Free 300 mail/ngày, không cần thẻ.
+- **Driver mail tự viết** `brevo` (`app/Mail/Transport/BrevoTransport.php`): một Symfony Mailer transport gọi API bằng **Laravel HTTP Client**, đăng ký bằng `Mail::extend()`. Không cài thêm package. Chỉ cần đổi `MAIL_MAILER` là chuyển giữa `brevo` (Render) và `log` (máy cá nhân).
+- **Mã OTP** (`app/Services/EmailOtpService.php`, bảng `email_otps`): mã 6 số tạo bằng `random_int`, chỉ lưu bản băm (`Hash::make`). Hết hạn sau 10 phút, sai 5 lần phải xin mã mới, gửi lại cách nhau 60 giây, tối đa 5 mã/giờ cho mỗi tài khoản (**Laravel Rate Limiter**). Cấu hình trong `config/otp.php`.
+- **Xác thực email**: `User` implements `MustVerifyEmail`, ghi đè `sendEmailVerificationNotification()` để gửi mã thay cho link. Middleware `EnsureEmailIsVerifiedWithOtp` (gắn vào nhóm `web`) đưa tài khoản chưa xác thực về trang nhập mã. Đăng nhập Google, giảng viên do admin tạo và mọi tài khoản có trước tính năng này được coi là đã xác thực. Đổi email trong hồ sơ không cần xác thực lại.
+- **Quên mật khẩu** (3 bước: nhập email → nhập mã → tạo mật khẩu mới): trang tạo mật khẩu mới chỉ mở sau khi nhập đúng mã, và chỉ trong 10 phút (ghi nhận trong session, `NewPasswordController`). Email lấy từ session chứ không lấy từ form. Luôn trả lời giống nhau dù email có tồn tại hay không (nhập mã cho email lạ cũng báo "Mã không đúng"), để người lạ không dò được email đã đăng ký.
+- **Giao diện**: ô nhập 6 số và nút "Gửi lại mã" có đếm ngược làm bằng **Alpine.js** (dán cả mã một lần được). Mail HTML viết bằng Blade, CSS inline.
+- **Dự phòng**: Brevo lỗi thì mã vẫn dùng được và được ghi vào log (Render > Logs, tìm chữ `Brevo`). Đặt `EMAIL_OTP_ENABLED=false` để tắt hẳn bước nhập mã.
+
+Cài Brevo: tạo tài khoản free ở brevo.com, vào Settings > Senders, Domains, IPs > **Add a sender** để xác nhận Gmail dùng làm địa chỉ gửi, vào Settings > SMTP & API > **API Keys & MCP** để tạo key, rồi vào Settings > Security > Authorized IPs bấm **Deactivate blocking** (IP của Render thay đổi). Gửi từ Gmail mà không có tên miền riêng thì mail có thể vào mục Spam.
+
+File liên quan: `app/Mail/Transport/BrevoTransport.php`, `app/Mail/EmailOtpMail.php`, `app/Services/EmailOtpService.php`, `app/Services/EmailOtpResult.php`, `app/Models/EmailOtp.php`, `app/Http/Middleware/EnsureEmailIsVerifiedWithOtp.php`, `app/Http/Controllers/Auth/` (`EmailVerification*`, `VerifyEmailController`, `PasswordResetLinkController`, `PasswordResetCodeController`, `NewPasswordController`, `GoogleController`), `config/otp.php`, `config/mail.php`, `resources/views/auth/` (`verify-email`, `forgot-password`, `reset-password`, `new-password`), `resources/views/components/` (`otp-input`, `otp-resend-button`, `password-reset-steps`), `resources/views/emails/`, `routes/auth.php`.
+
+## 10. Kiểm thử và chất lượng code
 
 - **PHPUnit** (feature test của Laravel), database SQLite trong bộ nhớ khi test.
-- **`Http::fake()`** giả lập Cloudinary và Gemini, nên test chạy không cần mạng và không tốn lượt API.
+- **`Http::fake()`** giả lập Cloudinary, Gemini và Brevo, **`Mail::fake()`** bắt mail OTP, nên test chạy không cần mạng và không tốn lượt API.
 - **Laravel Pint** để định dạng code theo chuẩn của Laravel.
-- Các file test: `tests/Feature/CloudinaryStorageTest.php`, `tests/Feature/CourseChatTest.php`, `tests/Feature/Admin/CloudinaryImagesTest.php`, `tests/Feature/Admin/CloudinaryAssignImageTest.php`, `tests/Feature/Admin/CloudinaryTrashTest.php`, `tests/Feature/Admin/CloudinaryBulkDeleteTest.php`, `tests/Feature/Auth/GoogleAuthenticationTest.php`.
+- Các file test: `tests/Feature/CloudinaryStorageTest.php`, `tests/Feature/CourseChatTest.php`, `tests/Feature/Admin/CloudinaryImagesTest.php`, `tests/Feature/Admin/CloudinaryAssignImageTest.php`, `tests/Feature/Admin/CloudinaryTrashTest.php`, `tests/Feature/Admin/CloudinaryBulkDeleteTest.php`, `tests/Feature/Auth/GoogleAuthenticationTest.php`, `tests/Feature/Auth/EmailVerificationTest.php`, `tests/Feature/Auth/PasswordResetTest.php`, `tests/Feature/Mail/BrevoTransportTest.php`.
 
 Chạy test:
 
@@ -129,7 +146,7 @@ Chạy test:
 php artisan test
 ```
 
-## 10. Biến môi trường
+## 11. Biến môi trường
 
 | Biến | Dùng cho | Lấy ở đâu |
 |---|---|---|
@@ -142,10 +159,15 @@ php artisan test
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Đăng nhập Google | Google Cloud Console > Credentials |
 | `GEMINI_API_KEY` | Chat AI | https://aistudio.google.com/apikey |
 | `GEMINI_MODEL` | Tên model Gemini | Mặc định `gemini-3.5-flash-lite` |
+| `MAIL_MAILER` | Cách gửi mail: `brevo` trên Render, `log` ở máy cá nhân | Tự đặt |
+| `BREVO_API_KEY` | Gửi mail qua Brevo | Brevo > Settings > SMTP & API > API Keys & MCP |
+| `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` | Địa chỉ và tên người gửi | Địa chỉ đã xác nhận trong Brevo > Senders |
+| `EMAIL_OTP_ENABLED` | Bật/tắt bước nhập mã OTP khi đăng ký (mặc định bật) | Tự đặt `true` / `false` |
 
-## 11. Giữ chi phí bằng 0
+## 12. Giữ chi phí bằng 0
 
 - **Render Free**: web tự ngủ sau 15 phút không có người truy cập, lần mở đầu tiên sẽ chậm vài chục giây.
 - **Cloudinary Free**: tính theo credits mỗi tháng. Trang Ảnh Cloudinary hiện số credits đã dùng để theo dõi.
 - **Gemini Free**: không bật thanh toán, hết lượt thì chỉ báo lỗi, không bị trừ tiền.
+- **Brevo Free**: 300 mail/ngày, không nhập thẻ. Web giới hạn mỗi tài khoản 5 mã/giờ nên khó chạm mức này.
 - **Database**: dùng gói Free của TiDB Cloud (hoặc dịch vụ MySQL miễn phí khác), xem lưu ý về Aiven ở mục 4.

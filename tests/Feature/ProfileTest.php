@@ -43,7 +43,8 @@ class ProfileTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        // Đổi email không bắt xác thực lại: mã OTP chỉ gửi lúc đăng ký và khi quên mật khẩu.
+        $this->assertNotNull($user->email_verified_at);
     }
 
     public function test_profile_bio_can_be_updated(): void

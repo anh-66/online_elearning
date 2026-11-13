@@ -2,23 +2,33 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Auth\Concerns\RedirectsAfterEmailVerification;
 use App\Http\Controllers\Controller;
+use App\Models\EmailOtp;
+use App\Services\EmailOtpResult;
+use App\Services\EmailOtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class EmailVerificationNotificationController extends Controller
 {
+    use RedirectsAfterEmailVerification;
+
     /**
-     * Send a new email verification notification.
+     * Gửi lại mã OTP xác thực email.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, EmailOtpService $otp): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->intended($this->homeAfterVerification($user));
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        $result = $otp->send($user, EmailOtp::PURPOSE_VERIFY_EMAIL);
 
-        return back()->with('status', 'verification-link-sent');
+        return $result->is(EmailOtpResult::SENT)
+            ? back()->with('otp_notice', 'Mã mới gồm 6 số đã được gửi tới email của bạn.')
+            : back()->with('otp_problem', $result->message());
     }
 }

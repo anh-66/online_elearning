@@ -54,7 +54,6 @@ class GoogleController extends Controller
                     'avatar' => $avatarUrl,
                     'role' => User::ROLE_STUDENT,
                     'status' => User::STATUS_ACTIVE,
-                    'email_verified_at' => now(),
                     'onboarding_completed' => false,
                 ]);
                 $isNewUser = true;
@@ -63,6 +62,8 @@ class GoogleController extends Controller
             if (! $user->isActive()) {
                 throw new \RuntimeException('The user account is not active.');
             }
+
+            $this->markGoogleEmailAsVerified($user, $isNewUser);
 
             $this->syncGoogleAvatar($user, $avatarUrl);
 
@@ -89,6 +90,24 @@ class GoogleController extends Controller
 
             return redirect()->route('login')->with('error', 'Đăng nhập bằng Google thất bại. Vui lòng thử lại!');
         }
+    }
+
+    /**
+     * Google đã xác minh email nên không cần mã OTP. Tài khoản đăng ký bằng mật khẩu mà chưa xác thực
+     * thì đổi mật khẩu sang ngẫu nhiên, để người đăng ký trước bằng email của người khác không dùng chung được.
+     */
+    private function markGoogleEmailAsVerified(User $user, bool $isNewUser): void
+    {
+        if ($user->email_verified_at !== null) {
+            return;
+        }
+
+        $attributes = ['email_verified_at' => now()];
+        if (! $isNewUser) {
+            $attributes['password'] = Str::random(32);
+        }
+
+        $user->forceFill($attributes)->save();
     }
 
     /**

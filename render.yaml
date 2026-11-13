@@ -54,8 +54,21 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: sync
+      # Gửi mail (mã OTP khi đăng ký, quên mật khẩu) qua API của Brevo, gói Free 300 mail/ngày.
+      # Render gói Free chặn cổng SMTP nên không dùng Gmail SMTP được. Hướng dẫn: docs/cong-nghe-su-dung.md mục 9.
       - key: MAIL_MAILER
-        value: log
+        value: brevo
+      # Brevo > Settings > SMTP & API > API Keys & MCP > Generate API key (dạng xkeysib-...)
+      - key: BREVO_API_KEY
+        sync: false
+      # Địa chỉ gửi, phải trùng sender đã xác nhận trong Brevo (Settings > Senders, Domains, IPs > Senders)
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: EduLearn
+      # Đặt "false" để tắt nhanh bước nhập mã OTP xác thực email (ví dụ khi Brevo trục trặc).
+      - key: EMAIL_OTP_ENABLED
+        value: "true"
 
       # Chạy migrate mỗi lần khởi động (an toàn, chỉ chạy migration mới).
       - key: RUN_MIGRATIONS

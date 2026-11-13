@@ -31,11 +31,8 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        // Đổi email không cần xác thực lại: mã OTP chỉ gửi lúc đăng ký và khi quên mật khẩu.
         $user->fill($request->safe()->only(['name', 'email', 'bio']));
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
 
         if ($request->hasFile('avatar')) {
             $previousAvatar = $user->avatar;

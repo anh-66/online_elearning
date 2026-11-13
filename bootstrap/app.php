@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnsureEmailIsVerifiedWithOtp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -33,6 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => CheckRole::class,
+        ]);
+
+        // Tài khoản chưa nhập mã OTP xác thực email thì bị đưa về trang nhập mã.
+        $middleware->web(append: [
+            EnsureEmailIsVerifiedWithOtp::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
