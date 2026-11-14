@@ -53,7 +53,7 @@ class CourseEnrollmentTest extends TestCase
         $this->actingAs($instructorA)
             ->get(route('courses.show', $paidCourse->slug))
             ->assertOk()
-            ->assertSee('Mua khóa học ngay · 799.000 ₫')
+            ->assertSee('Mua khóa học ngay - 799.000 đ')
             ->assertSee(route('courses.checkout', $paidCourse->slug));
 
         // 2. Thầy giáo A cố tình gọi POST enroll miễn phí -> Bị từ chối và redirect sang checkout
@@ -117,8 +117,8 @@ class CourseEnrollmentTest extends TestCase
         $this->actingAs($instructor)
             ->get(route('courses.show', $course->slug))
             ->assertOk()
-            ->assertSee('Vào phòng học (Xem trước)')
-            ->assertSee('Quản lý nội dung (Studio)')
+            ->assertSee('Vào học ngay')
+            ->assertSee('Quản lý khóa học (Studio)')
             ->assertDontSee('Mua khóa học ngay');
 
         // Cố tình ghi danh -> Bị chặn
@@ -231,7 +231,7 @@ class CourseEnrollmentTest extends TestCase
         $this->actingAs($student)
             ->get(route('courses.checkout', $course2->slug))
             ->assertOk()
-            ->assertSee('Đã lưu trong tài khoản')
+            ->assertSee('Đã lưu')
             ->assertSee('Ví điện tử MoMo')
             ->assertSee('0988***456');
 

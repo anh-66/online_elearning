@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
+use App\Services\CertificateIssuer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -60,6 +62,12 @@ class LearningController extends Controller
         $nextLesson = $currentIndex < $lessons->count() - 1 ? $lessons[$currentIndex + 1] : null;
         $enrollment = Enrollment::where('user_id', Auth::id())->where('course_id', $course->id)->first();
         $progressPercent = (int) ($enrollment?->progress_percent ?? 0);
+        $certificate = Certificate::query()
+            ->where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->first();
+        $courseCompleted = $certificate !== null
+            || ((int) Auth::id() !== (int) $course->instructor_id && $lessons->isNotEmpty() && count($completedLessonIds) >= $lessons->count());
 
         return view('learning.player', compact(
             'course',
@@ -67,11 +75,13 @@ class LearningController extends Controller
             'completedLessonIds',
             'prevLesson',
             'nextLesson',
-            'progressPercent'
+            'progressPercent',
+            'certificate',
+            'courseCompleted'
         ));
     }
 
-    public function markComplete(Request $request, Lesson $lesson): RedirectResponse|JsonResponse
+    public function markComplete(Request $request, Lesson $lesson, CertificateIssuer $certificates): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
         $course = $lesson->chapter()->with('course')->firstOrFail()->course;
@@ -95,8 +105,20 @@ class LearningController extends Controller
             ->where('course_id', $course->id)
             ->update(['progress_percent' => $percent]);
 
+        $certificate = $percent >= 100 ? $certificates->issue($user, $course) : null;
+
         if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'progress_percent' => $percent]);
+            return response()->json([
+                'success' => true,
+                'progress_percent' => $percent,
+                'certificate_url' => $certificate?->url(),
+            ]);
+        }
+
+        if ($certificate?->wasRecentlyCreated) {
+            return back()
+                ->with('success', 'Chúc mừng! Bạn đã hoàn thành khóa học và nhận được chứng chỉ.')
+                ->with('certificate_issued', $certificate->code);
         }
 
         return back()->with('success', 'Đã đánh dấu hoàn thành bài học.');

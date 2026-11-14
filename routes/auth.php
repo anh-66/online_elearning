@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\EmailVerificationStatusController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetCodeController;
@@ -27,7 +28,7 @@ Route::middleware('guest')->group(function () {
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware('throttle:6,1')
+        ->middleware('throttle:otp-request')
         ->name('password.email');
 
     // Quên mật khẩu: gửi mã OTP 6 số qua email -> nhập đúng mã -> mới được tạo mật khẩu mới.
@@ -55,8 +56,13 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:10,1')
         ->name('verification.verify');
 
+    // Trang nhập mã hỏi định kỳ: mail đã thật sự tới hộp thư chưa (đọc trạng thái từ Brevo).
+    Route::get('verify-email/status', EmailVerificationStatusController::class)
+        ->middleware('throttle:30,1')
+        ->name('verification.status');
+
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware('throttle:6,1')
+        ->middleware('throttle:otp-request')
         ->name('verification.send');
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])

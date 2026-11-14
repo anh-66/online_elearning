@@ -19,21 +19,19 @@ class PasswordResetCodeController extends Controller
     /**
      * Trang nhập mã 6 số vừa gửi về email.
      */
-    public function create(Request $request): View|RedirectResponse
+    public function create(Request $request, EmailOtpService $otp): View|RedirectResponse
     {
         $email = (string) $request->session()->get('password_reset_email', '');
         if ($email === '') {
             return redirect()->route('password.request');
         }
 
-        $requestedAt = (int) $request->session()->get('password_reset_requested_at', 0);
-        $resendIn = $requestedAt > 0
-            ? max(0, $requestedAt + (int) config('otp.resend_seconds', 60) - now()->getTimestamp())
-            : 0;
+        $throttle = $otp->resetEmailThrottle($email);
 
         return view('auth.reset-password', [
             'email' => $email,
-            'resendIn' => $resendIn,
+            'resendIn' => $throttle->secondsUntilNext(),
+            'sendsLeft' => $throttle->remaining(),
         ]);
     }
 
