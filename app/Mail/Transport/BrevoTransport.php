@@ -13,7 +13,7 @@ use Throwable;
 /**
  * Gửi mail qua API giao dịch của Brevo bằng HTTPS (cổng 443).
  *
- * Render gói Free chặn các cổng SMTP 25/465/587, nên không gửi qua SMTP được.
+ * Gửi qua HTTPS (cổng 443) nên chạy được cả khi mạng/host chặn các cổng SMTP 25/465/587.
  * Driver này gọi thẳng https://api.brevo.com/v3/smtp/email bằng Laravel HTTP Client,
  * không cần cài thêm package nào.
  */

@@ -4,7 +4,14 @@
 @section('page_title', 'Ảnh lưu trên Cloudinary')
 
 @section('content')
-<div x-data="cloudinaryGallery(@js(['targets' => $targets ?? [], 'folderDefaultTypes' => $folderDefaultTypes ?? [], 'trashDays' => $trashDays ?? 7]))" @keydown.escape.window="close()">
+<div x-data="cloudinaryGallery(@js([
+        'targets' => $targets ?? [],
+        'folderDefaultTypes' => $folderDefaultTypes ?? [],
+        'replaceFolders' => $replaceFolders ?? [],
+        'pickerUrl' => route('admin.cloudinary.picker'),
+        'folders' => $folders ?? [],
+        'trashDays' => $trashDays ?? 7,
+    ]))" @keydown.escape.window="replacing ? cancelReplace() : close()">
 <div class="space-y-6">
 
     {{-- Page Header --}}
@@ -51,7 +58,7 @@
             </p>
             <p class="text-sm text-gray-500 dark:text-neutral-400 mt-2 max-w-xl mx-auto">
                 Thêm <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 text-xs">CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME</code>
-                vào file <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 text-xs">.env</code> (hoặc mục Environment trên Render) rồi tải lại trang này.
+                vào mục Environment trên Render (hoặc file <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 text-xs">.env</code> khi chạy trên máy) rồi tải lại trang này.
             </p>
         </div>
     @elseif(isset($error))
@@ -251,7 +258,7 @@
                                 </p>
                                 <p class="text-xs text-gray-400 dark:text-neutral-500">{{ $image['uploaded_at'] }}</p>
                                 <div class="flex items-center gap-1 pt-1 mt-auto">
-                                    <button type="button" @click="open(@js($image))" title="Gắn ảnh này vào banner, khóa học hoặc avatar"
+                                    <button type="button" @click="open(@js($image))" title="Gắn ảnh này vào (hoặc thay ảnh của) banner, khóa học, avatar"
                                             class="inline-flex items-center gap-1 px-2 py-1 mr-auto whitespace-nowrap text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:bg-[#e6f6f5] dark:hover:bg-[#019D91]/20 rounded-lg transition-all">
                                         <iconify-icon icon="lucide:link-2" class="text-sm shrink-0"></iconify-icon>
                                         Gắn
@@ -309,6 +316,9 @@
                             <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
                         </button>
                     </div>
+
+                    <template x-if="!replacing">
+                    <div class="space-y-4">
                     <dl class="space-y-2.5 text-xs">
                         <div>
                             <dt class="text-gray-500 dark:text-neutral-400">Thư mục</dt>
@@ -355,8 +365,15 @@
                                 <p class="font-semibold mb-1.5">Đang được dùng cho</p>
                                 <ul class="space-y-1.5">
                                     <template x-for="place in preview.places" :key="place.type + place.id">
-                                        <li class="flex items-center justify-between gap-2">
-                                            <span class="min-w-0 break-words" x-text="place.label"></span>
+                                        <li class="space-y-1.5">
+                                            <span class="block break-words" x-text="place.label"></span>
+                                            <div class="flex items-center gap-1">
+                                            <button type="button" x-show="canReplace(place)" @click="startReplace(place)"
+                                                    title="Đổi chỗ này sang dùng một ảnh khác trên Cloudinary"
+                                                    class="inline-flex items-center gap-1 shrink-0 px-2 py-1 rounded-lg bg-white dark:bg-neutral-900 border border-emerald-200 dark:border-emerald-500/30 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:border-emerald-400 transition-colors">
+                                                <iconify-icon icon="lucide:arrow-left-right" class="text-xs"></iconify-icon>
+                                                Thay thế
+                                            </button>
                                             <form method="POST" action="{{ route('admin.cloudinary.unlink') }}"
                                                   @submit="if (! confirm('Tháo ảnh khỏi ' + place.label + '? Chỗ đó sẽ thành trống ảnh, ảnh vẫn còn trên Cloudinary.')) $event.preventDefault()">
                                                 @csrf
@@ -369,6 +386,7 @@
                                                     Tháo
                                                 </button>
                                             </form>
+                                            </div>
                                         </li>
                                     </template>
                                 </ul>
@@ -379,13 +397,14 @@
                         </template>
                     </div>
 
-                    {{-- Gắn ảnh có sẵn vào banner / ảnh bìa khóa học / avatar --}}
-                    <form method="POST" action="{{ route('admin.cloudinary.assign') }}" class="space-y-2.5 pt-4 border-t border-gray-100 dark:border-neutral-800">
+                    {{-- Gắn ảnh có sẵn vào banner / ảnh bìa khóa học / avatar, hoặc thay ảnh đang có của mục đó --}}
+                    <form method="POST" action="{{ route('admin.cloudinary.assign') }}" class="space-y-2.5 pt-4 border-t border-gray-100 dark:border-neutral-800"
+                          @submit="if (isReplacingTarget() && ! confirm(assignConfirm())) $event.preventDefault()">
                         @csrf
                         <input type="hidden" name="path" :value="preview.path">
                         <div>
                             <p class="text-sm font-bold text-gray-900 dark:text-neutral-100">Gắn ảnh này vào</p>
-                            <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-0.5">Chỉ hiện những mục chưa có ảnh hoặc ảnh đang lỗi.</p>
+                            <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-0.5">Mục chưa có ảnh hoặc ảnh lỗi xếp trước. Chọn mục đã có ảnh nếu muốn thay ảnh cũ bằng ảnh này.</p>
                         </div>
                         <select name="type" x-model="assignType" @change="assignId = ''"
                                 class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
@@ -395,17 +414,52 @@
                         </select>
                         <select name="target_id" x-model="assignId" required
                                 class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
-                            <option value="" x-text="missingTargets().length ? 'Chọn nơi gắn ảnh...' : 'Không còn mục nào thiếu ảnh'">Chọn nơi gắn ảnh...</option>
-                            <template x-for="item in missingTargets()" :key="assignType + item.id">
-                                <option :value="String(item.id)" x-text="optionLabel(item)" :selected="String(item.id) === assignId"></option>
-                            </template>
+                            <option value="" x-text="assignOptions('missing').length || assignOptions('ok').length ? 'Chọn nơi gắn ảnh...' : 'Chưa có mục nào'">Chọn nơi gắn ảnh...</option>
+                            <optgroup label="Chưa có ảnh hoặc ảnh lỗi" x-show="assignOptions('missing').length">
+                                <template x-for="item in assignOptions('missing')" :key="'missing' + assignType + item.id">
+                                    <option :value="String(item.id)" x-text="optionLabel(item)" :selected="String(item.id) === assignId"></option>
+                                </template>
+                            </optgroup>
+                            <optgroup label="Đã có ảnh (sẽ thay bằng ảnh này)" x-show="assignOptions('ok').length">
+                                <template x-for="item in assignOptions('ok')" :key="'ok' + assignType + item.id">
+                                    <option :value="String(item.id)" x-text="optionLabel(item)" :selected="String(item.id) === assignId"></option>
+                                </template>
+                            </optgroup>
                         </select>
+
+                        {{-- Mục đã có ảnh: cho xem ảnh cũ và ảnh mới trước khi thay --}}
+                        <template x-if="isReplacingTarget()">
+                            <div class="rounded-xl p-3 text-xs space-y-2.5 bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300">
+                                <p class="font-semibold">Mục này đang có ảnh, ảnh này sẽ thay vào.</p>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="mb-1">Ảnh hiện tại</p>
+                                        <div class="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                            <img x-show="selectedTarget().thumb_url" :src="selectedTarget().thumb_url" alt="Ảnh hiện tại" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                    <iconify-icon icon="lucide:arrow-right" class="text-base shrink-0"></iconify-icon>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="mb-1">Ảnh mới</p>
+                                        <div class="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                            <img :src="preview.thumb_url" alt="Ảnh mới" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="flex items-start gap-2 cursor-pointer">
+                                    <input type="checkbox" name="trash_old" value="1"
+                                           class="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-neutral-600 text-[#019D91] dark:text-[#02b3a5] focus:ring-[#019D91] cursor-pointer">
+                                    <span x-text="'Đưa ảnh cũ vào thùng rác nếu nó không còn dùng ở chỗ khác (khôi phục được trong ' + trashDays + ' ngày).'"></span>
+                                </label>
+                            </div>
+                        </template>
+
                         <button type="submit" :disabled="!assignId"
                                 class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#019D91] text-white text-sm font-semibold rounded-xl hover:bg-[#008b80] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <iconify-icon icon="lucide:link-2" class="text-base"></iconify-icon>
-                            Gắn ảnh
+                            <iconify-icon :icon="isReplacingTarget() ? 'lucide:arrow-left-right' : 'lucide:link-2'" class="text-base"></iconify-icon>
+                            <span x-text="isReplacingTarget() ? 'Thay ảnh' : 'Gắn ảnh'">Gắn ảnh</span>
                         </button>
-                        <p class="text-[11px] text-gray-500 dark:text-neutral-400">Chỉ đổi ảnh trong database. Ảnh cũ của mục đó (nếu có) vẫn còn trên Cloudinary.</p>
+                        <p class="text-[11px] text-gray-500 dark:text-neutral-400">Chỉ đổi ảnh trong database, không upload lại. Ảnh cũ vẫn còn trên Cloudinary trừ khi bạn chọn đưa vào thùng rác.</p>
                     </form>
 
                     <a :href="preview.url" target="_blank" rel="noopener noreferrer"
@@ -424,6 +478,90 @@
                         </button>
                         <p class="text-[11px] text-gray-500 dark:text-neutral-400 mt-1.5 text-center" x-text="'Ảnh vào thùng rác, tự xóa vĩnh viễn trên Cloudinary sau ' + trashDays + ' ngày.'"></p>
                     </form>
+                    </div>
+                    </template>
+
+                    {{-- Thay ảnh: chọn ảnh khác có sẵn trên Cloudinary cho một chỗ đang dùng ảnh này --}}
+                    <template x-if="replacing">
+                        <div class="space-y-3">
+                            <div class="rounded-xl p-3 text-xs bg-[#e6f6f5] dark:bg-[#019D91]/15 text-[#019D91] dark:text-[#02b3a5]">
+                                <p class="font-semibold">Chọn ảnh mới cho</p>
+                                <p class="mt-0.5 font-medium text-gray-900 dark:text-neutral-100 break-words" x-text="replacing.label"></p>
+                            </div>
+                            <input type="search" x-model="pickerQuery" @input="pickerLimit = pickerPageSize" placeholder="Tìm theo tên ảnh..."
+                                   class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
+                            <select x-model="pickerFolder" @change="pickerLimit = pickerPageSize"
+                                    class="w-full py-2 rounded-xl border-gray-200 dark:border-neutral-800 text-sm focus:border-[#019D91] focus:ring-[#019D91]">
+                                <option value="">Tất cả thư mục</option>
+                                <template x-for="folder in folders" :key="folder.value">
+                                    <option :value="folder.value" x-text="folder.label + ' · ' + folder.count" :selected="folder.value === pickerFolder"></option>
+                                </template>
+                            </select>
+                            <div class="grid grid-cols-3 gap-2 max-h-72 overflow-y-auto p-0.5">
+                                <template x-for="image in pickerResults().slice(0, pickerLimit)" :key="image.path">
+                                    <button type="button" @click="pickerChoice = image.path" :title="image.path"
+                                            class="relative block aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800"
+                                            :class="pickerChoice === image.path && 'outline outline-2 outline-offset-0 outline-[#019D91] dark:outline-[#02b3a5]'">
+                                        <img :src="image.thumb_url" :alt="image.path" loading="lazy" class="w-full h-full object-cover">
+                                        <span x-show="pickerChoice === image.path"
+                                              class="absolute top-1 right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#019D91] text-white">
+                                            <iconify-icon icon="lucide:check" class="text-xs"></iconify-icon>
+                                        </span>
+                                    </button>
+                                </template>
+                            </div>
+                            <p x-show="pickerLoading" class="flex items-center gap-2 text-xs text-gray-500 dark:text-neutral-400">
+                                <iconify-icon icon="lucide:loader-circle" class="text-base animate-spin"></iconify-icon>
+                                Đang tải danh sách ảnh...
+                            </p>
+                            <p x-show="pickerError" x-text="pickerError" class="text-xs text-red-600 dark:text-red-400"></p>
+                            <p x-show="!pickerLoading && !pickerError && !pickerResults().length" class="text-xs text-gray-500 dark:text-neutral-400">Không có ảnh nào khớp. Thử chọn "Tất cả thư mục" hoặc xóa ô tìm kiếm.</p>
+                            <button type="button" x-show="pickerResults().length > pickerLimit" @click="pickerLimit += pickerPageSize"
+                                    class="w-full px-4 py-2 border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-neutral-200 text-xs font-semibold rounded-xl hover:border-[#019D91] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition-colors"
+                                    x-text="'Xem thêm (' + (pickerResults().length - pickerLimit) + ' ảnh)'"></button>
+
+                            <form method="POST" action="{{ route('admin.cloudinary.replace') }}" class="space-y-2.5 pt-3 border-t border-gray-100 dark:border-neutral-800"
+                                  @submit="if (! confirm(replaceConfirm())) $event.preventDefault()">
+                                @csrf
+                                <input type="hidden" name="path" :value="preview.path">
+                                <input type="hidden" name="type" :value="replacing.type">
+                                <input type="hidden" name="id" :value="replacing.id">
+                                <input type="hidden" name="new_path" :value="pickerChoice">
+                                <template x-if="pickerChoice">
+                                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-neutral-400">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="mb-1">Ảnh hiện tại</p>
+                                            <div class="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                                <img :src="preview.thumb_url" alt="Ảnh hiện tại" class="w-full h-full object-cover">
+                                            </div>
+                                        </div>
+                                        <iconify-icon icon="lucide:arrow-right" class="text-base shrink-0"></iconify-icon>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="mb-1">Ảnh mới</p>
+                                            <div class="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                                <img :src="thumbFor(pickerChoice)" alt="Ảnh mới" class="w-full h-full object-cover">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <label class="flex items-start gap-2 text-xs text-gray-600 dark:text-neutral-300 cursor-pointer">
+                                    <input type="checkbox" name="trash_old" value="1"
+                                           class="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-neutral-600 text-[#019D91] dark:text-[#02b3a5] focus:ring-[#019D91] cursor-pointer">
+                                    <span x-text="'Đưa ảnh cũ vào thùng rác nếu sau khi thay nó không còn dùng ở chỗ khác (khôi phục được trong ' + trashDays + ' ngày).'"></span>
+                                </label>
+                                <button type="submit" :disabled="!pickerChoice"
+                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#019D91] text-white text-sm font-semibold rounded-xl hover:bg-[#008b80] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <iconify-icon icon="lucide:arrow-left-right" class="text-base"></iconify-icon>
+                                    <span x-text="pickerChoice ? 'Thay thế' : 'Chọn một ảnh ở trên'">Thay thế</span>
+                                </button>
+                                <button type="button" @click="cancelReplace()"
+                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 border border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-neutral-200 text-sm font-semibold rounded-xl hover:border-[#019D91] hover:text-[#019D91] dark:hover:text-[#02b3a5] transition-colors">
+                                    <iconify-icon icon="lucide:arrow-left" class="text-base"></iconify-icon>
+                                    Quay lại
+                                </button>
+                            </form>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -434,22 +572,129 @@
 @push('scripts')
 <script>
     function cloudinaryGallery(config) {
+        // Đường dẫn bỏ đuôi file, giống CloudinaryImageAssigner::key() (jpg/jpeg vẫn là một ảnh).
+        const key = (path) => String(path || '').replace(/^\/+/, '').replace(/\.[^.\/]+$/, '');
+        // Danh sách mọi ảnh để chọn ảnh thay thế: chỉ tải một lần, khi admin bấm "Thay thế" lần đầu.
+        let images = [];
+        let imagesByKey = new Map();
+        let loading = null;
+
         return {
             preview: null,
             copiedUrl: null,
             targets: config.targets || {},
             folderDefaultTypes: config.folderDefaultTypes || {},
+            replaceFolders: config.replaceFolders || {},
+            folders: config.folders || [],
             trashDays: config.trashDays || 7,
             assignType: 'course',
             assignId: '',
+            // Đang chọn ảnh mới cho một chỗ (banner, ảnh bìa, avatar...) đang dùng ảnh này.
+            replacing: null,
+            pickerQuery: '',
+            pickerFolder: '',
+            pickerChoice: '',
+            pickerPageSize: 60,
+            pickerLimit: 60,
+            pickerLoaded: false,
+            pickerLoading: false,
+            pickerError: '',
             open(image) {
                 this.assignType = this.folderDefaultTypes[image.folder] || 'course';
                 this.assignId = '';
+                this.replacing = null;
                 this.preview = image;
             },
-            // Ẩn những mục đã có ảnh chạy được, chỉ để lại mục đang trống hoặc ảnh lỗi.
-            missingTargets() {
-                return (this.targets[this.assignType]?.items ?? []).filter((item) => item.status !== 'ok');
+            // Ảnh nhỏ của một ảnh trong danh sách chọn ảnh thay thế.
+            thumbFor(path) {
+                return this.pickerLoaded ? (imagesByKey.get(key(path))?.thumb_url ?? null) : null;
+            },
+            loadPicker() {
+                loading ??= fetch(config.pickerUrl, { headers: { Accept: 'application/json' } })
+                    .then(async (response) => {
+                        const data = await response.json().catch(() => ({}));
+
+                        if (! response.ok) {
+                            throw new Error(data.message || 'Không tải được danh sách ảnh.');
+                        }
+
+                        images = data.images || [];
+                        imagesByKey = new Map(images.map((image) => [key(image.path), image]));
+                        this.pickerLoaded = true;
+                    })
+                    .catch((error) => {
+                        loading = null; // cho phép bấm "Thay thế" lần nữa để thử lại
+                        throw error;
+                    });
+
+                return loading;
+            },
+            // 'missing': mục trống ảnh hoặc ảnh lỗi. 'ok': mục đã có ảnh (gắn = thay ảnh cũ), trừ mục đang dùng chính ảnh này.
+            assignOptions(group) {
+                const current = key(this.preview?.path);
+
+                return (this.targets[this.assignType]?.items ?? []).filter((item) => group === 'missing'
+                    ? item.status !== 'ok'
+                    : item.status === 'ok' && key(item.path) !== current);
+            },
+            selectedTarget() {
+                return (this.targets[this.assignType]?.items ?? []).find((item) => String(item.id) === this.assignId) ?? null;
+            },
+            isReplacingTarget() {
+                return this.selectedTarget()?.status === 'ok';
+            },
+            assignConfirm() {
+                return 'Thay ảnh hiện tại của "' + this.selectedTarget().label + '" bằng ảnh này?';
+            },
+            canReplace(place) {
+                return Object.prototype.hasOwnProperty.call(this.replaceFolders, place.type);
+            },
+            async startReplace(place) {
+                const folder = this.replaceFolders[place.type] || '';
+
+                this.pickerFolder = folder;
+                this.pickerQuery = '';
+                this.pickerChoice = '';
+                this.pickerLimit = this.pickerPageSize;
+                this.pickerError = '';
+                this.replacing = place;
+
+                try {
+                    this.pickerLoading = ! this.pickerLoaded;
+                    await this.loadPicker();
+                } catch (error) {
+                    this.pickerError = error.message;
+
+                    return;
+                } finally {
+                    this.pickerLoading = false;
+                }
+
+                // Mở sẵn thư mục hợp với chỗ cần thay (banner -> banners...), nếu trong đó còn ảnh khác.
+                const current = key(this.preview?.path);
+
+                if (! images.some((image) => image.folder === folder && key(image.path) !== current)) {
+                    this.pickerFolder = '';
+                }
+            },
+            cancelReplace() {
+                this.replacing = null;
+            },
+            pickerResults() {
+                if (! this.pickerLoaded) {
+                    return [];
+                }
+
+                const current = key(this.preview?.path);
+                const query = this.pickerQuery.trim().toLowerCase();
+                const folder = this.pickerFolder === '/' ? '' : this.pickerFolder;
+
+                return images.filter((image) => key(image.path) !== current
+                    && (this.pickerFolder === '' || image.folder === folder)
+                    && (query === '' || image.path.toLowerCase().includes(query)));
+            },
+            replaceConfirm() {
+                return 'Thay ảnh của ' + this.replacing.label + ' bằng ảnh đã chọn?';
             },
             bulkTrashMessage(count, used) {
                 return 'Chuyển ' + count + ' ảnh đã chọn vào thùng rác?'
@@ -470,6 +715,7 @@
                 return item.label + (notes[item.status] || '');
             },
             close() {
+                this.replacing = null;
                 this.preview = null;
             },
             async copy(url) {

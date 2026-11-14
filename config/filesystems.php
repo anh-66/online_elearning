@@ -38,7 +38,7 @@ return [
             'report' => false,
         ],
 
-        // Có CLOUDINARY_URL (vd: trên Render) thì file upload lưu lên Cloudinary,
+        // Có CLOUDINARY_URL thì file upload lưu lên Cloudinary,
         // không thì lưu trong storage/app/public như bình thường.
         'public' => env('CLOUDINARY_URL') ? [
             'driver' => 'cloudinary',

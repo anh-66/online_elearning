@@ -69,6 +69,9 @@ services:
       # Đặt "false" để tắt nhanh bước nhập mã OTP xác thực email (ví dụ khi Brevo trục trặc).
       - key: EMAIL_OTP_ENABLED
         value: "true"
+      # Số mail OTP tối đa cả web gửi trong một ngày, để không vượt 300 mail/ngày của Brevo gói Free.
+      - key: EMAIL_OTP_MAX_PER_DAY
+        value: "250"
 
       # Chạy migrate mỗi lần khởi động (an toàn, chỉ chạy migration mới).
       - key: RUN_MIGRATIONS

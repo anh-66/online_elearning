@@ -19,8 +19,8 @@ class CloudinaryTrashBin
     public const DAYS = 7;
 
     /**
-     * Số giây tối đa dành cho việc xóa vĩnh viễn trong một lần bấm. PHP trên Render dừng request sau
-     * 60 giây (docker/php/app.ini), mà Cloudinary xóa từng ảnh một, nên xóa nhiều ảnh thì chia làm nhiều lượt.
+     * Số giây tối đa dành cho việc xóa vĩnh viễn trong một lần bấm. PHP thường dừng request sau
+     * 60 giây (max_execution_time), mà Cloudinary xóa từng ảnh một, nên xóa nhiều ảnh thì chia làm nhiều lượt.
      */
     public const REQUEST_SECONDS = 40;
 
@@ -157,8 +157,8 @@ class CloudinaryTrashBin
 
     /**
      * Xóa vĩnh viễn những ảnh đã nằm trong thùng rác quá DAYS ngày.
-     * Render gói free không có cron miễn phí, nên hàm này được gọi khi admin mở trang
-     * Ảnh Cloudinary và mỗi lần server khởi động (lệnh cloudinary:purge-trash).
+     * Không cần cron: hàm này được gọi khi admin mở trang Ảnh Cloudinary,
+     * hoặc chạy tay bằng lệnh php artisan cloudinary:purge-trash.
      *
      * @return array{purged: int, failed: int, remaining: int}
      */

@@ -49,6 +49,19 @@ class CloudinaryImageAssigner
     ];
 
     /**
+     * Những chỗ có thể thay ảnh đang dùng bằng ảnh khác: loại => thư mục gợi ý khi chọn ảnh mới.
+     * File đính kèm bài học / phản hồi không nằm trong đây vì chúng không chỉ là ảnh.
+     *
+     * @var array<string, string>
+     */
+    public const REPLACE_FOLDERS = [
+        'banner' => 'banners',
+        'course' => 'courses/thumbnails',
+        'course_image' => 'courses/gallery',
+        'user' => 'avatars',
+    ];
+
+    /**
      * Bỏ đuôi file để so khớp: Cloudinary có thể trả định dạng khác đuôi lưu trong database (jpeg/jpg).
      */
     public static function key(string $path): string
@@ -161,6 +174,33 @@ class CloudinaryImageAssigner
     }
 
     /**
+     * Thay ảnh đang dùng ở một chỗ bằng ảnh khác (chỉ sửa database, không upload hay xóa file).
+     * Trả về null nếu chỗ đó không còn dùng ảnh cũ nữa (vd: admin khác vừa đổi).
+     *
+     * @return array{type: string, id: int, label: string, course_id?: int}|null
+     *
+     * @throws InvalidArgumentException khi loại không thay được ảnh
+     */
+    public function replace(string $type, int $id, string $oldPath, string $newPath): ?array
+    {
+        if (! array_key_exists($type, self::REPLACE_FOLDERS)) {
+            throw new InvalidArgumentException('Không thay được ảnh cho loại: '.$type);
+        }
+
+        $config = self::PLACES[$type];
+        $record = $config['model']::query()->find($id);
+        $current = $record?->getAttribute($config['column']);
+
+        if (! is_string($current) || self::key($current) !== self::key($oldPath)) {
+            return null;
+        }
+
+        $record->forceFill([$config['column'] => ltrim($newPath, '/')])->save();
+
+        return $this->describe($type, $record);
+    }
+
+    /**
      * Gắn lại ảnh vào chỗ cũ khi khôi phục từ thùng rác. Không ghi đè nếu chỗ đó đã có ảnh khác.
      *
      * @param  array{type?: string, id?: int, course_id?: int}  $place
@@ -225,12 +265,25 @@ class CloudinaryImageAssigner
      * Danh sách banner/khóa học/người dùng để chọn khi gắn ảnh. Chỗ đang trống ảnh
      * hoặc trỏ tới file không còn trên Cloudinary được xếp lên đầu.
      *
-     * @param  array<int, string>  $existingPaths  đường dẫn các ảnh đang có trên Cloudinary
-     * @return array<string, array{label: string, items: array<int, array{id: int, label: string, status: string}>}>
+     * @param  array<string, string>  $thumbs  đường dẫn ảnh đang có trên Cloudinary => link ảnh nhỏ của nó
+     * @return array<string, array{label: string, items: array<int, array{id: int, label: string, status: string, path: ?string, thumb_url: ?string}>}>
      */
-    public function targets(array $existingPaths): array
+    public function targets(array $thumbs): array
     {
-        $existing = array_flip(array_map(self::key(...), $existingPaths));
+        $existing = [];
+
+        foreach ($thumbs as $path => $thumb) {
+            $existing[self::key((string) $path)] = $thumb;
+        }
+
+        // Ảnh nhỏ của ảnh hiện tại (null nếu trống hoặc file không còn trên Cloudinary).
+        $thumbOf = function (?string $path) use ($existing): ?string {
+            if (! is_string($path) || trim($path) === '') {
+                return null;
+            }
+
+            return preg_match('#^https?://#i', $path) ? $path : ($existing[self::key($path)] ?? null);
+        };
 
         $status = function (?string $path) use ($existing): string {
             if (! is_string($path) || trim($path) === '') {
@@ -249,6 +302,9 @@ class CloudinaryImageAssigner
                 'id' => (int) $record->getKey(),
                 'label' => (string) $label($record),
                 'status' => $status($record->getAttribute($pathColumn)),
+                // Ảnh hiện tại, để admin thấy mình sắp thay ảnh nào.
+                'path' => filled($record->getAttribute($pathColumn)) ? (string) $record->getAttribute($pathColumn) : null,
+                'thumb_url' => $thumbOf($record->getAttribute($pathColumn)),
             ])
             ->sortBy(fn (array $item): string => ($item['status'] === 'ok' ? '1' : '0').mb_strtolower($item['label']))
             ->values()
@@ -271,16 +327,20 @@ class CloudinaryImageAssigner
     }
 
     /**
-     * Gắn ảnh vào chỗ đã chọn và trả về câu mô tả để báo cho admin.
+     * Gắn ảnh vào chỗ đã chọn, ghi đè ảnh cũ nếu chỗ đó đang có ảnh.
+     * Trả về tên chỗ đó để báo cho admin, và đường dẫn ảnh cũ (nếu có) để xử lý tiếp.
+     *
+     * @return array{name: string, previous: ?string}
      *
      * @throws InvalidArgumentException khi loại không hợp lệ
      */
-    public function assign(string $type, int $id, string $path): string
+    public function assign(string $type, int $id, string $path): array
     {
         $config = self::TYPES[$type] ?? throw new InvalidArgumentException('Loại không hợp lệ: '.$type);
 
         /** @var Model $record */
         $record = $config['model']::query()->findOrFail($id);
+        $previous = $record->getAttribute($config['column']);
         $record->forceFill([$config['column'] => ltrim($path, '/')])->save();
 
         $name = match ($type) {
@@ -289,6 +349,6 @@ class CloudinaryImageAssigner
             'user' => 'ảnh đại diện của '.$record->getAttribute('name'),
         };
 
-        return 'Đã gắn ảnh cho '.$name.'.';
+        return ['name' => $name, 'previous' => is_string($previous) && trim($previous) !== '' ? $previous : null];
     }
 }

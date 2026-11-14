@@ -139,7 +139,7 @@ File liên quan: `app/Mail/Transport/BrevoTransport.php`, `app/Mail/EmailOtpMail
 - **PHPUnit** (feature test của Laravel), database SQLite trong bộ nhớ khi test.
 - **`Http::fake()`** giả lập Cloudinary, Gemini và Brevo, **`Mail::fake()`** bắt mail OTP, nên test chạy không cần mạng và không tốn lượt API.
 - **Laravel Pint** để định dạng code theo chuẩn của Laravel.
-- Các file test: `tests/Feature/CloudinaryStorageTest.php`, `tests/Feature/CourseChatTest.php`, `tests/Feature/Admin/CloudinaryImagesTest.php`, `tests/Feature/Admin/CloudinaryAssignImageTest.php`, `tests/Feature/Admin/CloudinaryTrashTest.php`, `tests/Feature/Admin/CloudinaryBulkDeleteTest.php`, `tests/Feature/Auth/GoogleAuthenticationTest.php`, `tests/Feature/Auth/EmailVerificationTest.php`, `tests/Feature/Auth/PasswordResetTest.php`, `tests/Feature/Mail/BrevoTransportTest.php`.
+- Các file test: `tests/Feature/CloudinaryStorageTest.php`, `tests/Feature/CourseChatTest.php`, `tests/Feature/Admin/CloudinaryImagesTest.php`, `tests/Feature/Admin/CloudinaryAssignImageTest.php`, `tests/Feature/Admin/CloudinaryTrashTest.php`, `tests/Feature/Admin/CloudinaryBulkDeleteTest.php`, `tests/Feature/Auth/GoogleAuthenticationTest.php`, `tests/Feature/Auth/EmailVerificationTest.php`, `tests/Feature/Auth/PasswordResetTest.php`, `tests/Feature/Mail/BrevoTransportTest.php`, `tests/Feature/Admin/EmailLogTest.php`, `tests/Feature/Admin/CloudinaryReplaceImageTest.php`, `tests/Feature/SeedIfEmptyCommandTest.php`, `tests/Feature/CertificateTest.php`.
 
 Chạy test:
 

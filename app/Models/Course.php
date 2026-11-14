@@ -110,6 +110,11 @@ class Course extends Model
         return $this->hasMany(Wishlist::class);
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
     public function isDraft(): bool
     {
         return $this->status === self::STATUS_DRAFT;

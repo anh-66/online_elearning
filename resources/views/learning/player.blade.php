@@ -61,7 +61,30 @@
     
     {{-- Left Area: Video Player & Details --}}
     <div :class="sidebarOpen ? 'flex-1' : 'w-full'" class="p-6 sm:p-8 lg:p-10 overflow-y-auto border-r border-gray-100 dark:border-neutral-800 bg-white dark:bg-[#0d1117] min-w-0 transition-all duration-300">
-        
+
+        {{-- Học xong toàn bộ khóa: mời xem chứng chỉ --}}
+        @if($courseCompleted)
+            @php $justIssued = session('certificate_issued') && $certificate && session('certificate_issued') === $certificate->code; @endphp
+            <div class="cert-banner {{ $justIssued ? 'cert-banner--new' : '' }}" role="status">
+                @if($justIssued)
+                    <span class="cert-banner__spark cert-banner__spark--1" aria-hidden="true"></span>
+                    <span class="cert-banner__spark cert-banner__spark--2" aria-hidden="true"></span>
+                    <span class="cert-banner__spark cert-banner__spark--3" aria-hidden="true"></span>
+                @endif
+                <span class="cert-banner__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6" /><path d="M9.5 9l1.8 1.8L14.8 7.5" /><path d="M8.5 14.2L7 21l5-2.6L17 21l-1.5-6.8" /></svg>
+                </span>
+                <div class="cert-banner__text">
+                    <p class="cert-banner__title">{{ $justIssued ? 'Chúc mừng! Bạn đã hoàn thành khóa học' : 'Bạn đã hoàn thành khóa học này' }}</p>
+                    <p class="cert-banner__sub">Chứng chỉ của bạn đã sẵn sàng: có mã QR xác minh, tải PDF hoặc sao chép liên kết để gửi cho người khác.</p>
+                </div>
+                <a class="cert-banner__btn" href="{{ $certificate ? route('certificates.show', $certificate->code) : route('courses.certificate', $course->slug) }}">
+                    Xem chứng chỉ
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </a>
+            </div>
+        @endif
+
         {{-- Video Player Container --}}
         @if($videoUrl)
             <div class="aspect-video w-full bg-black rounded-xl overflow-hidden relative shadow-sm border border-gray-100 dark:border-neutral-800 group">
@@ -313,3 +336,28 @@
 
 </div>
 @endsection
+
+@push('styles')
+<style>
+    .cert-banner { position: relative; overflow: hidden; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; margin-bottom: 24px; padding: 16px 18px; border-radius: 16px; color: #fff; background: linear-gradient(120deg, #0B4F4A 0%, #017F75 55%, #019D91 100%); box-shadow: 0 12px 28px -16px rgba(1, 79, 74, .7); }
+    .cert-banner::after { content: ''; position: absolute; right: -40px; top: -60px; width: 180px; height: 180px; border-radius: 999px; background: radial-gradient(circle, rgba(227, 194, 111, .35), rgba(227, 194, 111, 0) 70%); pointer-events: none; }
+    .cert-banner__icon { display: flex; align-items: center; justify-content: center; flex: none; width: 46px; height: 46px; border-radius: 999px; background: linear-gradient(135deg, #F1D88A, #B98A2F); color: #4A3510; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .35); }
+    .cert-banner__icon svg { width: 26px; height: 26px; }
+    .cert-banner__text { flex: 1; min-width: 220px; }
+    .cert-banner__title { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.35; }
+    .cert-banner__sub { margin: 3px 0 0; font-size: 13.5px; line-height: 1.5; color: rgba(255, 255, 255, .82); }
+    .cert-banner__btn { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 10px; background: #fff; color: #0B4F4A; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap; transition: transform .15s, box-shadow .15s; }
+    .cert-banner__btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px -6px rgba(0, 0, 0, .35); }
+    .cert-banner__btn:focus-visible { outline: 3px solid #F1D88A; outline-offset: 2px; }
+    .cert-banner__btn svg { width: 16px; height: 16px; }
+    .cert-banner__spark { position: absolute; width: 8px; height: 8px; border-radius: 2px; background: #F1D88A; opacity: 0; animation: cert-spark 1.8s ease-out .2s 2; }
+    .cert-banner__spark--1 { left: 30%; top: 70%; }
+    .cert-banner__spark--2 { left: 55%; top: 75%; background: #fff; animation-delay: .45s; }
+    .cert-banner__spark--3 { left: 78%; top: 70%; background: #7FE3D6; animation-delay: .7s; }
+    .cert-banner--new { animation: cert-pop .5s cubic-bezier(.2, .9, .3, 1.3); }
+    @keyframes cert-spark { 0% { opacity: 0; transform: translateY(0) rotate(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-70px) rotate(220deg); } }
+    @keyframes cert-pop { from { transform: scale(.97); opacity: .4; } to { transform: scale(1); opacity: 1; } }
+    @media (max-width: 520px) { .cert-banner__btn { width: 100%; justify-content: center; } }
+    @media (prefers-reduced-motion: reduce) { .cert-banner--new, .cert-banner__spark { animation: none; } .cert-banner__btn { transition: none; } }
+</style>
+@endpush

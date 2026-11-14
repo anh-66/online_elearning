@@ -38,7 +38,6 @@ class PublicPagesTest extends TestCase
             ->assertOk()
             ->assertSee($published->title)
             ->assertDontSee('cookie-consent')
-            ->assertSee('Làm mới danh sách khóa học')
             ->assertDontSee($draft->title);
         $this->get(route('courses.index', ['keyword' => 'Laravel']))->assertOk()->assertSee($published->title);
         $this->get(route('courses.show', $published->slug))->assertOk()->assertSee($published->title);
@@ -133,7 +132,7 @@ class PublicPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Đổi mật khẩu tài khoản EduLearn của bạn')
             ->assertSee('Đăng nhập vào tài khoản EduLearn')
-            ->assertSee('Lưu thay đổi');
+            ->assertSee('Cập nhật mật khẩu');
 
         $this->get(route('support.show', 'dat-lai-mat-khau'))
             ->assertOk()

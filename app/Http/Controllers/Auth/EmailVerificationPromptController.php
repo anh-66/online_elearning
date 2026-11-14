@@ -35,6 +35,7 @@ class EmailVerificationPromptController extends Controller
         return view('auth.verify-email', [
             'email' => $user->email,
             'resendIn' => $otp->secondsUntilResend($user, EmailOtp::PURPOSE_VERIFY_EMAIL),
+            'sendsLeft' => $otp->remainingSends($user, EmailOtp::PURPOSE_VERIFY_EMAIL),
             'notice' => $autoSent?->is(EmailOtpResult::SENT) ? 'Mã mới gồm 6 số đã được gửi tới email của bạn.' : null,
             'problem' => $autoSent !== null && ! $autoSent->is(EmailOtpResult::SENT) ? $autoSent->message() : null,
         ]);

@@ -29,7 +29,7 @@ class SeedIfEmptyCommandTest extends TestCase
         $admin = User::where('email', 'admin@gmail.com')->firstOrFail();
         $admin->update(['avatar' => 'avatars/admin.jpg']);
 
-        // Mô phỏng Render khởi động lại: entrypoint gọi lại lệnh này.
+        // Chạy lại lệnh lần nữa: database đã có dữ liệu nên phải bỏ qua.
         $this->artisan('app:seed-if-empty')
             ->expectsOutputToContain('bỏ qua seeder')
             ->assertSuccessful();

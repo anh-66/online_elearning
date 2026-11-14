@@ -200,6 +200,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->enrollments()->where('course_id', $course->id)->exists();
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
     public function lessonProgress(): HasMany
     {
         return $this->hasMany(LessonProgress::class);
