@@ -135,7 +135,7 @@
                  this.orderData = {
                      orderCode: data.order_code || '#ACD-99281',
                      paidAt: data.paid_at || '{{ now()->format('H:i, d/m/Y') }}',
-                     paymentTypeLabel: data.payment_type_label || this.getPaymentLabel(),
+                     paymentTypeLabel: this.getPaymentLabel(),
                      playerUrl: data.player_url || '{{ route('learning.player', $course->slug) }}',
                      courseUrl: data.course_url || '{{ route('courses.show', $course->slug) }}',
                      courseTitle: data.course_title || @js($course->title),
@@ -278,8 +278,8 @@
                                 <template x-if="currentStep > 1">
                                     <iconify-icon icon="lucide:check-circle-2" class="text-base text-emerald-600"></iconify-icon>
                                 </template>
-                                <span class="inline-block sm:hidden">01. Phương thức</span>
-                                <span class="hidden sm:inline">01. Phương thức thanh toán</span>
+                                <span class="inline-block" :class="currentStep === 3 ? '' : 'sm:hidden'">01. Phương thức</span>
+                                <span class="hidden sm:inline" x-show="currentStep !== 3">01. Phương thức thanh toán</span>
                             </button>
 
                             {{-- Step 2 Tab --}}
@@ -293,8 +293,8 @@
                                 <template x-if="currentStep > 2">
                                     <iconify-icon icon="lucide:check-circle-2" class="text-base text-emerald-600"></iconify-icon>
                                 </template>
-                                <span class="inline-block sm:hidden">02. Thông tin</span>
-                                <span class="hidden sm:inline">02. Thông tin thanh toán</span>
+                                <span class="inline-block" :class="currentStep === 3 ? '' : 'sm:hidden'">02. Thông tin</span>
+                                <span class="hidden sm:inline" x-show="currentStep !== 3">02. Thông tin thanh toán</span>
                             </button>
 
                             {{-- Step 3 Tab --}}
@@ -305,13 +305,13 @@
                                 <template x-if="currentStep === 3">
                                     <iconify-icon icon="lucide:check-circle-2" class="text-base text-emerald-600"></iconify-icon>
                                 </template>
-                                <span class="inline-block sm:hidden">03. Hoàn tất</span>
-                                <span class="hidden sm:inline">03. Hoàn tất đơn hàng</span>
+                                <span class="inline-block" :class="currentStep === 3 ? '' : 'sm:hidden'">03. Hoàn tất</span>
+                                <span class="hidden sm:inline" x-show="currentStep !== 3">03. Hoàn tất đơn hàng</span>
                             </div>
                         </div>
 
                         {{-- Step Counter --}}
-                        <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider shrink-0"
+                        <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider shrink-0 pb-2"
                              x-text="'BƯỚC ' + currentStep + ' / 3'">
                         </div>
                     </div>
@@ -501,7 +501,6 @@
                                                 <iconify-icon icon="lucide:truck" class="text-2xl text-gray-400"></iconify-icon>
                                             </div>
                                             <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-gray-400">Tư vấn</span>
-                                        </div>
                                         </div>
                                         <span class="font-bold text-gray-900 dark:text-white text-sm">Thanh toán sau (COD)</span>
                                         <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">Nhận tài liệu & tư vấn trực tiếp</span>

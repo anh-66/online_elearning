@@ -71,6 +71,8 @@ Route::patch('/banners/{banner}/toggle', [BannerController::class, 'toggle'])->n
 Route::get('/cloudinary', [CloudinaryController::class, 'index'])->name('cloudinary.index');
 Route::post('/cloudinary/assign', [CloudinaryController::class, 'assign'])->name('cloudinary.assign');
 Route::post('/cloudinary/unlink', [CloudinaryController::class, 'unlink'])->name('cloudinary.unlink');
+Route::post('/cloudinary/replace', [CloudinaryController::class, 'replace'])->name('cloudinary.replace');
+Route::get('/cloudinary/picker', [CloudinaryController::class, 'picker'])->name('cloudinary.picker');
 Route::get('/cloudinary/trash', [CloudinaryTrashController::class, 'index'])->name('cloudinary.trash.index');
 Route::post('/cloudinary/trash', [CloudinaryTrashController::class, 'store'])->name('cloudinary.trash.store');
 Route::delete('/cloudinary/trash', [CloudinaryTrashController::class, 'empty'])->name('cloudinary.trash.empty');
