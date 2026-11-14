@@ -171,7 +171,23 @@ php artisan config:clear
 
 Muốn mail tới hộp thư thật: xem [api-keys/brevo.md](api-keys/brevo.md).
 
-## 10. Bật thêm chức năng cần API key (tùy chọn)
+## 10. Chứng chỉ hoàn thành khóa học
+
+Học viên học xong 100% bài của một khóa sẽ tự nhận chứng chỉ (khổ A4 ngang,
+có mã QR và mã dạng `EDU-2026-XXXX-XXXX`). Ai học xong trước khi có tính năng
+này thì vào **Chứng chỉ của tôi** là được cấp bù.
+
+| Trang | Địa chỉ |
+|---|---|
+| Chứng chỉ của tôi (cần đăng nhập) | <http://localhost:8000/certificates> |
+| Xem một chứng chỉ (ai cũng xem được) | `http://localhost:8000/certificates/{mã}` |
+| Tra cứu chứng chỉ theo mã | <http://localhost:8000/verify-certificate> |
+
+Tải PDF: mở chứng chỉ, bấm **Tải PDF / In**, chọn máy in **Save as PDF**, khổ
+A4 ngang và bật **Background graphics** để giữ màu. Giảng viên học thử khóa của
+chính mình thì không được cấp chứng chỉ.
+
+## 11. Bật thêm chức năng cần API key (tùy chọn)
 
 | Chức năng | Hướng dẫn |
 |---|---|
@@ -182,7 +198,7 @@ Muốn mail tới hộp thư thật: xem [api-keys/brevo.md](api-keys/brevo.md).
 
 Sau khi sửa `.env` luôn chạy `php artisan config:clear`.
 
-## 11. Sau khi `git pull` code mới
+## 12. Sau khi `git pull` code mới
 
 ```bash
 composer install
@@ -194,7 +210,7 @@ php artisan optimize:clear
 
 Nếu có thêm biến mới trong `.env.example`, copy dòng đó sang `.env` của bạn.
 
-## 12. Chạy test
+## 13. Chạy test
 
 ```bash
 php artisan test
@@ -204,7 +220,7 @@ Test dùng SQLite trong bộ nhớ, không đụng database MySQL của bạn. C
 `npm run build` ít nhất một lần trước đó, nếu không nhiều test sẽ báo lỗi
 `Vite manifest not found`.
 
-## 13. Lỗi hay gặp
+## 14. Lỗi hay gặp
 
 | Lỗi | Cách sửa |
 |---|---|

@@ -78,10 +78,11 @@
                 <p class="text-xs text-gray-400 dark:text-neutral-400 uppercase font-medium mb-1">Đã ghi danh</p>
                 <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($enrollmentTotal) }}</p>
             </div>
-            <div class="bg-white dark:bg-[#161b22] p-6 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-sm">
+            <a href="{{ route('certificates.index') }}" id="stat-completed" class="group block bg-white dark:bg-[#161b22] p-6 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-sm hover:border-[#019D91]/40 dark:hover:border-[#019D91]/40 hover:shadow-md transition-all">
                 <p class="text-xs text-gray-400 dark:text-neutral-400 uppercase font-medium mb-1">Đã hoàn thành</p>
                 <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($completedTotal) }}</p>
-            </div>
+                <p class="mt-2 text-xs font-bold text-[#019D91] group-hover:underline">Chứng chỉ của tôi →</p>
+            </a>
             <div class="bg-white dark:bg-[#161b22] p-6 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-sm">
                 <p class="text-xs text-gray-400 dark:text-neutral-400 uppercase font-medium mb-1">Tiến độ trung bình</p>
                 <p class="text-3xl font-bold text-[#019D91] dark:text-teal-400">{{ $averageProgress }}%</p>
@@ -239,6 +240,12 @@
                                 <div class="w-full h-1.5 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                                     <div class="h-full bg-[#019D91] rounded-full transition-all duration-300" style="width: {{ min(100, max(0, (int) ($course->pivot->progress_percent ?? 0))) }}%"></div>
                                 </div>
+                                @if((int) ($course->pivot->progress_percent ?? 0) >= 100)
+                                    <a href="{{ route('courses.certificate', $course->slug) }}" class="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-[#019D91] hover:underline">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"></circle><path d="M8.5 14.2L7 21l5-2.6L17 21l-1.5-6.8"></path></svg>
+                                        Xem chứng chỉ
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     @endforeach

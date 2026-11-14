@@ -199,6 +199,12 @@
                                     </a>
                                 @endif
 
+                                @unless(Auth::user()->isAdmin())
+                                    <a href="{{ route('certificates.index') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
+                                        Chứng chỉ của tôi
+                                    </a>
+                                @endunless
+
                                 <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
                                     Hồ sơ cá nhân
                                 </a>
@@ -325,7 +331,9 @@
                         <li><a href="{{ route('register') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Đăng ký thành viên</a></li>
                         @if (Route::has('my-courses') && (!auth()->check() || !Auth::user()->isAdmin()))
                             <li><a href="{{ route('my-courses') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Khóa học của tôi</a></li>
+                            <li><a href="{{ route('certificates.index') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Chứng chỉ của tôi</a></li>
                         @endif
+                        <li><a href="{{ route('certificates.verify') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Tra cứu chứng chỉ</a></li>
                         <li><a href="{{ route('profile.edit') }}" class="text-neutral-400 hover:text-white transition-colors duration-150">Quản lý hồ sơ</a></li>
                     </ul>
                 </div>

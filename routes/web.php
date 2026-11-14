@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseCatalogController;
 use App\Http\Controllers\CourseChatController;
@@ -39,6 +40,15 @@ Route::post('/support/bao-cao-su-co', [SupportController::class, 'submitFeedback
 Route::get('/support/feedback', fn () => redirect()->route('support.feedback'));
 Route::get('/support/{slug}', [SupportController::class, 'show'])->name('support.show');
 
+// Chứng chỉ: trang xem công khai (quét QR / mở link) và trang tra cứu bằng mã
+Route::get('/verify-certificate', [CertificateController::class, 'verify'])
+    ->middleware('throttle:30,1')
+    ->name('certificates.verify');
+Route::get('/certificates/{code}', [CertificateController::class, 'show'])
+    ->where('code', '[A-Za-z0-9\-]+')
+    ->middleware('throttle:60,1')
+    ->name('certificates.show');
+
 // Chat AI tư vấn khóa học (không cần đăng nhập, giới hạn lượt hỏi trong AppServiceProvider)
 Route::post('/chat/courses', CourseChatController::class)
     ->middleware('throttle:course-chat')
@@ -62,6 +72,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/learning/{course:slug}/{lesson_id?}', [LearningController::class, 'player'])->name('learning.player');
     Route::post('/learning/lessons/{lesson}/complete', [LearningController::class, 'markComplete'])->name('learning.complete');
     Route::post('/wishlist/{course_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Chứng chỉ hoàn thành khóa học
+    Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
+    Route::get('/courses/{course:slug}/certificate', [CertificateController::class, 'forCourse'])->name('courses.certificate');
+    Route::post('/certificates/{certificate:code}/refresh-name', [CertificateController::class, 'refreshName'])->name('certificates.refresh-name');
     // TV4: Quiz trắc nghiệm & Đánh giá sao & Bình luận hỏi đáp
     Route::get('/quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
