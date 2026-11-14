@@ -82,20 +82,4 @@ class Certificate extends Model
 
         return sprintf('%d tháng %d năm %d', $date->day, $date->month, $date->year);
     }
-
-    /**
-     * Link "Thêm vào hồ sơ LinkedIn" (mục Licenses & certifications), miễn phí, không cần API.
-     */
-    public function linkedInUrl(): string
-    {
-        return 'https://www.linkedin.com/profile/add?'.http_build_query([
-            'startTask' => 'CERTIFICATION_NAME',
-            'name' => $this->course_title,
-            'organizationName' => config('app.name', 'EduLearn'),
-            'issueYear' => $this->issued_at->year,
-            'issueMonth' => $this->issued_at->month,
-            'certUrl' => $this->url(),
-            'certId' => $this->code,
-        ]);
-    }
 }

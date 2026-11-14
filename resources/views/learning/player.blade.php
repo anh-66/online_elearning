@@ -76,7 +76,7 @@
                 </span>
                 <div class="cert-banner__text">
                     <p class="cert-banner__title">{{ $justIssued ? 'Chúc mừng! Bạn đã hoàn thành khóa học' : 'Bạn đã hoàn thành khóa học này' }}</p>
-                    <p class="cert-banner__sub">Chứng chỉ của bạn đã sẵn sàng: có mã QR xác minh, tải PDF hoặc thêm vào hồ sơ LinkedIn.</p>
+                    <p class="cert-banner__sub">Chứng chỉ của bạn đã sẵn sàng: có mã QR xác minh, tải PDF hoặc sao chép liên kết để gửi cho người khác.</p>
                 </div>
                 <a class="cert-banner__btn" href="{{ $certificate ? route('certificates.show', $certificate->code) : route('courses.certificate', $course->slug) }}">
                     Xem chứng chỉ

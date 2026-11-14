@@ -129,7 +129,7 @@
             </div>
             <div class="mc__empty-text">
                 <h2>Bạn chưa có chứng chỉ nào</h2>
-                <p>Hoàn thành tất cả bài học của một khóa để nhận chứng chỉ đầu tiên. Chứng chỉ được cấp tự động, bạn có thể tải PDF, in ra hoặc thêm vào hồ sơ LinkedIn.</p>
+                <p>Hoàn thành tất cả bài học của một khóa để nhận chứng chỉ đầu tiên. Chứng chỉ được cấp tự động, bạn có thể tải PDF, in ra hoặc gửi liên kết để người khác kiểm tra.</p>
                 <a class="mc__btn mc__btn--primary" href="{{ route($inProgress->isNotEmpty() ? 'my-courses' : 'courses.index') }}">
                     {{ $inProgress->isNotEmpty() ? 'Tiếp tục học' : 'Khám phá khóa học' }}
                 </a>
