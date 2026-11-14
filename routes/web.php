@@ -139,6 +139,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::delete('/profile/payment-methods/{paymentMethod}', [ProfileController::class, 'destroyPaymentMethod'])->name('profile.payment-methods.destroy');
+    Route::post('/profile/achievements/{achievement}/claim', [ProfileController::class, 'claimAchievement'])->name('profile.achievements.claim');
 
     // Endpoint upload ảnh cho CKEditor 5
     Route::post('/upload/image', [UploadController::class, 'uploadImage'])->name('upload.image');

@@ -255,4 +255,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->paymentMethods()->where('is_default', true)->latest()->first()
             ?? $this->paymentMethods()->latest()->first();
     }
+
+    public function userAchievements(): HasMany
+    {
+        return $this->hasMany(UserAchievement::class);
+    }
+
+    public function achievements(): BelongsToMany
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')
+            ->withPivot(['progress', 'is_unlocked', 'unlocked_at'])
+            ->withTimestamps();
+    }
 }

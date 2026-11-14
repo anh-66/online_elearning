@@ -150,19 +150,57 @@
 
 @if(session('success') || session('error') || session('warning') || session('info'))
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        @if(session('success'))
-            window.toast?.success(@js(session('success')));
-        @endif
-        @if(session('error'))
-            window.toast?.error(@js(session('error')));
-        @endif
-        @if(session('warning'))
-            window.toast?.warning(@js(session('warning')));
-        @endif
-        @if(session('info'))
-            window.toast?.info(@js(session('info')));
-        @endif
-    });
+    (function() {
+        const fire = function() {
+            @if(session('success'))
+                window.toast?.success(@js(session('success')));
+            @endif
+            @if(session('error'))
+                window.toast?.error(@js(session('error')));
+            @endif
+            @if(session('warning'))
+                window.toast?.warning(@js(session('warning')));
+            @endif
+            @if(session('info'))
+                window.toast?.info(@js(session('info')));
+            @endif
+        };
+        if (document.readyState !== 'loading') {
+            fire();
+        } else {
+            document.addEventListener('DOMContentLoaded', fire);
+        }
+    })();
 </script>
 @endif
+
+@auth
+    @php
+        $newAchievements = app(\App\Services\AchievementService::class)->popUnnotifiedAchievements(Auth::user());
+    @endphp
+    @if(!empty($newAchievements) && count($newAchievements) > 0)
+    <script>
+        (function() {
+            const fireAchievements = function() {
+                @foreach($newAchievements as $newAch)
+                    window.toast?.success(
+                        'Bạn vừa hoàn thành mục tiêu: {{ addslashes($newAch->name) }}! Vào hồ sơ bấm "Nhận ngay" để nhận +{{ $newAch->points }} XP.',
+                        'Mở khóa thành tựu!',
+                        {
+                            label: 'Nhận ngay',
+                            onClick: function() {
+                                window.location.href = '{{ route('profile.edit') }}#achievements';
+                            }
+                        }
+                    );
+                @endforeach
+            };
+            if (document.readyState !== 'loading') {
+                fireAchievements();
+            } else {
+                document.addEventListener('DOMContentLoaded', fireAchievements);
+            }
+        })();
+    </script>
+    @endif
+@endauth

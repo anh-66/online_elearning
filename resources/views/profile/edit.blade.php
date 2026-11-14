@@ -12,8 +12,8 @@
         animation: fadeIn 0.25s ease-out;
     }
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(4px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 </style>
 @endpush
@@ -27,7 +27,7 @@
      x-init="
          const handleHash = () => {
              let h = window.location.hash.replace('#', '');
-             let allowed = @js($user->isStudent() ? ['account', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'notifications', 'privacy', 'display']);
+             let allowed = @js($user->isStudent() ? ['account', 'achievements', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'achievements', 'notifications', 'privacy', 'display']);
              if (h === 'password') {
                  activeTab = 'privacy';
                  setTimeout(() => document.getElementById('password')?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -55,12 +55,13 @@
          activeTab: (function() {
              let h = window.location.hash.replace('#', '');
              if (h === 'password') return 'privacy';
-             let allowed = @js($user->isStudent() ? ['account', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'notifications', 'privacy', 'display']);
+             let allowed = @js($user->isStudent() ? ['account', 'achievements', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'achievements', 'notifications', 'privacy', 'display']);
              if (allowed.includes(h)) return h;
              return @js($errors->updatePassword->isNotEmpty() ? 'privacy' : ($errors->userDeletion->isNotEmpty() ? 'privacy' : 'account'));
          })(),
          tabTitles: {
              'account': 'Cài đặt tài khoản',
+             'achievements': 'Thành tựu & Huy hiệu',
              'notifications': 'Cài đặt thông báo',
              'privacy': 'Quyền riêng tư & Bảo mật',
              'display': 'Giao diện & Hiển thị',
@@ -68,6 +69,7 @@
          },
          tabDescriptions: {
              'account': 'Quản lý thông tin cá nhân và cấu hình tài khoản của bạn.',
+             'achievements': 'Theo dõi tiến trình học tập, mở khóa huy hiệu và bảng thành tích cá nhân.',
              'notifications': 'Tùy chỉnh cách bạn nhận tin tức và cập nhật từ hệ thống.',
              'privacy': 'Quản lý bảo mật tài khoản và dữ liệu cá nhân của bạn.',
              'display': 'Tùy chỉnh cách ứng dụng hiển thị trên thiết bị của bạn.',
@@ -111,6 +113,13 @@
                         class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
                     <iconify-icon icon="lucide:user" class="text-lg"></iconify-icon>
                     <span>Tài khoản</span>
+                </button>
+
+                <button type="button" @click="activeTab = 'achievements'"
+                        :class="activeTab === 'achievements' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                        class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                    <iconify-icon icon="lucide:trophy" class="text-lg text-amber-500"></iconify-icon>
+                    <span>Thành tựu</span>
                 </button>
 
                 <button type="button" @click="activeTab = 'notifications'"
@@ -158,7 +167,12 @@
                 @include('profile.partials.update-profile-information-form')
             </section>
 
-            <!-- TAB 2: THÔNG BÁO -->
+            <!-- TAB 2: THÀNH TỰU (ACHIEVEMENTS) -->
+            <section x-show="activeTab === 'achievements'" x-cloak class="tab-content active space-y-10">
+                @include('profile.partials.achievements')
+            </section>
+
+            <!-- TAB 3: THÔNG BÁO -->
             <section x-show="activeTab === 'notifications'" x-cloak class="tab-content active space-y-10">
                 <div class="space-y-6">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Email thông báo</h2>
