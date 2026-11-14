@@ -297,7 +297,9 @@ class CertificateTest extends TestCase
             ->get(route('certificates.show', $certificate->code))
             ->assertOk()
             ->assertSee('Tải PDF / In')
-            ->assertSee('linkedin.com/profile/add', false)
+            ->assertSee('Sao chép liên kết')
+            ->assertDontSee('linkedin.com', false)
+            ->assertDontSee('facebook.com/sharer', false)
             ->assertDontSee('Chứng chỉ hợp lệ')
             ->assertDontSee('Cập nhật tên trên chứng chỉ');
     }

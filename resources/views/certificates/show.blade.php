@@ -44,8 +44,6 @@
         .btn svg { width: 18px; height: 18px; flex: none; }
         .btn--primary { background: #019D91; border-color: #019D91; color: #fff; }
         .btn--primary:hover { background: #018A80; border-color: #018A80; }
-        .btn--linkedin { color: #0A66C2; }
-        .btn--facebook { color: #1877F2; }
 
         .notice { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
         .notice svg { width: 20px; height: 20px; flex: none; margin-top: 1px; }
@@ -72,7 +70,6 @@
 
         @media (max-width: 640px) {
             .btn { height: 38px; padding: 0 12px; font-size: 13px; }
-            .btn span.btn__long { display: none; }
             .verified .btn { margin-left: 0; }
         }
         @media (prefers-reduced-motion: reduce) { .btn, .toast { transition: none; } }
@@ -101,16 +98,6 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1.5 1.5" /><path d="M14 10a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1.5-1.5" /></svg>
                     Sao chép liên kết
                 </button>
-                @if ($isOwner)
-                    <a class="btn btn--linkedin" href="{{ $certificate->linkedInUrl() }}" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" /></svg>
-                        <span>Thêm vào <span class="btn__long">hồ sơ </span>LinkedIn</span>
-                    </a>
-                    <a class="btn btn--facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.62 23.1 24 18.1 24 12.07z" /></svg>
-                        Chia sẻ
-                    </a>
-                @endif
             </div>
         </div>
 
