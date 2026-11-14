@@ -529,5 +529,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(DemoCourseSeeder::class);
+        $this->call(AchievementSeeder::class);
     }
 }

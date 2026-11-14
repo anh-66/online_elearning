@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SubmitQuizRequest;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
+use App\Services\AchievementService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -90,6 +91,8 @@ class QuizController extends Controller
         }
 
         $attempt = $quiz->attempts()->create($attemptData);
+
+        app(AchievementService::class)->syncUserAchievements(auth()->user());
 
         return redirect()->route('quiz.result', [$quiz, $attempt])
             ->with('success', "Nộp bài thành công! Bạn trả lời đúng {$totalCorrect}/{$questions->count()} câu.");

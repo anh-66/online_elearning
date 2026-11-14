@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Achievement;
 use App\Models\PaymentMethod;
+use App\Models\UserAchievement;
+use App\Services\AchievementService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +21,13 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request, AchievementService $achievementService): View
     {
+        $user = $request->user();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'achievementsData' => $achievementService->getProfileAchievementsData($user),
         ]);
     }
 
@@ -157,6 +164,14 @@ class ProfileController extends Controller
                 'content' => $c->content,
                 'created_at' => $c->created_at?->toIso8601String(),
             ]),
+            'achievements' => $user->userAchievements()->with('achievement')->get()->map(fn ($ua) => [
+                'achievement' => $ua->achievement?->name,
+                'tier' => $ua->achievement?->tier,
+                'points' => $ua->achievement?->points,
+                'progress' => $ua->progress,
+                'is_unlocked' => $ua->is_unlocked,
+                'unlocked_at' => $ua->unlocked_at?->toIso8601String(),
+            ]),
         ];
 
         $filename = 'edulearn-personal-data-'.Str::slug($user->name ?: 'user').'-'.now()->format('Ymd').'.json';
@@ -165,6 +180,48 @@ class ProfileController extends Controller
             echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }, $filename, [
             'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * Nhận phần thưởng cho thành tựu đã hoàn thành mục tiêu.
+     */
+    public function claimAchievement(Request $request, Achievement $achievement): JsonResponse
+    {
+        $user = $request->user();
+
+        $record = UserAchievement::where('user_id', $user->id)
+            ->where('achievement_id', $achievement->id)
+            ->first();
+
+        if (! $record || ! $record->is_unlocked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chưa hoàn thành mục tiêu của thành tựu này để nhận thưởng.',
+            ], 400);
+        }
+
+        if ($record->is_claimed) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn đã nhận phần thưởng cho thành tựu này rồi.',
+            ], 400);
+        }
+
+        $record->is_claimed = true;
+        $record->claimed_at = now();
+        $record->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Chúc mừng! Bạn đã nhận thành công +{$achievement->points} XP.",
+            'achievement' => [
+                'id' => $achievement->id,
+                'name' => $achievement->name,
+                'points' => $achievement->points,
+                'icon' => $achievement->icon,
+                'claimed_at' => $record->claimed_at->toIso8601String(),
+            ],
         ]);
     }
 }
