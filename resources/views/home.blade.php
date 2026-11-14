@@ -81,29 +81,29 @@
 {{-- 2. BILLBOARD BANNER (Full Width Edge-to-Edge) --}}
 {{-- ======================================================== --}}
 @if($banners->isNotEmpty())
-<section class="w-full relative overflow-hidden select-none border-y border-[#30363d]" 
+<section class="w-full relative select-none"
          x-data="{ current: 0, total: {{ $banners->count() }} }" 
          x-init="total > 1 && setInterval(() => { current = (current + 1) % total }, 6000)">
-    
-    {{-- Banner Slider: Tràn viền toàn diện, thay thế hoàn toàn ô màu đen cũ --}}
-    <div class="relative w-full h-[260px] sm:h-[360px] md:h-[420px] lg:h-[480px] overflow-hidden">
+    <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14">
+        {{-- Banner Slider: Căn theo vùng nội dung của header và giữ nguyên toàn bộ ảnh --}}
+        <div class="relative w-full overflow-hidden border-y border-[#30363d]" style="height: clamp(200px, 37.5vw, 520px);">
         @foreach($banners as $index => $banner)
-            <div class="absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out"
+            <div class="absolute inset-0 h-full w-full transition-opacity duration-700 ease-in-out"
                  x-show="current === {{ $index }}"
                  x-cloak
                  style="@if(!$banner->image_path && $banner->bg_color) background: {{ $banner->bg_color }}; @endif">
                 
                 @if($banner->image_path)
                     <a href="{{ $banner->link_url ? url($banner->link_url) : 'javascript:void(0)' }}" 
-                       class="block w-full h-full relative group">
+                       class="block h-full w-full relative group">
                         <img src="{{ Storage::disk('public')->url($banner->image_path) }}"
                              alt="{{ $banner->title }}"
-                             class="w-full h-full object-cover object-center"
+                             class="block h-full w-full object-fill"
                              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
                              onerror="this.style.display='none'; this.nextElementSibling?.classList.replace('hidden', 'flex');">
                         
                         {{-- Fallback nếu ảnh bị lỗi đường dẫn --}}
-                        <div class="hidden absolute inset-0 w-full h-full items-center justify-center p-6 text-center"
+                        <div class="hidden absolute inset-0 h-full w-full items-center justify-center p-6 text-center"
                              style="background: {{ $banner->bg_color ?: '#019D91' }};">
                             <h2 class="banner-headline font-anton uppercase tracking-wide text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.2] sm:leading-[1.28] drop-shadow-lg max-w-4xl mx-auto">
                                 {{ $banner->title }}
@@ -133,7 +133,7 @@
                     </a>
                 @else
                     {{-- Color Only Banner (Toàn màn hình lấp đầy bằng màu/gradient và chữ) --}}
-                    <div class="w-full h-full flex items-center justify-center p-6 sm:p-12 text-center text-white relative"
+                    <div class="flex h-full w-full items-center justify-center p-6 sm:p-12 text-center text-white relative"
                          style="background: {{ $banner->bg_color ?: '#019D91' }};">
                         
                         {{-- Subtle dot pattern --}}
@@ -158,31 +158,32 @@
                 @endif
             </div>
         @endforeach
-    </div>
 
-    {{-- Left / Right Slider Arrows --}}
-    @if($banners->count() > 1)
-        <button type="button" @click="current = (current - 1 + total) % total" aria-label="Banner trước"
-                class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
-            <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-        <button type="button" @click="current = (current + 1) % total" aria-label="Banner sau"
-                class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
-            <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-        </button>
-    @endif
-
-    {{-- Dots Indicator --}}
-    @if($banners->count() > 1)
-        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2.5 z-20">
-            @foreach($banners as $index => $banner)
-                <button type="button" @click="current = {{ $index }}" aria-label="Banner {{ $index + 1 }}"
-                        class="h-2 rounded-full transition-all duration-300 drop-shadow"
-                        :class="current === {{ $index }} ? 'bg-white w-8' : 'bg-white/40 w-2.5 hover:bg-white/70'">
+            {{-- Left / Right Slider Arrows --}}
+            @if($banners->count() > 1)
+                <button type="button" @click="current = (current - 1 + total) % total" aria-label="Banner trước"
+                        class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
+                    <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-            @endforeach
+                <button type="button" @click="current = (current + 1) % total" aria-label="Banner sau"
+                        class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
+                    <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            @endif
+
+            {{-- Dots Indicator --}}
+            @if($banners->count() > 1)
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2.5 z-20">
+                    @foreach($banners as $index => $banner)
+                        <button type="button" @click="current = {{ $index }}" aria-label="Banner {{ $index + 1 }}"
+                                class="h-2 rounded-full transition-all duration-300 drop-shadow"
+                                :class="current === {{ $index }} ? 'bg-white w-8' : 'bg-white/40 w-2.5 hover:bg-white/70'">
+                        </button>
+                    @endforeach
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </section>
 @endif
 
