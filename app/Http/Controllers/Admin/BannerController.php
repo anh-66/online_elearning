@@ -106,7 +106,7 @@ class BannerController extends Controller
         $data['order'] = (int) ($data['order'] ?? 0);
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
-        $data['bg_color'] = $data['bg_color'] ?: '#019D91';
+        $data['bg_color'] = ($data['bg_color'] ?? null) ?: '#019D91';
 
         return $data;
     }
