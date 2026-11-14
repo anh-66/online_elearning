@@ -51,7 +51,7 @@
                     </a>
 
                     <!-- Desktop Navigation Menu (@animate-ui / LottieFiles NavigationMenu Style) -->
-                    <nav class="hidden md:flex items-center gap-1.5 shrink-0 relative"
+                    <nav class="hidden xl:flex items-center gap-1.5 shrink-0 relative"
                          data-slot="navigation-menu"
                          @mouseleave="closeMenu()">
                         <a href="{{ url('/') }}"
@@ -102,7 +102,7 @@
                 </div>
 
                 <!-- Center: Compact Search Form (Thu nhỏ gọn gàng, dãn đều navbar) -->
-                <div class="hidden lg:flex items-center w-36 lg:w-44 xl:w-56 shrink mx-3 lg:mx-5">
+                <div class="hidden xl:flex items-center w-56 shrink mx-5">
                     <form action="{{ url('/courses') }}" method="GET" class="w-full relative">
                         <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm..."
                                class="w-full h-10 pl-10 pr-4 text-[13px] lg:text-[14px] bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] focus:border-[#019D91]/40 dark:focus:border-[#02b3a5] rounded-full focus:ring-2 focus:ring-[#019D91]/20 transition">
@@ -115,7 +115,7 @@
                 </div>
 
                 <!-- Right: Actions (Notification Bell + Theme Toggle + User Dropdown / Auth Buttons) -->
-                <div class="flex items-center space-x-3 sm:space-x-4 shrink-0">
+                <div class="flex items-center space-x-0 sm:space-x-4 shrink-0">
                     @include('partials.notification-bell')
 
                     @auth
@@ -125,6 +125,13 @@
                     @endauth
 
                     <x-theme-toggle class="!text-[#1D1D1F] dark:!text-[#e6edf3] hover:!bg-black/5 dark:hover:!bg-[#21262d] rounded-full p-2.5 transition" />
+
+                    <!-- Mobile Menu Hamburger -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="xl:hidden text-[#1D1D1F] dark:text-white p-1 sm:p-2 rounded-lg hover:bg-black/5 dark:hover:bg-[#21262d]" aria-label="Mở menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
 
                     @auth
                         @if(Auth::user()->isAdmin())
@@ -220,7 +227,7 @@
                     @else
                         <!-- Compact Mobile 'Đăng nhập' Pill (< sm) -->
                         <a href="{{ route('login') }}"
-                           class="sm:hidden inline-flex items-center justify-center h-9 px-3.5 rounded-xl bg-[#019D91] hover:bg-[#008b80] text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0"
+                           class="sm:hidden inline-flex items-center justify-center h-9 px-2.5 rounded-xl bg-[#019D91] hover:bg-[#008b80] text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0"
                            aria-label="Đăng nhập">
                             Đăng nhập
                         </a>
@@ -239,17 +246,11 @@
                         </a>
                     @endauth
 
-                    <!-- Mobile Menu Hamburger -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-[#1D1D1F] dark:text-white p-2 rounded-lg hover:bg-black/5 dark:hover:bg-[#21262d]" aria-label="Mở menu">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
                 </div>
             </div>
 
             <!-- Mobile Navigation Drawer -->
-            <div x-show="mobileMenuOpen" x-cloak class="md:hidden border-t border-[#E5E5EA] dark:border-[#30363d] py-4 space-y-3">
+            <div x-show="mobileMenuOpen" x-cloak class="xl:hidden border-t border-[#E5E5EA] dark:border-[#30363d] py-4 space-y-3">
                 <form action="{{ url('/courses') }}" method="GET" class="mb-3">
                     <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm khóa học..."
                            class="w-full h-11 text-[15px] bg-black/[0.04] dark:bg-[#161b22] text-[#1D1D1F] dark:text-[#e6edf3] placeholder-[#86868B] dark:placeholder-[#7d8590] border border-transparent dark:border-[#30363d] rounded-2xl px-4 focus:ring-1 focus:ring-[#019D91]">
