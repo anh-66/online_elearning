@@ -122,7 +122,7 @@ class CloudinaryAdapter implements FilesystemAdapter
     public function fileExists(string $path): bool
     {
         try {
-            return Http::timeout(15)->head($this->getUrl($path))->successful();
+            return $this->http(15)->head($this->getUrl($path))->successful();
         } catch (Throwable $exception) {
             throw UnableToCheckExistence::forLocation($path, $exception);
         }
@@ -149,7 +149,7 @@ class CloudinaryAdapter implements FilesystemAdapter
     public function read(string $path): string
     {
         try {
-            $response = Http::timeout(60)->get($this->getUrl($path));
+            $response = $this->http(60)->get($this->getUrl($path));
         } catch (Throwable $exception) {
             throw UnableToReadFile::fromLocation($path, $exception->getMessage(), $exception);
         }
@@ -176,7 +176,7 @@ class CloudinaryAdapter implements FilesystemAdapter
     public function delete(string $path): void
     {
         try {
-            $response = Http::asForm()->timeout(30)->post(
+            $response = $this->http(30)->asForm()->post(
                 $this->apiUrl($path, 'destroy'),
                 $this->signedParams(['public_id' => $this->publicId($path), 'invalidate' => 'true']),
             );
@@ -280,7 +280,7 @@ class CloudinaryAdapter implements FilesystemAdapter
     private function upload(string $path, $contents): void
     {
         try {
-            $response = Http::timeout(120)
+            $response = $this->http(120)
                 ->attach('file', $contents, basename($path))
                 ->post($this->apiUrl($path, 'upload'), $this->signedParams([
                     'public_id' => $this->publicId($path),
@@ -321,9 +321,23 @@ class CloudinaryAdapter implements FilesystemAdapter
      */
     private function adminRequest(): PendingRequest
     {
-        return Http::withBasicAuth($this->apiKey, $this->apiSecret)
-            ->acceptJson()
-            ->timeout(20);
+        return $this->http(20)
+            ->withBasicAuth($this->apiKey, $this->apiSecret)
+            ->acceptJson();
+    }
+
+    /**
+     * Khởi tạo HTTP client với timeout và tự động bỏ qua verify SSL trên môi trường local/Windows không có chứng chỉ CA.
+     */
+    private function http(int $timeout = 60): PendingRequest
+    {
+        $request = Http::timeout($timeout);
+
+        if (app()->environment('local', 'testing') || ! (ini_get('curl.cainfo') || ini_get('openssl.cafile'))) {
+            $request = $request->withoutVerifying();
+        }
+
+        return $request;
     }
 
     private function apiUrl(string $path, string $action): string

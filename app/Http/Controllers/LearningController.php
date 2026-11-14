@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
+use App\Services\AchievementService;
 use App\Services\CertificateIssuer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -92,6 +93,9 @@ class LearningController extends Controller
             ['is_completed' => true, 'completed_at' => now()]
         );
 
+        $achievementService = app(AchievementService::class);
+        $achievementService->syncUserAchievements($user);
+
         $lessonIds = $course->lessons()->pluck('lessons.id');
         $totalLessons = $lessonIds->count();
         $completedCount = LessonProgress::where('user_id', $user->id)
@@ -108,10 +112,13 @@ class LearningController extends Controller
         $certificate = $percent >= 100 ? $certificates->issue($user, $course) : null;
 
         if ($request->expectsJson()) {
+            $newAchievements = $achievementService->popUnnotifiedAchievements($user);
+
             return response()->json([
                 'success' => true,
                 'progress_percent' => $percent,
                 'certificate_url' => $certificate?->url(),
+                'new_achievements' => $newAchievements,
             ]);
         }
 

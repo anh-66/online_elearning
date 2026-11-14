@@ -8,6 +8,7 @@ use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\MessageConverter;
+use Symfony\Component\Mime\Part\DataPart;
 use Throwable;
 
 /**
@@ -94,7 +95,7 @@ class BrevoTransport extends AbstractTransport
     }
 
     /**
-     * @param  array<int, \Symfony\Component\Mime\Part\DataPart>  $attachments
+     * @param  array<int, DataPart>  $attachments
      * @return array<int, array{name: string, content: string}>
      */
     private function attachments(array $attachments): array

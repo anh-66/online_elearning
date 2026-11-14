@@ -74,6 +74,7 @@
     initialMode: '{{ $hasImage ? 'image' : 'color' }}',
     initialBgColor: '{{ $defaultColor }}',
     initialImage: '{{ $hasImage ? Storage::disk('public')->url($banner->image_path) : '' }}',
+    initialOriginalImage: '{{ !empty($banner->original_image_path) ? Storage::disk('public')->url($banner->original_image_path) : ($hasImage ? Storage::disk('public')->url($banner->image_path) : '') }}',
     initialTitle: '{{ addslashes($banner->title ?? 'Tiêu đề banner mẫu') }}',
     initialShowText: {{ $showText ? 'true' : 'false' }},
     initialUrl: '{{ addslashes($banner->link_url ?? '/courses') }}'
@@ -102,7 +103,7 @@
             <span class="text-[11px] font-semibold text-[#019D91] dark:text-[#02b3a5]" x-text="mode === 'image' ? (currentImage ? 'Chế độ: Ảnh tràn viền' : 'Chưa chọn ảnh') : 'Chế độ: Màu nền tràn viền'"></span>
         </div>
 
-        <div class="relative w-full rounded-2xl overflow-hidden min-h-[200px] sm:min-h-[260px] flex items-center justify-center text-center p-6 sm:p-8 transition-all duration-300 shadow-lg border border-gray-200/80 dark:border-neutral-800"
+        <div class="relative w-full overflow-hidden aspect-[3/1] flex items-center justify-center text-center transition-all duration-300 border border-gray-200/80 dark:border-neutral-800"
              :style="mode === 'color' || !currentImage ? 'background: ' + bgColor : ''">
             
             {{-- Image Mode Background (Edge to Edge) --}}
@@ -145,6 +146,7 @@
 
         {{-- Hidden Inputs --}}
         <input type="hidden" name="cropped_image" id="cropped_image" x-model="croppedImage">
+        <input type="hidden" name="original_image" id="original_image" x-model="rawOriginalImage">
         <input type="hidden" name="remove_image" id="remove_image" :value="removeImage ? 1 : 0">
         <input type="hidden" name="bg_color" id="bg_color" :value="bgColor">
 
@@ -196,7 +198,7 @@
                     <img :src="currentImage" alt="Banner current" class="w-full h-full object-cover">
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <button type="button" @click="triggerCropModal(currentImage)" 
+                    <button type="button" @click="reCrop()" 
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-xs font-bold text-white shadow-sm transition active:scale-95">
                         <iconify-icon icon="lucide:crop" class="text-sm"></iconify-icon>
                         Kéo thả & Cắt lại vùng mong muốn
@@ -351,50 +353,61 @@
                 </div>
 
                 {{-- Cropper Controls Bar --}}
-                <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-                    {{-- Aspect Ratio options --}}
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-xs font-semibold text-gray-500 dark:text-neutral-400 mr-1">Chế độ cắt:</span>
-                        <button type="button" @click="setAspectRatio(NaN)" 
-                                :class="isNaN(aspectRatio) ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                            <iconify-icon icon="lucide:move" class="text-xs"></iconify-icon>
-                            Tự do kéo thả
-                        </button>
-                        <button type="button" @click="setAspectRatio(3 / 1)" 
-                                :class="aspectRatio === 3 ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                            3:1 (Banner ngang)
-                        </button>
-                        <button type="button" @click="setAspectRatio(16 / 9)" 
-                                :class="aspectRatio === 16/9 ? 'bg-[#7c3aed] text-white shadow-sm' : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                            16:9
-                        </button>
+                <div class="space-y-2 pt-1">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        {{-- Aspect Ratio options --}}
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="text-xs font-semibold text-gray-500 dark:text-neutral-400 mr-1">Tỷ lệ cắt:</span>
+                            <button type="button" @click="setAspectRatio(3 / 1)" 
+                                    :class="aspectRatio === 3 ? 'bg-[#7c3aed] text-white shadow-sm ring-2 ring-[#7c3aed]/30' : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700'"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                                <iconify-icon icon="lucide:check-circle" class="text-xs"></iconify-icon>
+                                3:1 (Chuẩn banner ngang)
+                            </button>
+                            <button type="button" @click="setAspectRatio(16 / 9)" 
+                                    :class="aspectRatio === 16/9 ? 'bg-[#7c3aed] text-white shadow-sm ring-2 ring-[#7c3aed]/30' : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700'"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                16:9
+                            </button>
+                            <button type="button" @click="setAspectRatio(NaN)" 
+                                    :class="isNaN(aspectRatio) ? 'bg-[#7c3aed] text-white shadow-sm ring-2 ring-[#7c3aed]/30' : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 hover:bg-gray-200 dark:hover:bg-neutral-700'"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                <iconify-icon icon="lucide:move" class="text-xs"></iconify-icon>
+                                Tự do kéo thả
+                            </button>
+                        </div>
+
+                        {{-- Action tools: Zoom, Rotate, Reset --}}
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="cropper?.zoom(0.1)" title="Phóng to ảnh"
+                                    class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
+                                <iconify-icon icon="lucide:zoom-in" class="text-base"></iconify-icon>
+                                <span class="hidden sm:inline">Phóng to</span>
+                            </button>
+                            <button type="button" @click="cropper?.zoom(-0.1)" title="Thu nhỏ ảnh"
+                                    class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
+                                <iconify-icon icon="lucide:zoom-out" class="text-base"></iconify-icon>
+                                <span class="hidden sm:inline">Thu nhỏ</span>
+                            </button>
+                            <button type="button" @click="cropper?.rotate(90)" title="Xoay 90 độ"
+                                    class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
+                                <iconify-icon icon="lucide:rotate-cw" class="text-base"></iconify-icon>
+                                <span class="hidden sm:inline">Xoay</span>
+                            </button>
+                            <button type="button" @click="resetCrop()" title="Đặt lại ban đầu (Về toàn bộ ảnh)"
+                                    class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
+                                <iconify-icon icon="lucide:refresh-cw" class="text-base"></iconify-icon>
+                                <span class="hidden sm:inline">Đặt lại</span>
+                            </button>
+                        </div>
                     </div>
 
-                    {{-- Action tools: Zoom, Rotate, Reset --}}
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="cropper?.zoom(0.1)" title="Phóng to ảnh"
-                                class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
-                            <iconify-icon icon="lucide:zoom-in" class="text-base"></iconify-icon>
-                            <span class="hidden sm:inline">Phóng to</span>
-                        </button>
-                        <button type="button" @click="cropper?.zoom(-0.1)" title="Thu nhỏ ảnh"
-                                class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
-                            <iconify-icon icon="lucide:zoom-out" class="text-base"></iconify-icon>
-                            <span class="hidden sm:inline">Thu nhỏ</span>
-                        </button>
-                        <button type="button" @click="cropper?.rotate(90)" title="Xoay 90 độ"
-                                class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
-                            <iconify-icon icon="lucide:rotate-cw" class="text-base"></iconify-icon>
-                            <span class="hidden sm:inline">Xoay</span>
-                        </button>
-                        <button type="button" @click="cropper?.reset()" title="Đặt lại ban đầu"
-                                class="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-200 text-xs font-bold flex items-center gap-1">
-                            <iconify-icon icon="lucide:refresh-cw" class="text-base"></iconify-icon>
-                            <span class="hidden sm:inline">Đặt lại</span>
-                        </button>
+                    {{-- Ghi chú hướng dẫn chống mất chữ --}}
+                    <div class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40 text-[11px] text-purple-700 dark:text-purple-300 flex items-start gap-2">
+                        <iconify-icon icon="lucide:info" class="text-base shrink-0 mt-0.5 text-[#7c3aed]"></iconify-icon>
+                        <p>
+                            Khuyên dùng chế độ <strong>3:1 (Chuẩn banner ngang)</strong>: Hãy kéo các góc màu tím để mở rộng hoặc di chuyển khung tím bao trọn toàn bộ chữ <em>(như MÙA TỰU TRƯỜNG)</em>. Vùng nằm trong khung tím sẽ hiển thị <strong>đúng 100% ngoài trang chủ</strong> mà không bao giờ bị cắt mất chữ!
+                        </p>
                     </div>
                 </div>
 
@@ -422,14 +435,19 @@ document.addEventListener('alpine:init', () => {
         mode: config.initialMode || 'image',
         bgColor: config.initialBgColor || '#019D91',
         colorPicker: config.initialBgColor.startsWith('#') ? config.initialBgColor : '#019D91',
-        currentImage: config.initialImage || '',
+        currentImage: config.initialImage || '',       // Ảnh preview đã cắt
+        originalImage: config.initialOriginalImage || config.initialImage || '', // Ảnh gốc đầy đủ (để luôn cắt từ ảnh gốc)
+        rawOriginalImage: '',                         // Dữ liệu base64 ảnh gốc gửi lên server để lưu vĩnh viễn
+        pendingImage: null,                           // Ảnh gốc tạm thời khi upload / mở modal
+        savedCropData: null,                          // Tọa độ crop trước đó
+        isNewUpload: false,
         croppedImage: '',
         removeImage: false,
         showText: config.initialShowText ?? false,
         title: config.initialTitle || '',
         cropModalOpen: false,
         cropper: null,
-        aspectRatio: NaN, // Mặc định tự do kéo ra kéo vào theo mọi hướng
+        aspectRatio: 3 / 1, // Mặc định chuẩn 3:1 khớp hoàn toàn với banner trang chủ
 
         setMode(newMode) {
             this.mode = newMode;
@@ -453,6 +471,10 @@ document.addEventListener('alpine:init', () => {
 
         removeCurrentPhoto() {
             this.currentImage = '';
+            this.originalImage = '';
+            this.rawOriginalImage = '';
+            this.pendingImage = null;
+            this.savedCropData = null;
             this.croppedImage = '';
             this.removeImage = true;
             this.mode = 'color';
@@ -466,12 +488,32 @@ document.addEventListener('alpine:init', () => {
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                this.triggerCropModal(e.target.result);
+                const fullBase64 = e.target.result;
+                this.pendingImage = fullBase64;
+                this.originalImage = fullBase64;     // Lưu ngay ảnh gốc đầy đủ
+                this.rawOriginalImage = fullBase64;  // Gửi lên server để lưu vĩnh viễn vào DB
+                this.isNewUpload = true;
+                this.aspectRatio = 3 / 1; // Luôn đặt về tỷ lệ chuẩn 3:1 cho ảnh mới
+                this.savedCropData = null; // Ảnh mới: reset tọa độ crop cũ
+                this.triggerCropModal(fullBase64);
             };
             reader.readAsDataURL(file);
+            event.target.value = ''; // Cho phép chọn lại cùng 1 file nếu cần
+        },
+
+        reCrop() {
+            // Luôn mở cắt từ ảnh gốc đầy đủ chưa cắt
+            const src = this.originalImage || this.currentImage;
+            if (!src) return;
+            this.pendingImage = src;
+            this.isNewUpload = false;
+            this.triggerCropModal(src);
         },
 
         triggerCropModal(imageSrc) {
+            const src = imageSrc || this.originalImage || this.currentImage;
+            if (!src) return;
+
             this.cropModalOpen = true;
             this.$nextTick(() => {
                 const imgEl = document.getElementById('cropper_image_el');
@@ -485,12 +527,13 @@ document.addEventListener('alpine:init', () => {
                 const initCropper = () => {
                     if (this.cropper) {
                         this.cropper.destroy();
+                        this.cropper = null;
                     }
                     this.cropper = new Cropper(imgEl, {
                         aspectRatio: this.aspectRatio, // NaN cho phép kéo thả tự do mọi góc
                         viewMode: 1,
                         dragMode: 'crop',
-                        autoCropArea: 0.9,
+                        autoCropArea: 0.95,
                         cropBoxMovable: true,
                         cropBoxResizable: true,
                         toggleDragModeOnDblclick: false,
@@ -498,15 +541,33 @@ document.addEventListener('alpine:init', () => {
                         guides: true,
                         center: true,
                         background: true,
+                        ready: () => {
+                            // Nếu đã từng crop ảnh này, khôi phục lại vị trí khung crop trước đó
+                            // để người dùng thấy khung cũ và có thể kéo dãn ra các phần khác của ảnh gốc
+                            if (this.savedCropData && !this.isNewUpload) {
+                                try {
+                                    this.cropper.setData(this.savedCropData);
+                                } catch (e) {
+                                    console.warn('Could not restore previous crop data', e);
+                                }
+                            }
+                        }
                     });
                 };
 
-                imgEl.onload = () => {
+                let loaded = false;
+                const onImageReady = () => {
+                    if (loaded) return;
+                    loaded = true;
+                    imgEl.onload = null;
                     initCropper();
                 };
-                imgEl.src = imageSrc;
+
+                imgEl.onload = onImageReady;
+                imgEl.src = src;
+
                 if (imgEl.complete && imgEl.naturalWidth > 0) {
-                    initCropper();
+                    onImageReady();
                 }
             });
         },
@@ -518,8 +579,35 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        resetCrop() {
+            if (!this.cropper) return;
+            this.cropper.reset();
+            this.savedCropData = null;
+            if (isNaN(this.aspectRatio)) {
+                try {
+                    this.cropper.setCropBoxData(this.cropper.getCanvasData());
+                } catch (e) {
+                    // ignore
+                }
+            }
+        },
+
         applyCrop() {
             if (!this.cropper) return;
+
+            // Lưu lại ảnh gốc chưa cắt
+            if (this.pendingImage) {
+                this.originalImage = this.pendingImage;
+                this.pendingImage = null;
+            }
+
+            // Lưu lại tọa độ crop hiện tại trên ảnh gốc
+            try {
+                this.savedCropData = this.cropper.getData();
+            } catch (e) {
+                this.savedCropData = null;
+            }
+            this.isNewUpload = false;
 
             const canvas = this.cropper.getCroppedCanvas({
                 maxWidth: 2560,
@@ -539,6 +627,8 @@ document.addEventListener('alpine:init', () => {
 
         closeCropModal() {
             this.cropModalOpen = false;
+            this.pendingImage = null;
+            this.isNewUpload = false;
             if (this.cropper) {
                 this.cropper.destroy();
                 this.cropper = null;

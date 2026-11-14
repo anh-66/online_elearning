@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['title', 'image_path', 'bg_color', 'show_text', 'link_url', 'order', 'is_active'])]
+#[Fillable(['title', 'image_path', 'original_image_path', 'bg_color', 'show_text', 'link_url', 'order', 'is_active'])]
 class Banner extends Model
 {
     use HasFactory;

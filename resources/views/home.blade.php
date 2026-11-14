@@ -78,16 +78,16 @@
 </section>
 
 {{-- ======================================================== --}}
-{{-- 2. BILLBOARD BANNER (Full Width Edge-to-Edge) --}}
+{{-- 2. BILLBOARD BANNER (Tràn viền 100% toàn màn hình, tỷ lệ 3:1 không méo hình) --}}
 {{-- ======================================================== --}}
 @if($banners->isNotEmpty())
 <section class="w-full relative select-none"
          x-data="{ current: 0, total: {{ $banners->count() }} }" 
          x-init="total > 1 && setInterval(() => { current = (current + 1) % total }, 6000)">
-    <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14">
-        {{-- Banner Slider: Căn theo vùng nội dung của header và giữ nguyên toàn bộ ảnh --}}
-        <div class="relative w-full overflow-hidden border-y border-[#30363d]" style="height: clamp(200px, 37.5vw, 520px);">
-        @foreach($banners as $index => $banner)
+    <div class="w-full mx-auto px-0 max-w-none min-[1921px]:max-w-screen-2xl min-[1921px]:px-10">
+        {{-- Banner Slider: 100% tràn viền ở màn hình thường (100%), tự co gọn đồng bộ theo trang khi zoom out --}}
+        <div class="relative w-full aspect-[3/1] min-[1921px]:max-h-[520px] overflow-hidden border-y min-[1921px]:border border-neutral-200/80 dark:border-[#30363d]">
+            @foreach($banners as $index => $banner)
             <div class="absolute inset-0 h-full w-full transition-opacity duration-700 ease-in-out"
                  x-show="current === {{ $index }}"
                  x-cloak
@@ -98,7 +98,7 @@
                        class="block h-full w-full relative group">
                         <img src="{{ Storage::disk('public')->url($banner->image_path) }}"
                              alt="{{ $banner->title }}"
-                             class="block h-full w-full object-fill"
+                             class="block h-full w-full object-cover object-center"
                              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
                              onerror="this.style.display='none'; this.nextElementSibling?.classList.replace('hidden', 'flex');">
                         
@@ -162,11 +162,11 @@
             {{-- Left / Right Slider Arrows --}}
             @if($banners->count() > 1)
                 <button type="button" @click="current = (current - 1 + total) % total" aria-label="Banner trước"
-                        class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
+                        class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
                     <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 <button type="button" @click="current = (current + 1) % total" aria-label="Banner sau"
-                        class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
+                        class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg z-20">
                     <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </button>
             @endif
