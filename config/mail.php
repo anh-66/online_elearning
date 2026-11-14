@@ -70,6 +70,8 @@ return [
             'transport' => 'brevo',
             'key' => env('BREVO_API_KEY'),
             'endpoint' => env('BREVO_API_ENDPOINT', 'https://api.brevo.com/v3/smtp/email'),
+            // Đọc trạng thái thật của mail (đã tới hộp thư, bị từ chối...) cho trang admin "Email đã gửi".
+            'events_endpoint' => env('BREVO_EVENTS_ENDPOINT', 'https://api.brevo.com/v3/smtp/statistics/events'),
             'timeout' => 15,
         ],
 

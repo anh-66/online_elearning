@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Filesystem\CloudinaryAdapter;
 use App\Mail\Transport\BrevoTransport;
+use App\Services\EmailOtpResult;
 use App\Services\GeminiClient;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Foundation\Application;
@@ -61,6 +62,26 @@ class AppServiceProvider extends ServiceProvider
                     ->response($tooMany('Bạn gửi hơi nhanh, đợi khoảng 1 phút rồi hỏi tiếp nhé.')),
                 Limit::perDay(30)->by('day:'.$visitor)
                     ->response($tooMany('Bạn đã dùng hết 30 câu hỏi hôm nay, mai quay lại nhé.')),
+            ];
+        });
+
+        // Bấm "Gửi mã" / "Gửi lại mã" (quên mật khẩu, xác thực email): chặn spam theo máy và theo IP.
+        RateLimiter::for('otp-request', function (Request $request) {
+            $visitor = $request->user() ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+            $tooMany = fn (string $message) => function (Request $request, array $headers) use ($message) {
+                $message = str_replace(':wait', EmailOtpResult::duration((int) ($headers['Retry-After'] ?? 60)), $message);
+
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors(['email' => $message])
+                    ->with('otp_problem', $message);
+            };
+
+            return [
+                Limit::perMinute(6)->by('minute:'.$visitor)
+                    ->response($tooMany('Bạn bấm hơi nhanh, đợi :wait rồi thử lại nhé.')),
+                Limit::perHour((int) config('otp.max_requests_per_ip_per_hour', 20))->by('hour:ip:'.$request->ip())
+                    ->response($tooMany('Mạng của bạn đã xin quá nhiều mã trong giờ này. Thử lại sau :wait nhé.')),
             ];
         });
 

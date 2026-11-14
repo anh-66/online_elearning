@@ -25,6 +25,55 @@
         <p class="mb-4 rounded-xl bg-amber-50 px-4 py-2.5 text-xs font-medium text-amber-800" role="alert">{{ $problem }}</p>
     @endif
 
+    <x-otp-local-hint />
+
+    @if (config('mail.default') === 'brevo')
+        {{-- Hỏi định kỳ xem mail chứa mã đã thật sự tới hộp thư chưa (Brevo báo lại sau vài giây). --}}
+        <div
+            x-data="{
+                state: null,
+                message: null,
+                tries: 0,
+                init() { this.poll(); },
+                async poll() {
+                    this.tries++;
+                    try {
+                        const response = await fetch(@js(route('verification.status')), {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            credentials: 'same-origin',
+                        });
+                        if (! response.ok) { return; }
+                        const data = await response.json();
+                        this.state = data.state;
+                        this.message = data.message;
+                        if (data.final) { return; }
+                    } catch (error) {}
+                    if (this.tries < 20) { setTimeout(() => this.poll(), this.tries < 5 ? 3000 : 8000); }
+                },
+            }"
+            x-show="message"
+            x-cloak
+            class="mb-4 flex items-start gap-2 rounded-xl px-4 py-2.5 text-xs font-medium"
+            x-bind:class="{
+                'bg-emerald-50 text-emerald-800': state === 'delivered',
+                'bg-sky-50 text-sky-800': state === 'sending',
+                'bg-amber-50 text-amber-800': state === 'deferred',
+                'bg-red-50 text-red-700': state === 'rejected' || state === 'failed',
+            }"
+            role="status"
+            aria-live="polite"
+        >
+            <span class="mt-1 h-2 w-2 shrink-0 rounded-full"
+                  x-bind:class="{
+                      'bg-emerald-500': state === 'delivered',
+                      'bg-sky-500 animate-pulse': state === 'sending',
+                      'bg-amber-500 animate-pulse': state === 'deferred',
+                      'bg-red-500': state === 'rejected' || state === 'failed',
+                  }"></span>
+            <span x-text="message"></span>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('verification.verify') }}" class="space-y-4"
           x-data="{ sending: false }"
           x-on:otp-complete="if (! sending) { sending = true; $el.requestSubmit(); }"
@@ -47,7 +96,7 @@
         <p class="text-xs text-neutral-500">Chưa nhận được mã? Xem cả mục <span class="font-semibold text-neutral-700">Spam / Quảng cáo</span>.</p>
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
-            <x-otp-resend-button :seconds="$resendIn" />
+            <x-otp-resend-button :seconds="$resendIn" :sends-left="$sendsLeft ?? null" />
         </form>
     </div>
 

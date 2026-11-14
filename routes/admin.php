@@ -80,8 +80,9 @@ Route::delete('/cloudinary/trash/bulk', [CloudinaryTrashController::class, 'bulk
 Route::post('/cloudinary/trash/{item}/restore', [CloudinaryTrashController::class, 'restore'])->whereNumber('item')->name('cloudinary.trash.restore');
 Route::delete('/cloudinary/trash/{item}', [CloudinaryTrashController::class, 'destroy'])->whereNumber('item')->name('cloudinary.trash.destroy');
 
-// Email đã gửi (mã OTP): thành công hay thất bại
+// Email đã gửi (mã OTP): đã tới hộp thư chưa, bị từ chối vì sao (đọc trạng thái thật từ Brevo)
 Route::get('/email-logs', [EmailLogController::class, 'index'])->name('email-logs.index');
+Route::post('/email-logs/sync', [EmailLogController::class, 'sync'])->middleware('throttle:10,1')->name('email-logs.sync');
 
 // Phản hồi & Báo cáo sự cố
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');

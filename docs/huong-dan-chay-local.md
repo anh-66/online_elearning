@@ -155,7 +155,9 @@ mới hoặc quên mật khẩu, mã 6 số nằm ở một trong hai chỗ:
 - File `storage/logs/laravel.log`, kéo xuống cuối, tìm mail mới nhất.
 - Đăng nhập admin, vào **Email đã gửi** (<http://localhost:8000/admin/email-logs>).
 
-Mã hết hạn sau 10 phút, nhập sai tối đa 5 lần.
+Mã hết hạn sau 10 phút, nhập sai tối đa 5 lần. Gửi lại mã phải chờ tăng dần
+(1 phút, 2 phút, 5 phút rồi 10 phút) và mỗi tài khoản tối đa 5 mã mỗi giờ. Đang
+test mà bị chặn thì chạy `php artisan cache:clear` để xoá giới hạn.
 
 Không muốn bước nhập mã khi đăng ký, sửa trong `.env`:
 

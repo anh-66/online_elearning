@@ -32,7 +32,7 @@ class GoogleAuthenticationTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
         $this->assertNotNull($user->password);
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('onboarding.welcome', absolute: false));
     }
 
     public function test_google_login_links_an_existing_user_by_email(): void

@@ -79,7 +79,7 @@ class EmailLogTest extends TestCase
             ->assertOk()
             ->assertSee('Nguyễn Văn Học')
             ->assertSee('hoc@example.com')
-            ->assertSee('Thành công')
+            ->assertSee('Đã gửi đi')
             ->assertSee('Thất bại')
             ->assertSee('Brevo: API trả về lỗi 401 (Key not found).')
             ->assertSee('Authorized IPs')

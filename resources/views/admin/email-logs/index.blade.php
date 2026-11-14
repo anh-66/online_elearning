@@ -7,11 +7,27 @@
 <div class="space-y-6">
 
     {{-- Page Header --}}
-    <div>
-        <h2 class="text-xl font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Nhật ký gửi email</h2>
-        <p class="text-sm text-gray-500 dark:text-neutral-400 mt-0.5">
-            Mỗi lần web gửi mã xác thực email hoặc mã quên mật khẩu. "Thành công" nghĩa là Brevo đã nhận và gửi đi; mail vẫn có thể nằm trong mục Spam của người nhận.
-        </p>
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Nhật ký gửi email</h2>
+            <p class="text-sm text-gray-500 dark:text-neutral-400 mt-0.5 max-w-3xl">
+                Mỗi lần web gửi mã xác thực email hoặc mã quên mật khẩu. Trạng thái lấy từ Brevo:
+                "Chờ xác nhận" là Brevo mới nhận, "Đã tới hộp thư" là đã giao (có thể nằm trong Spam), "Bị từ chối" là Brevo không giao được.
+            </p>
+        </div>
+
+        @if ($trackerEnabled)
+            <form method="POST" action="{{ route('admin.email-logs.sync') }}" class="shrink-0">
+                @csrf
+                <button type="submit" class="inline-flex items-center gap-2 px-4 h-10 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium text-gray-700 dark:text-neutral-200 hover:border-[#019D91] hover:text-[#019D91] transition">
+                    <iconify-icon icon="lucide:refresh-cw" class="text-base"></iconify-icon>
+                    Cập nhật trạng thái
+                    @if ($awaiting > 0)
+                        <span class="rounded-full bg-sky-100 px-1.5 text-xs font-semibold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{{ $awaiting }}</span>
+                    @endif
+                </button>
+            </form>
+        @endif
     </div>
 
     @if ($onlyLogging)
@@ -22,10 +38,22 @@
                 Đổi thành <code class="font-mono font-semibold">MAIL_MAILER=brevo</code> và thêm <code class="font-mono font-semibold">BREVO_API_KEY</code> vào file <code class="font-mono font-semibold">.env</code> để gửi thật.
             </p>
         </div>
+    @elseif ($mailer === 'brevo' && ! $trackerEnabled)
+        <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300" role="status">
+            <iconify-icon icon="lucide:triangle-alert" class="text-lg shrink-0 mt-0.5"></iconify-icon>
+            <p>Chưa có <code class="font-mono font-semibold">BREVO_API_KEY</code> nên không gửi được mail và không đọc được trạng thái từ Brevo.</p>
+        </div>
+    @endif
+
+    @if ($trackerProblem)
+        <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300" role="status">
+            <iconify-icon icon="lucide:cloud-off" class="text-lg shrink-0 mt-0.5"></iconify-icon>
+            <p>Trạng thái có thể chưa mới nhất: {{ $trackerProblem }}</p>
+        </div>
     @endif
 
     {{-- Stats --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-6 border-b border-gray-100 dark:border-neutral-800">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-6 pb-6 border-b border-gray-100 dark:border-neutral-800">
         <div class="flex items-center gap-3">
             <iconify-icon icon="lucide:mail" class="text-2xl text-gray-400 dark:text-neutral-500 shrink-0"></iconify-icon>
             <div>
@@ -35,25 +63,33 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <iconify-icon icon="lucide:circle-check" class="text-2xl text-emerald-500 dark:text-emerald-400 shrink-0"></iconify-icon>
+            <iconify-icon icon="lucide:mail-check" class="text-2xl text-emerald-500 dark:text-emerald-400 shrink-0"></iconify-icon>
             <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Thành công (7 ngày)</p>
-                <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($stats['sent']) }}</p>
+                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Đã tới hộp thư (7 ngày)</p>
+                <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($stats['delivered']) }}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:hourglass" class="text-2xl text-sky-500 dark:text-sky-400 shrink-0"></iconify-icon>
+            <div>
+                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Chờ xác nhận (7 ngày)</p>
+                <p class="text-2xl font-bold text-sky-600 dark:text-sky-400">{{ number_format($stats['awaiting']) }}</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
             <iconify-icon icon="lucide:circle-x" class="text-2xl text-red-500 dark:text-red-400 shrink-0"></iconify-icon>
             <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Thất bại (7 ngày)</p>
-                <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ number_format($stats['failed']) }}</p>
+                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Lỗi / bị từ chối (7 ngày)</p>
+                <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ number_format($stats['problem']) }}</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
             <iconify-icon icon="lucide:gauge" class="text-2xl text-[#019D91] shrink-0"></iconify-icon>
             <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Tỉ lệ thành công (7 ngày)</p>
+                <p class="text-xs font-medium text-gray-500 dark:text-neutral-400">Tỉ lệ tới hộp thư (7 ngày)</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100">{{ $stats['success_rate'] === null ? '—' : $stats['success_rate'].'%' }}</p>
             </div>
         </div>
@@ -71,7 +107,15 @@
         @include('admin.email-logs.partials.filter-select', [
             'name' => 'status',
             'value' => $status,
-            'options' => ['all' => 'Tất cả trạng thái', 'sent' => 'Thành công', 'failed' => 'Thất bại'],
+            'options' => [
+                'all' => 'Tất cả trạng thái',
+                'delivered' => 'Đã tới hộp thư',
+                'sent' => 'Chờ xác nhận / đã gửi đi',
+                'deferred' => 'Đang thử lại',
+                'problem' => 'Lỗi + bị từ chối',
+                'rejected' => 'Bị từ chối',
+                'failed' => 'Thất bại',
+            ],
         ])
 
         <div class="flex items-center gap-2">
@@ -99,7 +143,7 @@
                         <th class="py-3.5 px-4 whitespace-nowrap">Loại mail</th>
                         <th class="py-3.5 px-4 whitespace-nowrap">Trạng thái</th>
                         <th class="py-3.5 px-4 whitespace-nowrap">Gửi qua</th>
-                        <th class="py-3.5 px-4">Lỗi / cách sửa</th>
+                        <th class="py-3.5 px-4">Chi tiết / cách sửa</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-neutral-800 text-gray-700 dark:text-neutral-200">
@@ -119,15 +163,26 @@
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap text-gray-600 dark:text-neutral-300">{{ $log->purposeLabel() }}</td>
                             <td class="py-3.5 px-4 whitespace-nowrap">
-                                @if ($log->isSent())
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800">
-                                        <iconify-icon icon="lucide:check" class="text-sm"></iconify-icon> Thành công
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800">
-                                        <iconify-icon icon="lucide:x" class="text-sm"></iconify-icon> Thất bại
-                                    </span>
-                                @endif
+                                @php
+                                    $tone = $log->statusTone();
+                                    $icon = match ($tone) {
+                                        'green' => 'lucide:check',
+                                        'red' => 'lucide:x',
+                                        'amber' => 'lucide:rotate-cw',
+                                        'sky' => 'lucide:hourglass',
+                                        default => 'lucide:file-text',
+                                    };
+                                @endphp
+                                <span @class([
+                                    'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border',
+                                    'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800' => $tone === 'green',
+                                    'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800' => $tone === 'red',
+                                    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800' => $tone === 'amber',
+                                    'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-800' => $tone === 'sky',
+                                    'bg-gray-50 text-gray-600 border-gray-200 dark:bg-neutral-800/60 dark:text-neutral-300 dark:border-neutral-700' => $tone === 'gray',
+                                ])>
+                                    <iconify-icon icon="{{ $icon }}" class="text-sm"></iconify-icon> {{ $log->statusLabel() }}
+                                </span>
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap">
                                 <span @class([
@@ -136,17 +191,42 @@
                                     'text-gray-600 dark:text-neutral-300' => ! $log->onlyLogged(),
                                 ])>{{ $log->mailerLabel() }}</span>
                             </td>
-                            <td class="py-3.5 px-4 min-w-64 max-w-md">
-                                @if ($log->isSent())
-                                    <span class="text-gray-300 dark:text-neutral-600">—</span>
-                                @else
-                                    <p class="text-xs text-red-600 dark:text-red-400 break-words">{{ $log->error ?? 'Không rõ lỗi.' }}</p>
+                            <td class="py-3.5 px-4 min-w-64 max-w-md text-xs">
+                                @if ($log->isDelivered())
+                                    <p class="text-gray-600 dark:text-neutral-300">Tới hộp thư lúc {{ ($log->delivered_at ?? $log->updated_at)->timezone($timezone)->format('H:i:s d/m') }}</p>
+                                    @if ($log->opened_at)
+                                        <p class="mt-0.5 text-gray-400 dark:text-neutral-500">Người nhận mở lúc {{ $log->opened_at->timezone($timezone)->format('H:i:s d/m') }}</p>
+                                    @endif
+                                    @if ($log->error)
+                                        <p class="mt-0.5 text-amber-700 dark:text-amber-400">{{ $log->error }}</p>
+                                    @endif
+                                @elseif ($log->isProblem() || $log->status === \App\Models\EmailLog::STATUS_DEFERRED)
+                                    <p @class([
+                                        'break-words',
+                                        'text-red-600 dark:text-red-400' => $log->isProblem(),
+                                        'text-amber-700 dark:text-amber-400' => ! $log->isProblem(),
+                                    ])>{{ $log->error ?? 'Không rõ lỗi.' }}</p>
                                     @if ($hint = $log->errorHint())
-                                        <p class="mt-1.5 flex items-start gap-1.5 text-xs text-gray-600 dark:text-neutral-300">
+                                        <p class="mt-1.5 flex items-start gap-1.5 text-gray-600 dark:text-neutral-300">
                                             <iconify-icon icon="lucide:lightbulb" class="text-sm text-amber-500 shrink-0 mt-px"></iconify-icon>
                                             <span>{{ $hint }}</span>
                                         </p>
                                     @endif
+                                @elseif ($log->isAwaitingDelivery())
+                                    <p class="text-gray-500 dark:text-neutral-400">
+                                        @if ($log->created_at->lt(now()->subDays(\App\Models\EmailLog::TRACK_DAYS)))
+                                            Brevo không báo kết quả cho mail này.
+                                        @else
+                                            Brevo đã nhận, đang chờ báo đã giao.
+                                            @if ($log->checked_at)
+                                                <span class="text-gray-400 dark:text-neutral-500">Hỏi lần cuối {{ $log->checked_at->timezone($timezone)->format('H:i:s') }}.</span>
+                                            @endif
+                                        @endif
+                                    </p>
+                                @elseif ($log->onlyLogged())
+                                    <p class="text-gray-400 dark:text-neutral-500">Mã nằm trong storage/logs/laravel.log.</p>
+                                @else
+                                    <span class="text-gray-300 dark:text-neutral-600">—</span>
                                 @endif
                             </td>
                         </tr>
@@ -168,7 +248,11 @@
             </div>
         @endif
 
-        <p class="pt-4 text-xs text-gray-400 dark:text-neutral-500">Nhật ký được giữ {{ \App\Models\EmailLog::KEEP_DAYS }} ngày. Không lưu mã OTP.</p>
+        <p class="pt-4 text-xs text-gray-400 dark:text-neutral-500">
+            Nhật ký được giữ {{ \App\Models\EmailLog::KEEP_DAYS }} ngày. Không lưu mã OTP.
+            Trạng thái mail gửi trong {{ \App\Models\EmailLog::TRACK_DAYS }} ngày gần nhất tự cập nhật khi mở trang này
+            (hoặc chạy <code class="font-mono">php artisan email-logs:sync</code>).
+        </p>
     </div>
 </div>
 @endsection

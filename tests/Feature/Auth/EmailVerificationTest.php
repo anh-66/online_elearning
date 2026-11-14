@@ -159,13 +159,14 @@ class EmailVerificationTest extends TestCase
     {
         $user = User::factory()->unverified()->create();
 
+        // Thời gian chờ tăng dần nhưng không quá 10 phút, nên 5 mã vẫn gửi được trong cùng một giờ.
         for ($i = 0; $i < 5; $i++) {
             $this->actingAs($user)->post(route('verification.send'))->assertSessionHas('otp_notice');
-            $this->travel(61)->seconds();
+            $this->travel(601)->seconds();
         }
 
         $this->actingAs($user)->post(route('verification.send'))
-            ->assertSessionHas('otp_problem');
+            ->assertSessionHas('otp_problem', fn (string $message) => str_contains($message, 'quá nhiều mã'));
         Mail::assertSentCount(5);
     }
 

@@ -18,7 +18,8 @@ use Throwable;
  *
  * - Mã 6 số, hết hạn sau 10 phút, sai 5 lần thì phải xin mã mới (config/otp.php).
  * - Chỉ lưu bản băm của mã. Gửi mã mới thì mã cũ hết hiệu lực.
- * - Phải chờ 60 giây giữa hai lần gửi, tối đa 5 mã/giờ cho mỗi tài khoản.
+ * - Thời gian chờ gửi lại tăng dần (60 giây, 2 phút, 5 phút, 10 phút), tối đa 5 mã/giờ cho mỗi tài khoản.
+ * - Toàn web tối đa otp.max_sends_per_day mail/ngày để không vượt hạn mức miễn phí của Brevo.
  */
 class EmailOtpService
 {
@@ -29,14 +30,19 @@ class EmailOtpService
 
     public function send(User $user, string $purpose): EmailOtpResult
     {
-        $wait = $this->secondsUntilResend($user, $purpose);
+        $throttle = $this->throttle($user, $purpose);
+        $wait = $throttle->secondsUntilNext();
         if ($wait > 0) {
-            return EmailOtpResult::cooldown($wait);
+            return $throttle->hourlyLimitReached()
+                ? EmailOtpResult::rateLimited($wait)
+                : EmailOtpResult::cooldown($wait);
         }
 
-        $limiterKey = 'email-otp:'.$purpose.':'.$user->getKey();
-        if (RateLimiter::tooManyAttempts($limiterKey, (int) config('otp.max_sends_per_hour', 5))) {
-            return EmailOtpResult::rateLimited(RateLimiter::availableIn($limiterKey));
+        if ($this->dailyLimitReached()) {
+            $maxPerDay = (int) config('otp.max_sends_per_day', 250);
+            $this->record($user, $purpose, EmailLog::STATUS_FAILED, error: "Đã gửi đủ {$maxPerDay} mail OTP hôm nay (giới hạn EMAIL_OTP_MAX_PER_DAY), không gửi thêm.");
+
+            return EmailOtpResult::dailyLimit();
         }
 
         $ttl = (int) config('otp.ttl_minutes', 10);
@@ -51,7 +57,8 @@ class EmailOtpService
                 'sent_at' => now(),
             ],
         );
-        RateLimiter::hit($limiterKey, 3600);
+        $throttle->hit();
+        RateLimiter::hit($this->dailyKey(), 86400);
 
         try {
             $sent = Mail::to($user)->send(new EmailOtpMail($user, $code, $purpose, $ttl));
@@ -148,14 +155,44 @@ class EmailOtpService
 
     public function secondsUntilResend(User $user, string $purpose): int
     {
-        $otp = $this->pending($user, $purpose);
-        if ($otp === null) {
-            return 0;
-        }
+        return $this->throttle($user, $purpose)->secondsUntilNext();
+    }
 
-        $nextAllowed = $otp->sent_at->copy()->addSeconds((int) config('otp.resend_seconds', 60));
+    /**
+     * Còn được gửi bao nhiêu mã nữa trong giờ hiện tại.
+     */
+    public function remainingSends(User $user, string $purpose): int
+    {
+        return $this->throttle($user, $purpose)->remaining();
+    }
 
-        return max(0, (int) ceil(now()->diffInSeconds($nextAllowed, false)));
+    /**
+     * Toàn web đã gửi đủ số mail OTP cho phép trong hôm nay chưa (otp.max_sends_per_day, 0 là không giới hạn).
+     */
+    public function dailyLimitReached(): bool
+    {
+        $maxPerDay = (int) config('otp.max_sends_per_day', 250);
+
+        return $maxPerDay > 0 && RateLimiter::attempts($this->dailyKey()) >= $maxPerDay;
+    }
+
+    /**
+     * Giới hạn gửi lại theo email ở trang quên mật khẩu. Áp dụng cho cả email chưa đăng ký
+     * để câu trả lời giống nhau, không lộ email nào có tài khoản.
+     */
+    public function resetEmailThrottle(string $email): OtpSendThrottle
+    {
+        return OtpSendThrottle::for('reset_email:'.sha1(Str::lower(trim($email))));
+    }
+
+    private function throttle(User $user, string $purpose): OtpSendThrottle
+    {
+        return OtpSendThrottle::for($purpose.':user:'.$user->getKey());
+    }
+
+    private function dailyKey(): string
+    {
+        return 'email-otp-day:'.now()->toDateString();
     }
 
     public function forget(User $user, string $purpose): void

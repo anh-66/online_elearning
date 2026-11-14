@@ -32,7 +32,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('onboarding.welcome', absolute: false));
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'role' => 'student',
@@ -50,7 +50,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('onboarding.welcome', absolute: false));
         $this->assertDatabaseHas('users', [
             'email' => 'instructor@example.com',
             'role' => 'student',
@@ -68,7 +68,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('onboarding.welcome', absolute: false));
         $this->assertDatabaseHas('users', [
             'email' => 'admin@example.com',
             'role' => 'student',
