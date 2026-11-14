@@ -1,0 +1,76 @@
+# Tự chạy toàn bộ test mỗi khi push lên các nhánh chính hoặc mở Pull Request.
+# Chạy miễn phí trên GitHub Actions và không cần key thật nào:
+#   - Test dùng SQLite trong bộ nhớ, mail chỉ giữ trong bộ nhớ chứ không gửi đi (xem phpunit.xml).
+#   - File .env lấy từ .env.example: Cloudinary, Brevo, Gemini, Google để trống nên các tính năng đó tự tắt,
+#     còn test nào cần gọi API ngoài thì đã giả lập bằng Http::fake().
+# Xem kết quả ở tab "Actions" trên GitHub, hoặc dấu ✓ / ✗ cạnh mỗi commit và Pull Request.
+name: Tests
+
+on:
+  push:
+    branches: [main, merge-main-render, deploy-render]
+    paths-ignore: ['docs/**', '**/*.md']
+  pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
+  # Cho phép bấm chạy tay ở tab Actions.
+  workflow_dispatch:
+
+# Push liên tục thì chỉ giữ lần chạy mới nhất của mỗi nhánh, đỡ tốn phút miễn phí.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Lấy code
+        uses: actions/checkout@v7
+
+      - name: Cài PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_sqlite, sqlite3, gd, zip, intl, exif, bcmath
+          coverage: none
+          tools: composer:v2
+
+      - name: Cài Node 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Tìm thư mục cache của Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Dùng lại cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Cài thư viện PHP
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      # Các trang dùng @vite nên cần có public/build/manifest.json. Bước này cũng kiểm tra luôn giao diện build được.
+      - name: Cài thư viện JS và build giao diện
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Tạo file .env cho test
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Chạy test
+        run: php artisan test

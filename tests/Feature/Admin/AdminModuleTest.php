@@ -79,8 +79,10 @@ class AdminModuleTest extends TestCase
         $response = $this->get(route('admin.dashboard'))->assertOk();
 
         $chart = $response->viewData('enrollmentChart');
+        // Biểu đồ hiển thị đủ 12 tháng (1 -> 12) của năm đang chọn, nên 2 lượt ghi danh nằm ở tháng hiện tại.
         $this->assertCount(12, $chart['labels']);
-        $this->assertSame(2, end($chart['data']));
+        $this->assertSame(2, $chart['data'][now()->month - 1]);
+        $this->assertSame(2, array_sum($chart['data']));
     }
 
     public function test_user_search_and_role_filter(): void
@@ -103,21 +105,21 @@ class AdminModuleTest extends TestCase
 
         $this->actingAs($admin);
 
-        $this->patch(route('admin.users.role', $student), ['role' => 'instructor'])->assertSessionHas('success');
+        $this->patch(route('admin.users.update-role', $student), ['role' => 'instructor'])->assertSessionHas('success');
         $this->assertSame('instructor', $student->fresh()->role);
 
-        $this->patch(route('admin.users.status', $student))->assertSessionHas('success');
+        $this->patch(route('admin.users.toggle-status', $student))->assertSessionHas('success');
         $this->assertSame(User::STATUS_BLOCKED, $student->fresh()->status);
 
-        $this->patch(route('admin.users.status', $student));
+        $this->patch(route('admin.users.toggle-status', $student));
         $this->assertSame(User::STATUS_ACTIVE, $student->fresh()->status);
 
-        $this->patch(route('admin.users.role', $admin), ['role' => 'student'])->assertSessionHas('error');
-        $this->patch(route('admin.users.status', $admin))->assertSessionHas('error');
+        $this->patch(route('admin.users.update-role', $admin), ['role' => 'student'])->assertSessionHas('error');
+        $this->patch(route('admin.users.toggle-status', $admin))->assertSessionHas('error');
         $this->assertSame(User::ROLE_ADMIN, $admin->fresh()->role);
         $this->assertSame(User::STATUS_ACTIVE, $admin->fresh()->status);
 
-        $this->patch(route('admin.users.role', $student), ['role' => 'hacker'])->assertSessionHasErrors('role');
+        $this->patch(route('admin.users.update-role', $student), ['role' => 'hacker'])->assertSessionHasErrors('role');
     }
 
     public function test_blocked_user_is_logged_out_on_next_request(): void
@@ -143,10 +145,14 @@ class AdminModuleTest extends TestCase
         $this->put(route('admin.categories.update', $category), ['name' => 'Web nâng cao'])->assertRedirect();
         $this->assertSame('web-nang-cao', $category->fresh()->slug);
 
+        // Danh mục còn khóa học thì không cho xóa; chuyển khóa học đi rồi mới xóa được.
         $course = $this->makeCourse(Course::STATUS_PUBLISHED, $category);
-        $this->delete(route('admin.categories.destroy', $category))->assertRedirect();
+        $this->delete(route('admin.categories.destroy', $category))->assertSessionHas('error');
+        $this->assertModelExists($category);
+
+        $course->update(['category_id' => null]);
+        $this->delete(route('admin.categories.destroy', $category))->assertRedirect(route('admin.categories.index'));
         $this->assertModelMissing($category);
-        $this->assertNull($course->fresh()->category_id);
     }
 
     public function test_admin_can_approve_pending_course(): void
@@ -226,7 +232,16 @@ class AdminModuleTest extends TestCase
         Storage::fake('public');
         $this->actingAs($this->admin());
 
-        $this->post(route('admin.banners.store'), ['title' => 'Banner không ảnh'])->assertSessionHasErrors('image');
+        // Banner không ảnh vẫn hợp lệ (chỉ hiện chữ trên nền màu), không gửi màu thì dùng màu mặc định.
+        $this->post(route('admin.banners.store'), ['title' => 'Banner không ảnh'])->assertRedirect(route('admin.banners.index'));
+        $textOnly = Banner::firstWhere('title', 'Banner không ảnh');
+        $this->assertNull($textOnly->image_path);
+        $this->assertSame('#019D91', $textOnly->bg_color);
+
+        $this->post(route('admin.banners.store'), [
+            'title' => 'Ảnh sai định dạng',
+            'image' => UploadedFile::fake()->create('banner.pdf', 10, 'application/pdf'),
+        ])->assertSessionHasErrors('image');
 
         $this->post(route('admin.banners.store'), [
             'title' => 'Khuyến mãi tháng 11',
