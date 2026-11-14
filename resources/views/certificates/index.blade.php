@@ -46,8 +46,9 @@
     .mc__empty-lock { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
     .mc__empty-lock span { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 999px; background: var(--mc-card); color: var(--mc-teal); box-shadow: 0 6px 20px -6px rgba(0, 0, 0, .3); }
     .mc__empty-lock svg { width: 24px; height: 24px; }
-    .mc__empty h2 { margin: 0; font-size: 20px; font-weight: 800; color: var(--mc-ink); }
-    .mc__empty p { margin: 8px 0 0; font-size: 14.5px; line-height: 1.6; color: var(--mc-muted); }
+    /* Chỉ áp dụng cho phần chữ bên phải, không lan vào tờ chứng chỉ mẫu bên trái (nó cũng có thẻ h2, p). */
+    .mc__empty-text h2 { margin: 0; font-size: 20px; font-weight: 800; color: var(--mc-ink); }
+    .mc__empty-text p { margin: 8px 0 0; font-size: 14.5px; line-height: 1.6; color: var(--mc-muted); }
     .mc__empty .mc__btn { flex: none; width: auto; padding: 0 18px; margin-top: 18px; height: 42px; font-size: 14px; }
 
     .mc__section { margin-top: 56px; }
@@ -126,7 +127,7 @@
                 <x-certificate-sheet :certificate="$sample" thumbnail />
                 <div class="mc__empty-lock"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></svg></span></div>
             </div>
-            <div>
+            <div class="mc__empty-text">
                 <h2>Bạn chưa có chứng chỉ nào</h2>
                 <p>Hoàn thành tất cả bài học của một khóa để nhận chứng chỉ đầu tiên. Chứng chỉ được cấp tự động, bạn có thể tải PDF, in ra hoặc thêm vào hồ sơ LinkedIn.</p>
                 <a class="mc__btn mc__btn--primary" href="{{ route($inProgress->isNotEmpty() ? 'my-courses' : 'courses.index') }}">
