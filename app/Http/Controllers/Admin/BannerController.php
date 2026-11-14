@@ -28,15 +28,21 @@ class BannerController extends Controller
     {
         $data = $this->validated($request);
 
+        if ($request->filled('original_image')) {
+            $data['original_image_path'] = $this->saveBase64Image($request->input('original_image'));
+        }
+
         if ($request->filled('cropped_image')) {
             $data['image_path'] = $this->saveBase64Image($request->input('cropped_image'));
         } elseif ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('banners', 'public');
+            $data['original_image_path'] = $data['image_path'];
         } else {
             $data['image_path'] = null;
+            $data['original_image_path'] = null;
         }
 
-        unset($data['image'], $data['cropped_image'], $data['remove_image']);
+        unset($data['image'], $data['cropped_image'], $data['original_image'], $data['remove_image']);
 
         Banner::create($data);
 
@@ -54,16 +60,27 @@ class BannerController extends Controller
 
         if ($request->boolean('remove_image')) {
             $this->deleteImage($banner);
+            $this->deleteOriginalImage($banner);
             $data['image_path'] = null;
-        } elseif ($request->filled('cropped_image')) {
-            $this->deleteImage($banner);
-            $data['image_path'] = $this->saveBase64Image($request->input('cropped_image'));
-        } elseif ($request->hasFile('image')) {
-            $this->deleteImage($banner);
-            $data['image_path'] = $request->file('image')->store('banners', 'public');
+            $data['original_image_path'] = null;
+        } else {
+            if ($request->filled('original_image')) {
+                $this->deleteOriginalImage($banner);
+                $data['original_image_path'] = $this->saveBase64Image($request->input('original_image'));
+            }
+
+            if ($request->filled('cropped_image')) {
+                $this->deleteImage($banner);
+                $data['image_path'] = $this->saveBase64Image($request->input('cropped_image'));
+            } elseif ($request->hasFile('image')) {
+                $this->deleteImage($banner);
+                $this->deleteOriginalImage($banner);
+                $data['image_path'] = $request->file('image')->store('banners', 'public');
+                $data['original_image_path'] = $data['image_path'];
+            }
         }
 
-        unset($data['image'], $data['cropped_image'], $data['remove_image']);
+        unset($data['image'], $data['cropped_image'], $data['original_image'], $data['remove_image']);
 
         $banner->update($data);
 
@@ -73,6 +90,7 @@ class BannerController extends Controller
     public function destroy(Banner $banner): RedirectResponse
     {
         $this->deleteImage($banner);
+        $this->deleteOriginalImage($banner);
         $banner->delete();
 
         return redirect()->route('admin.banners.index')->with('success', 'Đã xóa banner.');
@@ -95,6 +113,7 @@ class BannerController extends Controller
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'original_image' => ['nullable', 'string'],
             'cropped_image' => ['nullable', 'string'],
             'remove_image' => ['nullable', 'boolean'],
             'bg_color' => ['nullable', 'string', 'max:150'],
@@ -135,6 +154,13 @@ class BannerController extends Controller
     {
         if ($banner->image_path) {
             Storage::disk('public')->delete($banner->image_path);
+        }
+    }
+
+    private function deleteOriginalImage(Banner $banner): void
+    {
+        if ($banner->original_image_path && $banner->original_image_path !== $banner->image_path) {
+            Storage::disk('public')->delete($banner->original_image_path);
         }
     }
 }
