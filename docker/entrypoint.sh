@@ -56,6 +56,14 @@ case "${RUN_SEEDERS:-false}" in
         ;;
 esac
 
+# Danh sách thành tựu (huy hiệu) lấy từ AchievementSeeder. Database đã có dữ liệu thì seeder mẫu ở trên
+# bỏ qua, nên nạp riêng danh sách này mỗi lần khởi động. Seeder chỉ ghi bảng achievements theo slug
+# (updateOrCreate), không đụng tới tiến độ của học viên hay dữ liệu khác.
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+    php artisan db:seed --class=AchievementSeeder --force --no-interaction \
+        || echo "[entrypoint] Chưa nạp được danh sách thành tựu, sẽ thử lại lần sau." >&2
+fi
+
 # Xóa vĩnh viễn trên Cloudinary những ảnh nằm trong thùng rác quá 7 ngày.
 # Render gói free không có cron miễn phí nên dọn mỗi lần khởi động (và khi admin mở trang Ảnh Cloudinary).
 php artisan cloudinary:purge-trash --no-interaction \
