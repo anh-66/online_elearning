@@ -10,6 +10,7 @@ use App\Http\Controllers\CourseCheckoutController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorProfileController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\OnboardingController;
@@ -53,6 +54,10 @@ Route::get('/certificates/{code}', [CertificateController::class, 'show'])
 Route::post('/chat/courses', CourseChatController::class)
     ->middleware('throttle:course-chat')
     ->name('course-chat.send');
+
+// Bảng xếp hạng học viên tích lũy điểm EXP thành tựu
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+Route::get('/bang-xep-hang', fn () => redirect()->route('leaderboard.index'));
 
 /*
 |--------------------------------------------------------------------------

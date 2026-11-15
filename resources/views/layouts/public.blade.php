@@ -55,12 +55,12 @@
                          data-slot="navigation-menu"
                          @mouseleave="closeMenu()">
                         <a href="{{ url('/') }}"
-                           class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center outline-none select-none text-[#1D1D1F] dark:text-[#e6edf3] hover:bg-black/[0.05] dark:hover:bg-white/10">
+                           class="h-10 px-4 py-2 rounded-xl text-[16px] font-bold transition-all inline-flex items-center justify-center outline-none select-none text-[#1D1D1F] dark:text-[#e6edf3] hover:bg-black/[0.05] dark:hover:bg-white/10">
                             Trang chủ
                         </a>
 
                         <a href="{{ url('/courses') }}"
-                           class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center outline-none select-none text-[#1D1D1F] dark:text-[#e6edf3] hover:bg-black/[0.05] dark:hover:bg-white/10">
+                           class="h-10 px-4 py-2 rounded-xl text-[16px] font-bold transition-all inline-flex items-center justify-center outline-none select-none text-[#1D1D1F] dark:text-[#e6edf3] hover:bg-black/[0.05] dark:hover:bg-white/10">
                             Khóa học
                         </a>
 
@@ -69,7 +69,7 @@
                             <button type="button"
                                     @mouseenter="openMenu('support')"
                                     @click="activeMenu = activeMenu === 'support' ? null : 'support'"
-                                    class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center gap-1.5 outline-none select-none group hover:bg-black/[0.05] dark:hover:bg-white/10 text-[#1D1D1F] dark:text-[#e6edf3]"
+                                    class="h-10 px-4 py-2 rounded-xl text-[16px] font-bold transition-all inline-flex items-center justify-center gap-1.5 outline-none select-none group hover:bg-black/[0.05] dark:hover:bg-white/10 text-[#1D1D1F] dark:text-[#e6edf3]"
                                     :class="activeMenu === 'support' ? 'bg-black/[0.05] dark:bg-white/10' : ''">
                                 <span>Hỗ Trợ</span>
                                 <svg class="relative top-px size-3 text-gray-400 dark:text-gray-400 transition-transform duration-300 ease-out"
@@ -85,7 +85,7 @@
                             <button type="button"
                                     @mouseenter="openMenu('features')"
                                     @click="activeMenu = activeMenu === 'features' ? null : 'features'"
-                                    class="h-9 px-3.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all inline-flex items-center justify-center gap-1.5 outline-none select-none group hover:bg-black/[0.05] dark:hover:bg-white/10 text-[#1D1D1F] dark:text-[#e6edf3]"
+                                    class="h-10 px-4 py-2 rounded-xl text-[16px] font-bold transition-all inline-flex items-center justify-center gap-1.5 outline-none select-none group hover:bg-black/[0.05] dark:hover:bg-white/10 text-[#1D1D1F] dark:text-[#e6edf3]"
                                     :class="activeMenu === 'features' ? 'bg-black/[0.05] dark:bg-white/10' : ''">
                                 <span>Tiện ích</span>
                                 <svg class="relative top-px size-3 text-gray-400 dark:text-gray-400 transition-transform duration-300 ease-out"
@@ -134,23 +134,6 @@
                     </button>
 
                     @auth
-                        @if(Auth::user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
-                                Trang Quản trị Admin
-                            </a>
-                        @elseif(Auth::user()->isInstructor())
-                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
-                                Khóa học của tôi
-                            </a>
-                            <a href="{{ route('instructor.dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
-                                Studio Giảng viên
-                            </a>
-                        @else
-                            <a href="{{ route('dashboard') }}" class="hidden xl:inline-block whitespace-nowrap text-[15px] font-semibold text-[#1D1D1F] dark:text-[#e6edf3] transition px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-[#21262d]">
-                                Khóa học của tôi
-                            </a>
-                        @endif
-
                         <!-- User Profile Dropdown Popover (@animate-ui / shadcn Popover Style) -->
                         <div class="relative" data-slot="popover" x-data="{ open: false }" @click.outside="open = false">
                             <button @click="open = !open"
@@ -207,8 +190,9 @@
                                 @endif
 
                                 @unless(Auth::user()->isAdmin())
-                                    <a href="{{ route('certificates.index') }}" class="flex items-center px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
-                                        Chứng chỉ của tôi
+                                    <a href="{{ route('certificates.index') }}" class="flex items-center justify-between px-4 py-2.5 hover:bg-[#F5F5F7] dark:hover:bg-[#21262d] transition font-medium">
+                                        <span>Chứng chỉ của tôi</span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black leading-none tracking-wide">New</span>
                                     </a>
                                 @endunless
 

@@ -23,11 +23,21 @@
 @endpush
 
 @section('content')
+@php
+    $allowedTabs = ['account'];
+    if ($user->isStudent()) {
+        $allowedTabs[] = 'achievements';
+    }
+    $allowedTabs = array_merge($allowedTabs, ['notifications', 'privacy', 'display']);
+    if ($user->isStudent()) {
+        $allowedTabs[] = 'billing';
+    }
+@endphp
 <div class="min-h-[calc(100vh-140px)] bg-white text-gray-900 dark:bg-[#0d1117] dark:text-gray-100 border-b border-gray-100 dark:border-neutral-800"
      x-init="
          const handleHash = () => {
              let h = window.location.hash.replace('#', '');
-             let allowed = @js($user->isStudent() ? ['account', 'achievements', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'achievements', 'notifications', 'privacy', 'display']);
+             let allowed = @js($allowedTabs);
              if (h === 'password') {
                  activeTab = 'privacy';
                  setTimeout(() => document.getElementById('password')?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -55,7 +65,7 @@
          activeTab: (function() {
              let h = window.location.hash.replace('#', '');
              if (h === 'password') return 'privacy';
-             let allowed = @js($user->isStudent() ? ['account', 'achievements', 'notifications', 'privacy', 'display', 'billing'] : ['account', 'achievements', 'notifications', 'privacy', 'display']);
+             let allowed = @js($allowedTabs);
              if (allowed.includes(h)) return h;
              return @js($errors->updatePassword->isNotEmpty() ? 'privacy' : ($errors->userDeletion->isNotEmpty() ? 'privacy' : 'account'));
          })(),
@@ -115,12 +125,14 @@
                     <span>Tài khoản</span>
                 </button>
 
-                <button type="button" @click="activeTab = 'achievements'"
-                        :class="activeTab === 'achievements' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
-                        class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
-                    <iconify-icon icon="lucide:trophy" class="text-lg text-amber-500"></iconify-icon>
-                    <span>Thành tựu</span>
-                </button>
+                @if($user->isStudent())
+                    <button type="button" @click="activeTab = 'achievements'"
+                            :class="activeTab === 'achievements' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
+                            class="w-full group flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all text-left">
+                        <iconify-icon icon="lucide:trophy" class="text-lg text-amber-500"></iconify-icon>
+                        <span>Thành tựu</span>
+                    </button>
+                @endif
 
                 <button type="button" @click="activeTab = 'notifications'"
                         :class="activeTab === 'notifications' ? 'bg-gray-100 dark:bg-neutral-800 font-medium text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800/50 hover:text-gray-900 dark:hover:text-white'"
@@ -167,10 +179,12 @@
                 @include('profile.partials.update-profile-information-form')
             </section>
 
-            <!-- TAB 2: THÀNH TỰU (ACHIEVEMENTS) -->
-            <section x-show="activeTab === 'achievements'" x-cloak class="tab-content active space-y-10">
-                @include('profile.partials.achievements')
-            </section>
+            @if($user->isStudent())
+                <!-- TAB 2: THÀNH TỰU (ACHIEVEMENTS) -->
+                <section x-show="activeTab === 'achievements'" x-cloak class="tab-content active space-y-10">
+                    @include('profile.partials.achievements')
+                </section>
+            @endif
 
             <!-- TAB 3: THÔNG BÁO -->
             <section x-show="activeTab === 'notifications'" x-cloak class="tab-content active space-y-10">

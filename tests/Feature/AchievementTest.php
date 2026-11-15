@@ -38,6 +38,32 @@ class AchievementTest extends TestCase
         $response->assertSee('Hành trình Chinh phục Tri thức');
     }
 
+    public function test_admin_profile_does_not_display_achievements(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this
+            ->actingAs($admin)
+            ->get('/profile');
+
+        $response->assertOk();
+        $response->assertDontSee('<span>Thành tựu</span>', false);
+        $response->assertDontSee('Hành trình Chinh phục Tri thức');
+    }
+
+    public function test_instructor_profile_does_not_display_achievements(): void
+    {
+        $instructor = User::factory()->instructor()->create();
+
+        $response = $this
+            ->actingAs($instructor)
+            ->get('/profile');
+
+        $response->assertOk();
+        $response->assertDontSee('<span>Thành tựu</span>', false);
+        $response->assertDontSee('Hành trình Chinh phục Tri thức');
+    }
+
     public function test_completing_first_lesson_unlocks_first_step_achievement(): void
     {
         $user = User::factory()->create();
@@ -127,5 +153,29 @@ class AchievementTest extends TestCase
             'achievement_id' => $achievement->id,
             'is_claimed' => true,
         ]);
+    }
+
+    public function test_admin_cannot_claim_achievement(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $achievement = Achievement::where('slug', 'first_step')->firstOrFail();
+
+        $response = $this
+            ->actingAs($admin)
+            ->postJson(route('profile.achievements.claim', $achievement));
+
+        $response->assertForbidden();
+    }
+
+    public function test_instructor_cannot_claim_achievement(): void
+    {
+        $instructor = User::factory()->instructor()->create();
+        $achievement = Achievement::where('slug', 'first_step')->firstOrFail();
+
+        $response = $this
+            ->actingAs($instructor)
+            ->postJson(route('profile.achievements.claim', $achievement));
+
+        $response->assertForbidden();
     }
 }
