@@ -397,18 +397,6 @@
 
                     <!-- Chuyển giao diện sáng/tối (dùng chung với trang chủ và Studio Giảng viên) -->
                     <x-theme-toggle />
-
-                    <div class="h-6 w-px bg-gray-200 dark:bg-neutral-700"></div>
-
-                    <!-- User Avatar Only -->
-                    <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black text-sm font-bold text-white shadow-sm ring-2 ring-gray-100 dark:ring-neutral-800 select-none" title="{{ Auth::user()->name ?? 'Admin' }}">
-                        @if(Auth::user()->avatar_url)
-                            <img src="{{ Auth::user()->avatar_url }}" referrerpolicy="no-referrer" alt="{{ Auth::user()->name }}" class="h-full w-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
-                            <span class="hidden flex items-center justify-center w-full h-full">{{ Auth::user()->initialLetter() }}</span>
-                        @else
-                            <span>{{ Auth::user()->initialLetter() }}</span>
-                        @endif
-                    </div>
                 </div>
             </header>
 

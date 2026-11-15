@@ -25,6 +25,13 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+
+        iconify-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body class="h-full bg-white font-sans antialiased text-neutral-800 dark:bg-neutral-950 dark:text-neutral-200"
@@ -104,7 +111,7 @@
                            data-slot="sidebar-menu-button"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('instructor/dashboard') ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-medium' : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white' }}"
                            :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : ''">
-                            <iconify-icon icon="lucide:layout-dashboard" class="text-lg shrink-0"></iconify-icon>
+                            <iconify-icon icon="lucide:layout-dashboard" class="text-xl shrink-0 flex items-center justify-center" width="20" height="20"></iconify-icon>
                             <span x-show="!isCollapsed" class="truncate">Tổng quan</span>
                         </a>
 
@@ -120,10 +127,10 @@
                         <button type="button"
                                 @click="toggleSubmenu('courses')"
                                 data-slot="sidebar-menu-button"
-                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('instructor/courses*', 'instructor/chapters*', 'instructor/lessons*', 'instructor/quizzes*', 'instructor/questions*') ? 'text-neutral-900 dark:text-white font-medium' : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white' }}"
-                                :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : ''">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <iconify-icon icon="lucide:book-open" class="text-lg shrink-0"></iconify-icon>
+                                class="flex items-center rounded-lg text-sm font-medium transition-colors {{ request()->is('instructor/courses*', 'instructor/chapters*', 'instructor/lessons*', 'instructor/quizzes*', 'instructor/questions*') ? 'text-neutral-900 dark:text-white font-medium' : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white' }}"
+                                :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : 'w-full justify-between gap-3 px-3 py-2'">
+                            <div class="flex items-center" :class="isCollapsed ? 'justify-center' : 'gap-3 min-w-0'">
+                                <iconify-icon icon="lucide:book-open" class="text-xl shrink-0 flex items-center justify-center" width="20" height="20"></iconify-icon>
                                 <span x-show="!isCollapsed" class="truncate">Khóa học của tôi</span>
                             </div>
                             <svg x-show="!isCollapsed"
@@ -175,7 +182,7 @@
                            data-slot="sidebar-menu-button"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('instructor/students*') ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-medium' : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white' }}"
                            :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : ''">
-                            <iconify-icon icon="lucide:users" class="text-lg shrink-0"></iconify-icon>
+                            <iconify-icon icon="lucide:users" class="text-xl shrink-0 flex items-center justify-center" width="20" height="20"></iconify-icon>
                             <span x-show="!isCollapsed" class="truncate">Quản lý Học viên</span>
                         </a>
 
@@ -191,7 +198,7 @@
                            data-slot="sidebar-menu-button"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('instructor/payouts*') ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-medium' : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white' }}"
                            :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : ''">
-                            <iconify-icon icon="lucide:wallet" class="text-lg shrink-0"></iconify-icon>
+                            <iconify-icon icon="lucide:wallet" class="text-xl shrink-0 flex items-center justify-center" width="20" height="20"></iconify-icon>
                             <span x-show="!isCollapsed" class="truncate">Thu nhập & Rút tiền</span>
                         </a>
 
@@ -215,7 +222,7 @@
                            data-slot="sidebar-menu-button"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('dashboard', 'my-courses') ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-medium' : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white' }}"
                            :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : ''">
-                            <iconify-icon icon="lucide:graduation-cap" class="text-lg shrink-0"></iconify-icon>
+                            <iconify-icon icon="lucide:graduation-cap" class="text-xl shrink-0 flex items-center justify-center" width="20" height="20"></iconify-icon>
                             <span x-show="!isCollapsed" class="truncate">Giao diện Học viên</span>
                         </a>
 
@@ -227,17 +234,17 @@
 
                     {{-- Về trang chủ Public --}}
                     <div class="relative group/nav-item">
-                        <a href="{{ url('/') }}"
+                        <a href="{{ route('home') }}"
                            data-slot="sidebar-menu-button"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white transition-colors"
                            :class="isCollapsed ? 'justify-center px-0 size-9 mx-auto' : ''">
-                            <iconify-icon icon="lucide:globe" class="text-lg shrink-0"></iconify-icon>
-                            <span x-show="!isCollapsed" class="truncate">Trang chủ EduLearn</span>
+                            <iconify-icon icon="lucide:arrow-left" class="text-xl shrink-0 flex items-center justify-center" width="20" height="20"></iconify-icon>
+                            <span x-show="!isCollapsed" class="truncate">Về trang chủ</span>
                         </a>
 
                         <div x-show="isCollapsed"
                              class="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 hidden group-hover/nav-item:flex items-center px-2.5 py-1 text-xs font-medium text-white bg-neutral-900 dark:bg-neutral-800 rounded-md shadow-lg whitespace-nowrap">
-                            Trang chủ EduLearn
+                            Về trang chủ
                         </div>
                     </div>
                 </div>
@@ -328,21 +335,21 @@
             {{-- Top Navbar with Animate-UI SidebarTrigger --}}
             <header class="h-16 shrink-0 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between px-4 sm:px-6 shadow-xs">
                 <div class="flex items-center gap-3 min-w-0">
-                    {{-- Desktop Sidebar Trigger (PanelLeft Animate UI Icon) --}}
+                    {{-- Desktop Sidebar Trigger (Match Admin style) --}}
                     <button type="button"
                             @click="toggleSidebar()"
                             data-slot="sidebar-trigger"
                             data-sidebar="trigger"
-                            class="hidden lg:flex size-9 items-center justify-center rounded-lg border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
+                            class="hidden lg:flex p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-500 dark:text-neutral-400 transition-colors"
                             title="Thu gọn / Mở rộng Sidebar">
-                        <iconify-icon icon="lucide:panel-left" class="text-lg transition-transform duration-200" :class="isCollapsed ? 'rotate-180' : ''"></iconify-icon>
+                        <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
                         <span class="sr-only">Toggle Sidebar</span>
                     </button>
 
                     {{-- Mobile Hamburger Trigger --}}
                     <button type="button"
                             @click="openMobile = true"
-                            class="lg:hidden size-9 flex items-center justify-center rounded-lg border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+                            class="lg:hidden p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-500 dark:text-neutral-400 transition-colors">
                         <iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon>
                     </button>
 
@@ -358,7 +365,7 @@
             </header>
 
             {{-- Main Scrollable Content --}}
-            <main data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 min-w-0 bg-white dark:bg-neutral-950">
+            <main data-back-to-top-scroll class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 min-w-0 bg-[#f9fafb] dark:bg-neutral-950">
                 @if($errors->any())
                     <div class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-300 text-sm shadow-xs">
                         <p class="font-semibold mb-1">Vui lòng kiểm tra lại các trường lỗi:</p>

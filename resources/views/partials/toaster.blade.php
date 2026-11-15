@@ -175,32 +175,34 @@
 @endif
 
 @auth
-    @php
-        $newAchievements = app(\App\Services\AchievementService::class)->popUnnotifiedAchievements(Auth::user());
-    @endphp
-    @if(!empty($newAchievements) && count($newAchievements) > 0)
-    <script>
-        (function() {
-            const fireAchievements = function() {
-                @foreach($newAchievements as $newAch)
-                    window.toast?.success(
-                        'Bạn vừa hoàn thành mục tiêu: {{ addslashes($newAch->name) }}! Vào hồ sơ bấm "Nhận ngay" để nhận +{{ $newAch->points }} XP.',
-                        'Mở khóa thành tựu!',
-                        {
-                            label: 'Nhận ngay',
-                            onClick: function() {
-                                window.location.href = '{{ route('profile.edit') }}#achievements';
+    @if(Auth::user()->isStudent())
+        @php
+            $newAchievements = app(\App\Services\AchievementService::class)->popUnnotifiedAchievements(Auth::user());
+        @endphp
+        @if(!empty($newAchievements) && count($newAchievements) > 0)
+        <script>
+            (function() {
+                const fireAchievements = function() {
+                    @foreach($newAchievements as $newAch)
+                        window.toast?.success(
+                            'Bạn vừa hoàn thành mục tiêu: {{ addslashes($newAch->name) }}! Vào hồ sơ bấm "Nhận ngay" để nhận +{{ $newAch->points }} XP.',
+                            'Mở khóa thành tựu!',
+                            {
+                                label: 'Nhận ngay',
+                                onClick: function() {
+                                    window.location.href = '{{ route('profile.edit') }}#achievements';
+                                }
                             }
-                        }
-                    );
-                @endforeach
-            };
-            if (document.readyState !== 'loading') {
-                fireAchievements();
-            } else {
-                document.addEventListener('DOMContentLoaded', fireAchievements);
-            }
-        })();
-    </script>
+                        );
+                    @endforeach
+                };
+                if (document.readyState !== 'loading') {
+                    fireAchievements();
+                } else {
+                    document.addEventListener('DOMContentLoaded', fireAchievements);
+                }
+            })();
+        </script>
+        @endif
     @endif
 @endauth

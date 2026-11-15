@@ -283,6 +283,13 @@
                 <div class="h-full rounded-full bg-blue-600 dark:bg-blue-500 transition-all duration-700 ease-out"
                      style="width: {{ $achievementsData['completion_percentage'] ?? 0 }}%;"></div>
             </div>
+            <div class="pt-2 flex items-center justify-between">
+                <span class="text-[11px] text-gray-400 dark:text-neutral-500">Điểm EXP dùng để xếp hạng thành tích học viên</span>
+                <a href="{{ route('leaderboard.index') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    <iconify-icon icon="ph:trophy-bold" class="text-sm"></iconify-icon>
+                    <span>Xem Bảng Xếp Hạng &rarr;</span>
+                </a>
+            </div>
         </div>
     </div>
 

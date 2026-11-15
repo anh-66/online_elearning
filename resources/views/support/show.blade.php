@@ -2,110 +2,129 @@
 
 @section('title', $article['title'] . ' - Hỗ Trợ EduLearn')
 
+@push('styles')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .font-inter,
+        .font-inter * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        }
+        .font-inter {
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+@endpush
+
 @section('content')
-<div class="min-h-screen bg-white text-[#1D1D1F] dark:bg-[#000000] dark:text-[#f5f5f7] transition-colors pb-24"
+<div class="min-h-screen bg-[#fcfcfc] dark:bg-[#0d1117] text-[#111827] dark:text-neutral-100 transition-colors pb-24 font-inter"
      x-data="{ feedbackGiven: false, feedbackHelpful: true }">
 
-    <!-- Sub-navigation / Breadcrumbs fixed below the navbar -->
-    <div class="bg-[#F5F5F7]/95 dark:bg-[#161617]/95 backdrop-blur-md sticky top-[72px] sm:top-[80px] z-30 transition-all shadow-xs">
-        <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 py-4 flex items-center justify-between text-base">
-            <nav class="flex items-center space-x-2 text-[#86868B] dark:text-[#a1a1a6] truncate">
-                <a href="{{ route('support.index') }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition">Hỗ Trợ</a>
-                <span>/</span>
-                <a href="{{ route('support.index', ['category' => $article['category_slug']]) }}" class="hover:text-[#1D1D1F] dark:hover:text-white transition truncate">{{ $article['category'] }}</a>
-                <span>/</span>
-                <span class="text-[#1D1D1F] dark:text-white font-medium truncate">{{ $article['badge'] }}</span>
-            </nav>
-
-            <a href="{{ route('support.index') }}" class="text-[#019D91] dark:text-[#02b3a5] hover:underline font-medium shrink-0 ml-4">
-                ← Tất cả chủ đề
-            </a>
+    {{-- Subtle Breadcrumb (Tối giản chuẩn Course Show) --}}
+    <div class="max-w-7xl mx-auto px-6 md:px-12 pt-6 pb-2 flex items-center justify-between text-xs sm:text-sm text-gray-400 dark:text-neutral-500">
+        <div class="flex items-center gap-2 truncate">
+            <a href="{{ route('home') }}" class="hover:text-black dark:hover:text-white transition-colors">Trang chủ</a>
+            <span>&rsaquo;</span>
+            <a href="{{ route('support.index') }}" class="hover:text-black dark:hover:text-white transition-colors">Hỗ trợ</a>
+            <span>&rsaquo;</span>
+            <a href="{{ route('support.index', ['category' => $article['category_slug']]) }}" class="hover:text-black dark:hover:text-white transition-colors truncate">{{ $article['category'] }}</a>
+            <span>&rsaquo;</span>
+            <span class="text-gray-900 dark:text-white font-medium truncate">{{ $article['badge'] }}</span>
         </div>
+
+        <a href="{{ route('support.index') }}" class="hover:text-black dark:hover:text-white transition-colors shrink-0 ml-4 font-medium">
+            ← Tất cả chủ đề
+        </a>
     </div>
 
-    <!-- Article Container (Rộng rãi chuẩn max-w-screen-2xl dãn đều 2 bên) -->
-    <div class="w-full max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-14 pt-8 sm:pt-12">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 items-start">
-            <!-- Left / Main Column: Article Content -->
-            <article class="lg:col-span-8 space-y-8">
-                <!-- Badge -->
+    {{-- Main Content Wrapper (Layout thoáng đãng, tinh gọn, không chia khối hộp) --}}
+    <main class="max-w-7xl mx-auto px-6 md:px-12 pt-6 md:pt-10">
+        <div class="flex flex-col lg:flex-row gap-12 lg:gap-16">
+
+            {{-- Cột trái: Nội dung hướng dẫn --}}
+            <article class="flex-1 order-2 lg:order-1 min-w-0 space-y-8">
+
+                {{-- Tiêu đề & Danh mục --}}
                 <div>
-                    <span class="inline-block px-3.5 py-1 rounded-full text-xs font-semibold bg-[#019D91]/15 text-[#018076] dark:bg-[#019D91]/25 dark:text-[#02b3a5]">
-                        {{ $article['badge'] }}
-                    </span>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-neutral-800 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 rounded">
+                            {{ $article['badge'] }}
+                        </span>
+                        <span class="text-xs text-gray-400 dark:text-neutral-500">•</span>
+                        <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">{{ $article['category'] }}</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.15] mb-5 text-gray-900 dark:text-white">
+                        {{ $article['title'] }}
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-gray-500 dark:text-neutral-400 leading-relaxed max-w-3xl">
+                        {{ $article['summary'] }}
+                    </p>
                 </div>
 
-                <!-- Article Main Title -->
-                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1D1D1F] dark:text-white leading-tight">
-                    {{ $article['title'] }}
-                </h1>
-
-                <!-- Subtitle / Summary -->
-                <p class="text-lg sm:text-xl text-[#6E6E73] dark:text-[#a1a1a6] leading-relaxed">
-                    {{ $article['summary'] }}
-                </p>
-
-                <!-- Intro Paragraph with Inline Links -->
-                <div class="p-5 sm:p-6 rounded-2xl bg-[#F5F5F7] dark:bg-[#1c1c1e] border border-[#E5E5EA] dark:border-[#2c2c2e] text-sm sm:text-base leading-relaxed text-[#1D1D1F] dark:text-[#e6edf3]">
-                    <p>
+                {{-- Lời mở đầu & Thao tác nhanh (Thiết kế phẳng tối giản, viền line mỏng, không nền hộp) --}}
+                <div class="py-3 border-l-2 border-[#019D91] pl-4 space-y-2">
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-neutral-300 leading-relaxed">
                         {{ $article['intro'] }}
                     </p>
-                    <div class="mt-3 pt-3 border-t border-[#E5E5EA] dark:border-[#2c2c2e] flex flex-wrap items-center gap-3">
-                        <span class="text-xs text-[#86868B] dark:text-[#a1a1a6]">Thao tác nhanh:</span>
-                        <a href="{{ $article['action_url'] }}"
-                           class="font-semibold text-xs sm:text-sm text-[#019D91] dark:text-[#02b3a5] hover:underline inline-flex items-center gap-1">
-                            <span>{{ $article['action_label'] }}</span>
-                            <span>→</span>
-                        </a>
-                    </div>
+                    @if(!empty($article['action_label']) && !empty($article['action_url']))
+                        <div class="flex items-center gap-2 pt-1 text-xs sm:text-sm">
+                            <span class="text-gray-400 dark:text-neutral-500">Thao tác nhanh:</span>
+                            <a href="{{ $article['action_url'] }}"
+                               class="font-semibold text-[#019D91] dark:text-[#02b3a5] hover:underline inline-flex items-center gap-1">
+                                <span>{{ $article['action_label'] }}</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
-                <!-- Detailed Step-by-Step Section -->
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F] dark:text-white mb-6">
+                {{-- Các bước thao tác (Dạng timeline phẳng, loại bỏ khối hộp rườm rà) --}}
+                <div class="pt-4">
+                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
                         {{ $article['steps_heading'] }}
                     </h2>
 
-                    <ol class="space-y-4 sm:space-y-5 text-sm sm:text-base">
+                    <div class="space-y-6">
                         @foreach($article['steps'] as $step)
-                            <li class="flex items-start space-x-4 p-5 rounded-2xl bg-[#FAFAFC] dark:bg-[#161b22] border border-[#E5E5EA]/80 dark:border-[#30363d]/80 transition hover:border-[#019D91]/30">
-                                <!-- Step Number Badge -->
-                                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1D1D1F] text-white dark:bg-white dark:text-black font-bold flex items-center justify-center shrink-0 text-sm mt-0.5 shadow-sm">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-full bg-gray-900 text-white dark:bg-white dark:text-black font-bold flex items-center justify-center shrink-0 text-xs mt-0.5 shadow-xs">
                                     {{ $step['step_number'] }}
                                 </div>
-
-                                <!-- Step Details -->
-                                <div class="flex-1 space-y-1.5">
-                                    <h3 class="font-bold text-[#1D1D1F] dark:text-white text-base sm:text-lg">
+                                <div class="flex-1 pb-6 border-b border-gray-100 dark:border-neutral-800 space-y-1.5">
+                                    <h3 class="font-semibold text-gray-900 dark:text-white text-base">
                                         {{ $step['title'] }}
                                     </h3>
-                                    <p class="text-[#6E6E73] dark:text-[#a1a1a6] leading-relaxed">
+                                    <p class="text-sm text-gray-500 dark:text-neutral-400 leading-relaxed">
                                         {{ $step['description'] }}
                                     </p>
-
                                     @if(!empty($step['link_label']) && !empty($step['link_url']))
                                         <div class="pt-1">
                                             <a href="{{ $step['link_url'] }}"
-                                               class="inline-flex items-center gap-1 font-semibold text-xs sm:text-sm text-[#019D91] dark:text-[#02b3a5] hover:underline">
+                                               class="inline-flex items-center gap-1 font-semibold text-xs text-[#019D91] dark:text-[#02b3a5] hover:underline">
                                                 <span>{{ $step['link_label'] }}</span>
                                                 <span>→</span>
                                             </a>
                                         </div>
                                     @endif
                                 </div>
-                            </li>
+                            </div>
                         @endforeach
-                    </ol>
+                    </div>
                 </div>
 
-                <!-- Helpful Notes / Tips -->
+                {{-- Lưu ý quan trọng (nếu có) --}}
                 @if(!empty($article['notes']))
-                    <div class="p-5 sm:p-6 rounded-2xl bg-[#F5F5F7] dark:bg-[#1c1c1e] border-l-4 border-[#019D91] dark:border-[#02b3a5]">
-                        <h4 class="text-xs font-semibold text-[#86868B] dark:text-[#7d8590] uppercase tracking-wider mb-2 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-[#019D91] dark:text-[#02b3a5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 text-sm">
+                        <h4 class="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Lưu ý quan trọng
                         </h4>
-                        <ul class="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-[#6E6E73] dark:text-[#a1a1a6]">
+                        <ul class="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-amber-900/80 dark:text-amber-300/80">
                             @foreach($article['notes'] as $note)
                                 <li>{{ $note }}</li>
                             @endforeach
@@ -113,87 +132,95 @@
                     </div>
                 @endif
 
-                <!-- Article Feedback Section -->
-                <div class="py-6 border-t border-b border-[#E5E5EA] dark:border-[#2c2c2e]">
+                {{-- Đánh giá bài viết --}}
+                <div class="py-6 border-t border-gray-100 dark:border-neutral-800">
                     <template x-if="!feedbackGiven">
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <p class="text-sm sm:text-base font-semibold text-[#1D1D1F] dark:text-white">
+                            <p class="text-sm font-medium text-gray-700 dark:text-neutral-300">
                                 Bài viết này có hữu ích với bạn không?
                             </p>
-                            <div class="inline-flex items-center gap-3">
+                            <div class="inline-flex items-center gap-2">
                                 <button type="button"
                                         @click="feedbackGiven = true; feedbackHelpful = true"
-                                        class="px-5 py-2 rounded-full border border-[#D2D2D7] dark:border-[#3a3a3c] text-xs sm:text-sm font-semibold hover:bg-[#F5F5F7] dark:hover:bg-[#2c2c2e] transition active:scale-95">
+                                        class="px-4 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 text-xs font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition active:scale-95">
                                     Có, rất hữu ích
                                 </button>
                                 <button type="button"
                                         @click="feedbackGiven = true; feedbackHelpful = false"
-                                        class="px-5 py-2 rounded-full border border-[#D2D2D7] dark:border-[#3a3a3c] text-xs sm:text-sm font-semibold hover:bg-[#F5F5F7] dark:hover:bg-[#2c2c2e] transition active:scale-95">
+                                        class="px-4 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 text-xs font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition active:scale-95">
                                     Không
                                 </button>
                             </div>
                         </div>
                     </template>
                     <template x-if="feedbackGiven">
-                        <div class="text-sm font-medium text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <span>Cảm ơn bạn đã đóng góp phản hồi giúp hoàn thiện tài liệu hỗ trợ!</span>
+                        <div class="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>Cảm ơn bạn đã đóng góp phản hồi!</span>
                         </div>
                     </template>
                 </div>
+
             </article>
 
-            <!-- Right Column: Sidebar Actions & Related Topics -->
-            <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-[140px] self-start">
-                <!-- Action Callout Card -->
-                <div class="p-6 sm:p-7 rounded-3xl bg-[#E8F7F5] dark:bg-[#123331] border border-[#019D91]/30 dark:border-[#019D91]/40 shadow-sm space-y-3">
-                    <h4 class="text-base sm:text-lg font-bold text-[#1D1D1F] dark:text-white">
-                        Sẵn sàng thực hiện ngay?
-                    </h4>
-                    <p class="text-xs sm:text-sm text-[#6E6E73] dark:text-[#a1a1a6] leading-relaxed">
-                        {{ $article['action_help'] ?? 'Bấm nút để truy cập thẳng vào trang xử lý chức năng trong tài khoản của bạn.' }}
-                    </p>
-                    <div class="pt-2">
-                        <a href="{{ $article['action_url'] }}"
-                           class="w-full text-center block btn-apple-primary text-xs sm:text-sm px-6 py-3 shadow-md">
-                            {{ $article['action_label'] }} →
-                        </a>
-                    </div>
-                </div>
+            {{-- Cột phải: Sidebar thẻ đơn tinh gọn chuẩn Course Show --}}
+            <aside class="w-full lg:w-80 xl:w-96 order-1 lg:order-2 shrink-0">
+                <div class="sticky top-28 bg-white dark:bg-[#161b22] border border-gray-100 dark:border-neutral-800 rounded-2xl p-6 shadow-sm space-y-6">
 
-                <!-- Related Guides & Topics Sidebar List -->
-                @if(!empty($relatedArticles))
-                    <div class="p-6 rounded-3xl bg-[#F5F5F7] dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] space-y-4">
-                        <h4 class="text-xs font-semibold text-[#86868B] dark:text-[#7d8590] uppercase tracking-wider">
-                            Các chủ đề liên quan
-                        </h4>
-                        <div class="space-y-3">
-                            @foreach($relatedArticles as $related)
-                                <a href="{{ route('support.show', $related['slug']) }}"
-                                   class="p-3.5 rounded-2xl bg-white dark:bg-[#0d1117] border border-[#E5E5EA]/80 dark:border-[#30363d] hover:border-[#019D91]/40 transition group flex flex-col justify-between">
-                                    <span class="text-[10px] font-semibold text-[#86868B] dark:text-[#7d8590] uppercase">{{ $related['category'] }}</span>
-                                    <h5 class="text-xs sm:text-sm font-bold text-[#1D1D1F] dark:text-white group-hover:text-[#019D91] transition mt-1 leading-snug">
-                                        {{ $related['title'] }}
-                                    </h5>
-                                    <span class="text-[11px] font-semibold text-[#019D91] dark:text-[#02b3a5] mt-2 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                                        Xem chi tiết →
-                                    </span>
-                                </a>
-                            @endforeach
+                    {{-- Hành động nhanh --}}
+                    <div class="space-y-3">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">
+                            Sẵn sàng thực hiện ngay?
+                        </h3>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-neutral-400 leading-relaxed">
+                            {{ $article['action_help'] ?? 'Bấm nút để truy cập thẳng vào trang xử lý tính năng trong tài khoản của bạn.' }}
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <a href="{{ $article['action_url'] }}"
+                               class="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-semibold text-sm rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-200 transition text-center block shadow-xs">
+                                {{ $article['action_label'] }}
+                            </a>
+                            <a href="{{ route('support.index') }}"
+                               class="w-full py-2.5 bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-200 font-semibold text-xs rounded-xl hover:bg-gray-200 dark:hover:bg-neutral-700 transition text-center block">
+                                Tìm kiếm chủ đề khác
+                            </a>
                         </div>
                     </div>
-                @endif
 
-                <!-- Contact Help Box -->
-                <div class="p-6 rounded-3xl bg-white dark:bg-[#161b22] border border-[#E5E5EA] dark:border-[#30363d] shadow-sm text-center space-y-2">
-                    <h4 class="text-sm font-bold text-[#1D1D1F] dark:text-white">Vẫn cần hỗ trợ?</h4>
-                    <p class="text-xs text-[#86868B] dark:text-[#7d8590] leading-relaxed">Gửi phản hồi hoặc liên hệ đội ngũ kỹ thuật của EduLearn.</p>
-                    <a href="{{ route('support.feedback') }}" class="inline-block mt-2 text-xs font-semibold text-[#019D91] hover:underline">
-                        Gửi phản hồi / Báo lỗi →
-                    </a>
+                    {{-- Chủ đề liên quan (Dạng text link tối giản, không lồng hộp) --}}
+                    @if(!empty($relatedArticles))
+                        <div class="pt-5 border-t border-gray-100 dark:border-neutral-800 space-y-3">
+                            <span class="text-[11px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider block">
+                                Chủ đề liên quan
+                            </span>
+                            <div class="space-y-3">
+                                @foreach($relatedArticles as $related)
+                                    <a href="{{ route('support.show', $related['slug']) }}"
+                                       class="group block pb-2 border-b border-gray-50 dark:border-neutral-800/60 last:border-0 last:pb-0">
+                                        <p class="text-[10px] font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">{{ $related['category'] }}</p>
+                                        <p class="text-sm font-medium text-gray-800 dark:text-neutral-200 group-hover:text-[#019D91] transition mt-0.5 leading-snug">
+                                            {{ $related['title'] }}
+                                        </p>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Trợ giúp bổ sung --}}
+                    <div class="pt-4 border-t border-gray-100 dark:border-neutral-800 text-xs text-gray-500 dark:text-neutral-400 flex items-center justify-between">
+                        <span>Vẫn cần hỗ trợ?</span>
+                        <a href="{{ route('support.feedback') }}" class="font-semibold text-[#019D91] dark:text-[#02b3a5] hover:underline">
+                            Gửi phản hồi →
+                        </a>
+                    </div>
+
                 </div>
             </aside>
+
         </div>
-    </div>
+    </main>
+
 </div>
 @endsection

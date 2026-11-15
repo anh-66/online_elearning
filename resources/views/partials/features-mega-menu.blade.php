@@ -37,6 +37,17 @@
             </div>
         </a>
 
+        <a href="{{ route('leaderboard.index') }}"
+           class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/10 transition-colors group">
+            <div class="size-8 rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <iconify-icon icon="ph:trophy-bold" class="text-base"></iconify-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Bảng xếp hạng</div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Vinh danh Top học viên điểm EXP thành tựu</p>
+            </div>
+        </a>
+
         @if(auth()->check() && Auth::user()->isInstructor())
             <a href="{{ route('instructor.dashboard') }}"
                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/10 transition-colors group">
