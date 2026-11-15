@@ -54,21 +54,21 @@
 <div class="min-h-screen bg-white dark:bg-[#0d1117] text-[#111827] dark:text-neutral-100 flex flex-col">
     <main class="flex-1 overflow-y-auto pb-20">
         <!-- Title Section -->
-        <section class="max-w-6xl mx-auto px-8 pt-12 pb-8 text-center">
-            <h1 class="text-4xl font-bold mb-4 tracking-tight text-gray-900 dark:text-white">
+        <section class="max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 pb-6 sm:pb-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 tracking-tight text-gray-900 dark:text-white">
                 Bảng Xếp Hạng Điểm Tích Lũy
             </h1>
-            <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed px-2">
                 Vinh danh những người dùng tích cực nhất trong cộng đồng dựa trên điểm số hoạt động và đóng góp thực tế.
             </p>
         </section>
 
         <!-- Stepped Podium Top 3 -->
-        <section class="max-w-6xl mx-auto px-8 mb-16 pt-6">
-            <div class="flex flex-col md:flex-row items-end justify-center gap-6 md:gap-0">
+        <section class="max-w-6xl mx-auto px-4 sm:px-8 mb-12 sm:mb-16 pt-4 sm:pt-6">
+            <div class="flex flex-col md:flex-row items-center md:items-end justify-center gap-10 md:gap-0">
                 <!-- RANK 2: BẠC (SILVER) - Khung Rank 2 -->
-                <div class="w-full md:w-1/3 order-2 md:order-1">
-                    <div class="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl p-6 text-center shadow-sm relative z-10 transform translate-y-4 md:translate-y-8">
+                <div class="w-full max-w-sm md:max-w-none md:w-1/3 order-2 md:order-1">
+                    <div class="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl p-6 text-center shadow-sm relative z-10 transform translate-y-0 md:translate-y-8">
                         <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-12 h-12 text-white rounded-full flex items-center justify-center font-bold border-4 border-white dark:border-neutral-900 shadow-md z-30"
                              style="background-color: #C0C0C0;">
                             2
@@ -99,8 +99,8 @@
                 </div>
 
                 <!-- RANK 1: VÀNG (GOLD) - Khung Rank 3 Kim Cương (Cao nhất) -->
-                <div class="w-full md:w-1/3 order-1 md:order-2 px-2">
-                    <div class="bg-white dark:bg-neutral-900 border-2 border-blue-600 rounded-2xl p-8 text-center shadow-xl relative z-20">
+                <div class="w-full max-w-sm md:max-w-none md:w-1/3 order-1 md:order-2 px-0 md:px-2">
+                    <div class="bg-white dark:bg-neutral-900 border-2 border-blue-600 rounded-2xl p-6 sm:p-8 text-center shadow-xl relative z-20">
                         <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-16 h-16 text-white rounded-full flex items-center justify-center font-extrabold text-2xl border-4 border-white dark:border-neutral-900 shadow-lg z-30"
                              style="background-color: #FFD700;">
                             1
@@ -131,8 +131,8 @@
                 </div>
 
                 <!-- RANK 3: ĐỒNG (BRONZE) - Khung Rank 1 Sắt (Thấp nhất) -->
-                <div class="w-full md:w-1/3 order-3 md:order-3">
-                    <div class="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl p-6 text-center shadow-sm relative z-10 transform translate-y-4 md:translate-y-8">
+                <div class="w-full max-w-sm md:max-w-none md:w-1/3 order-3 md:order-3">
+                    <div class="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl p-6 text-center shadow-sm relative z-10 transform translate-y-0 md:translate-y-8">
                         <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-12 h-12 text-white rounded-full flex items-center justify-center font-bold border-4 border-white dark:border-neutral-900 shadow-md z-30"
                              style="background-color: #CD7F32;">
                             3
@@ -165,22 +165,22 @@
         </section>
 
         <!-- Danh sách Top 10 -->
-        <section class="max-w-4xl mx-auto px-8" x-data="{ expanded: false }">
-            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-neutral-800">
-                <h2 class="font-bold text-xl text-gray-900 dark:text-white">
+        <section class="max-w-4xl mx-auto px-4 sm:px-8" x-data="{ expanded: false }">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-neutral-800 gap-2">
+                <h2 class="font-bold text-lg sm:text-xl text-gray-900 dark:text-white shrink-0">
                     Danh sách Top 10
                 </h2>
-                <div class="flex gap-2">
+                <div class="flex gap-1 sm:gap-2">
                     <a href="{{ route('leaderboard.index', ['timeframe' => 'week']) }}"
-                       class="text-xs font-bold uppercase tracking-widest px-3 py-1 transition-colors {{ $timeframe === 'week' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
+                       class="text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-3 py-1 transition-colors {{ $timeframe === 'week' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
                         Tuần này
                     </a>
                     <a href="{{ route('leaderboard.index', ['timeframe' => 'month']) }}"
-                       class="text-xs font-bold uppercase tracking-widest px-3 py-1 transition-colors {{ $timeframe === 'month' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
+                       class="text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-3 py-1 transition-colors {{ $timeframe === 'month' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
                         Tháng này
                     </a>
                     <a href="{{ route('leaderboard.index', ['timeframe' => 'all']) }}"
-                       class="text-xs font-bold uppercase tracking-widest px-3 py-1 transition-colors {{ $timeframe === 'all' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
+                       class="text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-3 py-1 transition-colors {{ $timeframe === 'all' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-black dark:hover:text-white' }}">
                         Tất cả
                     </a>
                 </div>
@@ -197,9 +197,9 @@
                              x-transition:enter="transition ease-out duration-150"
                              x-transition:enter-start="opacity-0 -translate-y-1"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="flex items-center p-4 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-xl hover:shadow-sm transition-shadow group">
-                            <div class="w-10 font-bold text-gray-400">{{ $formattedRank }}</div>
-                            <div class="flex-1 flex items-center gap-3 min-w-0">
+                             class="flex items-center p-3.5 sm:p-4 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-xl hover:shadow-sm transition-shadow group">
+                            <div class="w-8 sm:w-10 font-bold text-gray-400 text-sm sm:text-base">{{ $formattedRank }}</div>
+                            <div class="flex-1 flex items-center gap-2.5 sm:gap-3 min-w-0">
                                 <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs select-none">
                                     @if($student->avatar_url)
                                         <img src="{{ $student->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $student->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
@@ -208,12 +208,12 @@
                                         <span class="font-bold text-xs">{{ $student->initialLetter() }}</span>
                                     @endif
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                <div class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">
                                     {{ $student->name }}
                                 </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <div class="text-sm font-mono font-bold text-gray-900 dark:text-white">{{ number_format($student->total_exp) }} XP</div>
+                                <div class="text-xs sm:text-sm font-mono font-bold text-gray-900 dark:text-white">{{ number_format($student->total_exp) }} XP</div>
                                 <div class="text-[10px] text-emerald-600 font-bold uppercase">+50</div>
                             </div>
                         </div>
@@ -247,18 +247,18 @@
                              x-transition:enter="transition ease-out duration-150"
                              x-transition:enter-start="opacity-0 -translate-y-1"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="flex items-center p-4 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-xl hover:shadow-sm transition-shadow group">
-                            <div class="w-10 font-bold text-gray-400">{{ $item['rank'] }}</div>
-                            <div class="flex-1 flex items-center gap-3 min-w-0">
+                             class="flex items-center p-3.5 sm:p-4 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-xl hover:shadow-sm transition-shadow group">
+                            <div class="w-8 sm:w-10 font-bold text-gray-400 text-sm sm:text-base">{{ $item['rank'] }}</div>
+                            <div class="flex-1 flex items-center gap-2.5 sm:gap-3 min-w-0">
                                 <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs select-none">
                                     <span class="text-xs font-bold">{{ mb_substr($item['name'], 0, 1) }}</span>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                <div class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">
                                     {{ $item['name'] }}
                                 </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <div class="text-sm font-mono font-bold text-gray-900 dark:text-white">{{ $item['exp'] }} XP</div>
+                                <div class="text-xs sm:text-sm font-mono font-bold text-gray-900 dark:text-white">{{ $item['exp'] }} XP</div>
                                 <div class="text-[10px] {{ $item['color'] }} font-bold uppercase">{{ $item['diff'] }}</div>
                             </div>
                         </div>
