@@ -5,144 +5,285 @@
 
 @section('content')
 <div class="min-w-0 space-y-6">
-    <!-- Thu nhập & Ví banner -->
-    <div class="p-5 sm:p-6 rounded-2xl bg-brand-700 text-white shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+    {{-- 1. Header: Lời chào mừng & Tác vụ nhanh --}}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1">
         <div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-brand-200">Ví Giảng Viên</span>
-            <div class="mt-1 flex items-baseline gap-3">
-                <span class="text-3xl font-extrabold tracking-tight">{{ number_format(auth()->user()->instructorAvailableBalance(), 0, ',', '.') }} ₫</span>
-                <span class="text-xs text-brand-200">Số dư khả dụng để rút</span>
-            </div>
-            <p class="text-xs text-brand-100/90 mt-1">Tổng thu nhập tích lũy (70%): {{ number_format(auth()->user()->instructorTotalEarnings(), 0, ',', '.') }} ₫</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-neutral-100 tracking-tight">
+                Chào mừng trở lại, {{ auth()->user()->name }} 👋
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                Theo dõi hiệu suất giảng dạy, lượt ghi danh và doanh thu tích lũy của bạn.
+            </p>
         </div>
-        <a href="{{ route('instructor.payouts.index') }}"
-           class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white text-brand-900 font-bold text-sm hover:bg-neutral-100 transition shadow-sm self-start sm:self-center">
-            Quản lý thu nhập & Rút tiền →
-        </a>
-    </div>
-
-    <!-- Thẻ thống kê -->
-    <div class="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Tổng số khóa học</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ $stats['total_courses'] }}</p>
-                <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">{{ $stats['published_courses'] }} đã xuất bản · {{ $stats['pending_courses'] }} chờ duyệt</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            </div>
-        </div>
-
-        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Học viên</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ $stats['total_students'] }}</p>
-                <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">Không trùng lặp giữa các khóa</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            </div>
-        </div>
-
-        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Lượt ghi danh</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-1">{{ $stats['total_enrollments'] }}</p>
-                <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">Trên tất cả khóa học</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-            </div>
-        </div>
-
-        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Đánh giá trung bình</p>
-                <p class="text-2xl font-bold text-amber-500 mt-1">{{ $stats['total_reviews'] > 0 ? number_format($stats['average_rating'], 1) : '—' }} ★</p>
-                <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">{{ $stats['total_reviews'] }} lượt đánh giá</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-            </div>
+        <div class="flex items-center gap-2.5 shrink-0">
+            <a href="{{ route('instructor.courses.create') }}"
+               class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#019D91] hover:bg-[#008b80] text-white text-xs sm:text-sm font-semibold shadow-xs transition active:scale-95">
+                <iconify-icon icon="lucide:plus" class="text-base"></iconify-icon>
+                <span>Tạo khóa học mới</span>
+            </a>
+            <a href="{{ route('instructor.payouts.index') }}"
+               class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 text-xs sm:text-sm font-semibold shadow-xs transition active:scale-95">
+                <iconify-icon icon="lucide:wallet" class="text-base"></iconify-icon>
+                <span>Rút tiền / Ví</span>
+            </a>
         </div>
     </div>
 
+    {{-- 2. Thẻ Thống Kê KPI (5 thẻ tinh gọn, phong cách tối giản phẳng) --}}
+    <div class="grid min-w-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
+
+        {{-- Thẻ 1: Ví Giảng Viên --}}
+        <div class="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between transition hover:border-[#019D91]/40">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider block">Ví Giảng Viên</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1.5 tracking-tight">
+                        {{ number_format(auth()->user()->instructorAvailableBalance(), 0, ',', '.') }}<span class="text-base font-semibold text-gray-400 ml-0.5">₫</span>
+                    </h3>
+                </div>
+                <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <iconify-icon icon="lucide:wallet" class="text-xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800/80 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+                <span class="truncate">Tích lũy 70%</span>
+                <a href="{{ route('instructor.payouts.index') }}" class="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">
+                    Chi tiết →
+                </a>
+            </div>
+        </div>
+
+        {{-- Thẻ 2: Khóa Học --}}
+        <div class="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between transition hover:border-[#019D91]/40">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider block">Khóa Học</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1.5 tracking-tight">
+                        {{ $stats['total_courses'] }}
+                    </h3>
+                </div>
+                <div class="p-2.5 rounded-xl bg-[#019D91]/10 text-[#019D91] dark:text-[#02b3a5]">
+                    <iconify-icon icon="lucide:book-open" class="text-xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800/80 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+                <span class="truncate">{{ $stats['published_courses'] }} xuất bản · {{ $stats['pending_courses'] }} duyệt</span>
+                <a href="{{ route('instructor.courses.index') }}" class="font-semibold text-[#019D91] dark:text-[#02b3a5] hover:underline shrink-0">
+                    Xem tất cả →
+                </a>
+            </div>
+        </div>
+
+        {{-- Thẻ 3: Học Viên --}}
+        <div class="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between transition hover:border-[#019D91]/40">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider block">Học Viên</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1.5 tracking-tight">
+                        {{ number_format($stats['total_students']) }}
+                    </h3>
+                </div>
+                <div class="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                    <iconify-icon icon="lucide:users" class="text-xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800/80 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+                <span class="truncate">Không trùng lặp</span>
+                <a href="{{ route('instructor.students.index') }}" class="font-semibold text-sky-600 dark:text-sky-400 hover:underline shrink-0">
+                    Danh sách →
+                </a>
+            </div>
+        </div>
+
+        {{-- Thẻ 4: Lượt Ghi Danh --}}
+        <div class="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between transition hover:border-[#019D91]/40">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider block">Lượt Ghi Danh</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1.5 tracking-tight">
+                        {{ number_format($stats['total_enrollments']) }}
+                    </h3>
+                </div>
+                <div class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                    <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800/80 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+                <span class="truncate">Toàn bộ khóa học</span>
+                <span class="text-xs font-semibold text-purple-600 dark:text-purple-400">Tích lũy</span>
+            </div>
+        </div>
+
+        {{-- Thẻ 5: Đánh Giá Trung Bình --}}
+        <div class="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between transition hover:border-[#019D91]/40">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider block">Đánh Giá</span>
+                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1.5 tracking-tight flex items-center gap-1.5">
+                        {{ $stats['total_reviews'] > 0 ? number_format($stats['average_rating'], 1) : '—' }}
+                        <span class="text-amber-500 text-lg">★</span>
+                    </h3>
+                </div>
+                <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                    <iconify-icon icon="lucide:star" class="text-xl"></iconify-icon>
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800/80 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
+                <span class="truncate">{{ $stats['total_reviews'] }} lượt đánh giá</span>
+                <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">Học viên</span>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- 3. Phần giữa: Biểu đồ ghi danh & Danh sách học viên mới --}}
     <div class="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
-        <!-- Biểu đồ ghi danh -->
-        <div class="min-w-0 lg:col-span-2 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
-            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 uppercase tracking-wide">Lượt ghi danh 6 tháng gần nhất</h3>
+
+        {{-- Biểu đồ ghi danh 6 tháng gần nhất --}}
+        <div class="min-w-0 lg:col-span-2 bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100">
+                        Xu hướng ghi danh 6 tháng gần nhất
+                    </h2>
+                    <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
+                        Số lượng học viên mới đăng ký các khóa học theo từng tháng
+                    </p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400">
+                    Tổng: {{ number_format($stats['total_enrollments']) }} lượt
+                </span>
+            </div>
             <div class="h-72 w-full">
                 <canvas id="instructorEnrollmentChart"></canvas>
             </div>
         </div>
 
-        <!-- Ghi danh gần đây -->
-        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Ghi danh gần đây</h3>
-                <a href="{{ route('instructor.students.index') }}" class="text-xs font-semibold text-brand-700 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300">Xem tất cả</a>
+        {{-- Học viên mới ghi danh --}}
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100 dark:border-neutral-800">
+                    <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100">
+                        Ghi danh gần đây
+                    </h2>
+                    <a href="{{ route('instructor.students.index') }}"
+                       class="text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:underline">
+                        Xem tất cả →
+                    </a>
+                </div>
+
+                <ul class="space-y-3.5">
+                    @forelse($recentEnrollments as $enrollment)
+                        <li class="flex items-center space-x-3 group">
+                            <div class="w-9 h-9 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+                                @if($enrollment->user->avatar_url)
+                                    <img src="{{ $enrollment->user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                                    <span class="hidden flex items-center justify-center w-full h-full">{{ $enrollment->user->initialLetter() }}</span>
+                                @else
+                                    <span>{{ $enrollment->user->initialLetter() }}</span>
+                                @endif
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate group-hover:text-[#019D91] transition-colors">
+                                    {{ $enrollment->user->name }}
+                                </p>
+                                <p class="text-xs text-gray-400 dark:text-neutral-500 truncate">
+                                    {{ $enrollment->course->title }}
+                                </p>
+                            </div>
+                            <span class="text-[11px] font-medium text-gray-400 dark:text-neutral-500 shrink-0">
+                                {{ $enrollment->enrolled_at?->locale('vi')->diffForHumans(null, true) }}
+                            </span>
+                        </li>
+                    @empty
+                        <li class="text-sm text-gray-400 dark:text-neutral-500 py-6 text-center">
+                            Chưa có học viên nào ghi danh gần đây.
+                        </li>
+                    @endforelse
+                </ul>
             </div>
-            <ul class="space-y-3">
-                @forelse($recentEnrollments as $enrollment)
-                    <li class="flex items-start space-x-3">
-                        <div class="w-9 h-9 rounded-full bg-black text-white dark:bg-black dark:text-white font-bold text-sm flex items-center justify-center shrink-0 overflow-hidden">
-                            @if($enrollment->user->avatar_url)
-                                <img src="{{ $enrollment->user->avatar_url }}" referrerpolicy="no-referrer" alt="{{ $enrollment->user->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
-                                <span class="hidden flex items-center justify-center w-full h-full">{{ $enrollment->user->initialLetter() }}</span>
-                            @else
-                                <span>{{ $enrollment->user->initialLetter() }}</span>
-                            @endif
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate">{{ $enrollment->user->name }}</p>
-                            <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">{{ $enrollment->course->title }}</p>
-                            <p class="text-[11px] text-gray-400 dark:text-neutral-500">{{ $enrollment->enrolled_at?->locale('vi')->diffForHumans() }}</p>
-                        </div>
-                    </li>
-                @empty
-                    <li class="text-sm text-gray-500 dark:text-neutral-400">Chưa có học viên nào ghi danh.</li>
-                @endforelse
-            </ul>
+
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800 text-center">
+                <a href="{{ route('instructor.students.index') }}" class="text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-[#019D91] transition">
+                    Quản lý toàn bộ học viên của bạn →
+                </a>
+            </div>
         </div>
+
     </div>
 
+    {{-- 4. Phần dưới: Bảng thống kê khóa học & Đánh giá gần đây --}}
     <div class="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
-        <!-- Thống kê theo khóa học -->
-        <div class="min-w-0 lg:col-span-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
+
+        {{-- Bảng thống kê khóa học --}}
+        <div class="min-w-0 lg:col-span-2 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-                <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 uppercase tracking-wide">Thống kê theo khóa học</h3>
-                <a href="{{ route('instructor.courses.create') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-brand-700 text-white text-xs font-semibold hover:bg-brand-800">+ Tạo khóa học</a>
+                <div>
+                    <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100">
+                        Hiệu suất khóa học của bạn
+                    </h2>
+                    <p class="text-xs text-gray-400 dark:text-neutral-500 mt-0.5">
+                        Tình trạng xuất bản và mức độ tương tác của học viên
+                    </p>
+                </div>
+                <a href="{{ route('instructor.courses.create') }}"
+                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#019D91] text-white text-xs font-semibold hover:bg-[#008b80] transition">
+                    <iconify-icon icon="lucide:plus" class="text-sm"></iconify-icon>
+                    <span>Tạo mới</span>
+                </a>
             </div>
+
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="bg-gray-50 dark:bg-neutral-800/40 text-xs uppercase text-gray-500 dark:text-neutral-400">
+                    <thead class="bg-gray-50/60 dark:bg-neutral-800/40 text-xs uppercase text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-neutral-800">
                         <tr>
-                            <th class="px-6 py-3 text-left font-semibold">Khóa học</th>
-                            <th class="px-4 py-3 text-left font-semibold">Trạng thái</th>
-                            <th class="px-4 py-3 text-center font-semibold">Học viên</th>
-                            <th class="px-4 py-3 text-center font-semibold">Đánh giá</th>
+                            <th class="px-6 py-3 text-left font-semibold">Tên khóa học</th>
+                            <th class="px-4 py-3 text-left font-semibold whitespace-nowrap">Trạng thái</th>
+                            <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">Học viên</th>
+                            <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">Đánh giá</th>
+                            <th class="px-6 py-3 text-right font-semibold whitespace-nowrap">Hành động</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-neutral-800">
                         @forelse($courses as $course)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-neutral-800">
-                                <td class="px-6 py-3">
-                                    <a href="{{ route('instructor.courses.show', $course) }}" class="font-semibold text-gray-900 dark:text-neutral-100 hover:text-brand-700 dark:hover:text-brand-300">{{ $course->title }}</a>
+                            <tr class="hover:bg-gray-50/70 dark:hover:bg-neutral-800/50 transition">
+                                <td class="px-6 py-3.5">
+                                    <a href="{{ route('instructor.courses.show', $course) }}"
+                                       class="font-semibold text-gray-900 dark:text-neutral-100 hover:text-[#019D91] dark:hover:text-[#02b3a5] transition line-clamp-1">
+                                        {{ $course->title }}
+                                    </a>
                                 </td>
-                                <td class="px-4 py-3">@include('instructor.partials.status-badge', ['status' => $course->status])</td>
-                                <td class="px-4 py-3 text-center">
-                                    <a href="{{ route('instructor.students.index', ['course_id' => $course->id]) }}" class="font-semibold text-brand-700 dark:text-brand-400 hover:underline">{{ $course->enrollments_count }}</a>
+                                <td class="px-4 py-3.5 whitespace-nowrap">
+                                    @include('instructor.partials.status-badge', ['status' => $course->status])
                                 </td>
-                                <td class="px-4 py-3 text-center text-amber-500 font-semibold">
-                                    {{ $course->reviews_count > 0 ? number_format($course->reviews_avg_rating, 1).' ★' : '—' }}
-                                    <span class="text-xs text-gray-400 dark:text-neutral-500 font-normal">({{ $course->reviews_count }})</span>
+                                <td class="px-4 py-3.5 text-center">
+                                    <a href="{{ route('instructor.students.index', ['course_id' => $course->id]) }}"
+                                       class="font-semibold text-gray-800 dark:text-neutral-200 hover:text-[#019D91] hover:underline">
+                                        {{ number_format($course->enrollments_count) }}
+                                    </a>
+                                </td>
+                                <td class="px-4 py-3.5 text-center">
+                                    @if($course->reviews_count > 0)
+                                        <span class="font-semibold text-amber-500">
+                                            {{ number_format($course->reviews_avg_rating, 1) }} ★
+                                        </span>
+                                        <span class="text-xs text-gray-400 dark:text-neutral-500 font-normal">({{ $course->reviews_count }})</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">Chưa có</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-3.5 text-right">
+                                    <a href="{{ route('instructor.courses.show', $course) }}"
+                                       class="text-xs font-semibold text-[#019D91] dark:text-[#02b3a5] hover:underline">
+                                        Chi tiết →
+                                    </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-10 text-center text-gray-500 dark:text-neutral-400">
-                                    Bạn chưa có khóa học nào. <a href="{{ route('instructor.courses.create') }}" class="text-brand-700 dark:text-brand-400 font-semibold hover:underline">Tạo khóa học đầu tiên</a>
+                                <td colspan="5" class="px-6 py-10 text-center text-gray-400 dark:text-neutral-500">
+                                    Bạn chưa có khóa học nào. <a href="{{ route('instructor.courses.create') }}" class="text-[#019D91] dark:text-[#02b3a5] font-semibold hover:underline">Tạo khóa học đầu tiên</a>
                                 </td>
                             </tr>
                         @endforelse
@@ -151,27 +292,50 @@
             </div>
         </div>
 
-        <!-- Đánh giá mới -->
-        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
-            <h3 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 uppercase tracking-wide">Đánh giá mới nhất</h3>
-            <ul class="space-y-4">
-                @forelse($recentReviews as $review)
-                    <li class="border-b border-gray-100 dark:border-neutral-800 pb-3 last:border-0 last:pb-0">
-                        <div class="flex items-center justify-between">
-                            <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate">{{ $review->user->name }}</p>
-                            <span class="text-amber-500 text-xs font-bold">{{ str_repeat('★', $review->rating) }}<span class="text-gray-300 dark:text-neutral-600">{{ str_repeat('★', 5 - $review->rating) }}</span></span>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">{{ $review->course->title }}</p>
-                        @if($review->comment)
-                            <p class="text-sm text-gray-700 dark:text-neutral-200 mt-1 line-clamp-2">{{ $review->comment }}</p>
-                        @endif
-                    </li>
-                @empty
-                    <li class="text-sm text-gray-500 dark:text-neutral-400">Chưa có đánh giá nào.</li>
-                @endforelse
-            </ul>
+        {{-- Đánh giá mới nhất của học viên --}}
+        <div class="min-w-0 bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-gray-100 dark:border-neutral-800 shadow-xs flex flex-col justify-between">
+            <div>
+                <h2 class="text-base font-bold text-gray-900 dark:text-neutral-100 mb-4 pb-2 border-b border-gray-100 dark:border-neutral-800">
+                    Đánh giá mới nhất
+                </h2>
+
+                <ul class="space-y-4">
+                    @forelse($recentReviews as $review)
+                        <li class="border-b border-gray-50 dark:border-neutral-800/60 pb-3.5 last:border-0 last:pb-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-neutral-100 truncate">
+                                    {{ $review->user->name }}
+                                </p>
+                                <span class="text-amber-500 text-xs font-bold tracking-wider">
+                                    {{ str_repeat('★', $review->rating) }}<span class="text-gray-200 dark:text-neutral-700">{{ str_repeat('★', 5 - $review->rating) }}</span>
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-neutral-500 truncate">
+                                {{ $review->course->title }}
+                            </p>
+                            @if($review->comment)
+                                <p class="text-xs text-gray-600 dark:text-neutral-300 mt-1.5 line-clamp-2 bg-gray-50 dark:bg-neutral-800/40 p-2 rounded-lg leading-relaxed">
+                                    “{{ $review->comment }}”
+                                </p>
+                            @endif
+                        </li>
+                    @empty
+                        <li class="text-sm text-gray-400 dark:text-neutral-500 py-6 text-center">
+                            Chưa có đánh giá nào từ học viên.
+                        </li>
+                    @endforelse
+                </ul>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-neutral-800 text-center">
+                <span class="text-xs text-gray-400 dark:text-neutral-500">
+                    Phản hồi chân thật giúp cải thiện bài giảng
+                </span>
+            </div>
         </div>
+
     </div>
+
 </div>
 @endsection
 
@@ -183,6 +347,16 @@
             return;
         }
 
+        const chartPalette = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            return {
+                label: isDark ? '#a3a3a3' : '#6b7280',
+                tick: isDark ? '#737373' : '#9ca3af',
+                grid: isDark ? '#262626' : '#f3f4f6',
+            };
+        };
+        const palette = chartPalette();
+
         new window.Chart(canvas, {
             type: 'bar',
             data: {
@@ -190,15 +364,49 @@
                 datasets: [{
                     label: 'Lượt ghi danh',
                     data: @json($monthlyEnrollments['data']),
-                    backgroundColor: 'rgba(15, 118, 110, 0.85)',
-                    borderRadius: 6,
+                    backgroundColor: '#019D91',
+                    hoverBackgroundColor: '#008b80',
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 42,
                 }],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#171717',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e5e5e5',
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: (context) => `${context.parsed.y} học viên ghi danh`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Inter', size: 12, weight: '500' },
+                            color: palette.label,
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: palette.grid },
+                        ticks: {
+                            precision: 0,
+                            font: { family: 'Inter', size: 11 },
+                            color: palette.tick,
+                            stepSize: 1
+                        }
+                    }
+                },
             },
         });
     });

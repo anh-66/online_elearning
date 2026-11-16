@@ -27,7 +27,7 @@ class ProfileController extends Controller
 
         return view('profile.edit', [
             'user' => $user,
-            'achievementsData' => $achievementService->getProfileAchievementsData($user),
+            'achievementsData' => $user->isStudent() ? $achievementService->getProfileAchievementsData($user) : [],
         ]);
     }
 
@@ -189,6 +189,13 @@ class ProfileController extends Controller
     public function claimAchievement(Request $request, Achievement $achievement): JsonResponse
     {
         $user = $request->user();
+
+        if (! $user->isStudent()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ tài khoản học viên mới có thể nhận thưởng thành tựu.',
+            ], 403);
+        }
 
         $record = UserAchievement::where('user_id', $user->id)
             ->where('achievement_id', $achievement->id)

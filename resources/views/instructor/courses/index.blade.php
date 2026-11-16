@@ -49,12 +49,12 @@
             <thead class="border-b border-gray-100 dark:border-neutral-800 text-xs uppercase text-gray-400 dark:text-neutral-500">
                 <tr>
                     <th class="py-3 text-left font-semibold">Khóa học</th>
-                    <th class="px-4 py-3 text-left font-semibold">Trạng thái</th>
-                    <th class="px-4 py-3 text-center font-semibold">Nội dung</th>
-                    <th class="px-4 py-3 text-center font-semibold">Học viên</th>
-                    <th class="px-4 py-3 text-center font-semibold">Đánh giá</th>
-                    <th class="px-4 py-3 text-right font-semibold">Học phí</th>
-                    <th class="px-6 py-3 text-right font-semibold">Thao tác</th>
+                    <th class="px-4 py-3 text-left font-semibold whitespace-nowrap">Trạng thái</th>
+                    <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">Nội dung</th>
+                    <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">Học viên</th>
+                    <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">Đánh giá</th>
+                    <th class="px-4 py-3 text-right font-semibold whitespace-nowrap">Học phí</th>
+                    <th class="px-6 py-3 text-right font-semibold whitespace-nowrap">Thao tác</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-neutral-800">
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-4">@include('instructor.partials.status-badge', ['status' => $course->status])</td>
+                            <td class="px-4 py-4 whitespace-nowrap">@include('instructor.partials.status-badge', ['status' => $course->status])</td>
                             <td class="px-4 py-4 text-center text-gray-600 dark:text-neutral-300 whitespace-nowrap">{{ $course->chapters_count }} chương · {{ $course->lessons_count }} bài</td>
                             <td class="px-4 py-4 text-center">
                                 <a href="{{ route('instructor.students.index', ['course_id' => $course->id]) }}" class="font-semibold text-brand-700 dark:text-brand-400 hover:underline">{{ $course->enrollments_count }}</a>

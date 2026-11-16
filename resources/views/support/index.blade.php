@@ -2,8 +2,25 @@
 
 @section('title', 'Trung tâm Hỗ trợ EduLearn')
 
+@push('styles')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .font-inter,
+        .font-inter * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        }
+        .font-inter {
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+@endpush
+
 @section('content')
-<div class="min-h-screen bg-[#F5F5F7] dark:bg-[#0d1117] transition-colors pb-20"
+<div class="min-h-screen bg-[#fcfcfc] dark:bg-[#0d1117] transition-colors pb-20 font-inter"
      x-data="{
         searchQuery: '{{ addslashes($searchKeyword) }}',
         activeCat: '{{ $activeCategory }}',

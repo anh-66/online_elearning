@@ -7,4 +7,4 @@
     ];
     [$statusLabel, $statusClass] = $statusStyles[$status] ?? [ucfirst($status), 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-200 ring-gray-200 dark:ring-neutral-800'];
 @endphp
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ring-1 ring-inset {{ $statusClass }}">{{ $statusLabel }}</span>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ring-inset whitespace-nowrap shrink-0 {{ $statusClass }}">{{ $statusLabel }}</span>
